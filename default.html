@@ -277,7 +277,7 @@
                         <div class="mb-3">
                             <label>What modes are supported by the applications console?</label>
                             <div class="form-text">This is in addition to the applications management type if it
-                                accepts management over methods other then Standard IO</div>
+                                accepts management over methods other than Standard IO</div>
                             <div class="list-group mx-0 list-group-horizontal">
                                 <label class="list-group-item d-flex gap-2" style="flex: 1">
                                     <input class="form-check-input flex-shrink-0" type="checkbox"
@@ -564,8 +564,9 @@
                             <input type="text" class="form-control" id="applicationArgumentsField"
                                 data-bind="value: App_CommandLineArgs, valueUpdate: 'input'">
                             <div class="form-text">Don't include any arguments that come from the Configuration and
-                                Settings section above. <button type="button" class="linkButton">Show substitutions
-                                    reference</button></div>
+                                Settings section above. 
+                                <!-- <button type="button" class="linkButton">Show substitutions reference</button> -->
+                            </div>
                         </div>
                         <div class="row">
                             <div class="mb-3 col-6">
@@ -746,13 +747,13 @@
                                     <path d="M4.54.146A.5.5 0 0 1 4.893 0h6.214a.5.5 0 0 1 .353.146l4.394 4.394a.5.5 0 0 1 .146.353v6.214a.5.5 0 0 1-.146.353l-4.394 4.394a.5.5 0 0 1-.353.146H4.893a.5.5 0 0 1-.353-.146L.146 11.46A.5.5 0 0 1 0 11.107V4.893a.5.5 0 0 1 .146-.353L4.54.146zM5.1 1 1 5.1v5.8L5.1 15h5.8l4.1-4.1V5.1L10.9 1H5.1z"></path>
                                     <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"></path>
                                   </svg>&nbsp;
-                                Validation Failed - You must address the above failures before you may continue.</p>
+                                Validation Failed - You must address the following failures before you may continue.</p>
                             <p data-bind="visible: __ValidationResult() == 2" class="p-3 mb-2 bg-warning text-dark">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
                                     <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"></path>
                                     <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"></path>
                                   </svg>&nbsp;
-                                Validation Passed with Warnings - You should consider addressing the above warnings.</p>
+                                Validation Passed with Warnings - You should consider addressing the following warnings.</p>
                             <p data-bind="visible: __ValidationResult() == 3" class="p-3 mb-2 bg-success text-white">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
                                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
@@ -813,8 +814,13 @@
                                     <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"></path>
                                   </svg>&nbsp;
                                 Make sure to keep a backup of your configuration by using the 'Export' option at the top of the page! You will need this to make further changes even after downloading the configuration and manifest.</p>
-                            <p>&nbsp;</p>
                         </div>
+                        <div class="mb-3">
+                            <h5>Using the generated configuration</h5>
+                            <p>Place the .kvp and .json files in your ADS instance under the <code>/Plugins/ADSModule/GenericTemplates</code> directory along side the other .kvp and .json files.</p>
+                            <p>Then restart ADS, and your new configuration will appear as an option when you select 'Create Instance'.</p>
+                        </div>
+                        <p>&nbsp;</p>
                     </form>
                 </div>
             </main>

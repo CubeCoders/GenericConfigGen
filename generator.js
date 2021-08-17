@@ -35,6 +35,7 @@ class generatorViewModel {
         this.App_AdminMethod = ko.observable("STDIO");
         this.App_HasReadableConsole = ko.observable(true);
         this.App_HasWritableConsole = ko.observable(true);
+        this.App_DisplayName = ko.computed(() => this.Meta_DisplayName());
 
         this.App_CommandLineArgs = ko.observable("+ip {{$ApplicationIPBinding}} +port {{$ApplicationPort1}} +queryport {{$ApplicationPort2}} +rconpassword \"{{$RemoteAdminPassword}}\" +maxusers {{$MaxUsers}} {{$FormattedArgs}}")
         this.App_CommandLineParameterFormat = ko.observable("-{0} \"{1}\"");
@@ -418,7 +419,7 @@ class generatorViewModel {
                     if (self._UpdateSourceURL() == "") {
                         failure("Update method is Fetch from URL, but no download URL was specified.", "Specify the 'Update source URL' under Update Sources.");
                     }
-                    else if (self._UpdateSourceURL().toLowerCase().endsWith(".zip"))
+                    else if (self._UpdateSourceURL().toLowerCase().endsWith(".zip") && !self._UpdateSourceUnzip())
                     {
                         info("Download URL is a zip file, but 'Unzip once downloaded' is not turned on.", "Turn on 'Unzip once downloaded' under 'Update Sources'", "Without this setting turned on, the archive will not be extracted. If this was intentional, you can ignore this message.");
                     }
