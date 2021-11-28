@@ -80,7 +80,7 @@ class generatorViewModel {
         this.Meta_DisplayImageSource = ko.computed(() => self._UpdateSourceType() == "4" ? "steam:" + self._SteamClientAppID() : "url:" + self._DisplayImageSource());
 
         this.App_RootDir = ko.computed(() => `./${self.__SanitizedName()}/`);
-        this.App_BaseDir = ko.computed(() => self._UpdateSourceType() == "4" ? `./${self.__SanitizedName()}/${self._SteamServerAppID()}/` : `./${self.__SanitizedName()}/`);
+        this.App_BaseDirectory = ko.computed(() => self._UpdateSourceType() == "4" ? `./${self.__SanitizedName()}/${self._SteamServerAppID()}/` : `./${self.__SanitizedName()}/`);
         this.App_WorkingDir = ko.computed(() => self._UpdateSourceType() == "4" ? self._SteamServerAppID() : "");
 
         this.App_ExecutableWin = ko.computed(() => self.App_WorkingDir() == "" ? self._WinExecutableName() : `${self.App_WorkingDir()}\\${self._WinExecutableName()}`);
@@ -103,7 +103,7 @@ class generatorViewModel {
                 }
                 else
                 {
-                    if (appPortNum >= 3) { continue; }
+                    if (appPortNum > 3) { continue; }
                     var portName = "ApplicationPort" + appPortNum;
                     data[portName] = portEntry.Port();
                     appPortNum++;
@@ -154,7 +154,7 @@ class generatorViewModel {
                 },
                 {
                     "key": "Base Directory",
-                    "value": self.App_BaseDir()
+                    "value": self.App_BaseDirectory()
                 },
                 {
                     "key": "Working Directory",
@@ -294,15 +294,6 @@ class generatorViewModel {
             for (const key of Object.keys(self).filter(k => !k.startsWith("_")))
             {
                 lines.push(`${key.replace("_", ".")}=${self[key]()}`);
-            }
-
-            if (self._UpdateSourceType() == "0") //None
-            {
-                lines.push("App.UpdateSource=None");
-            }
-            else
-            {
-                lines.push("App.UpdateSource=Multi");
             }
 
             switch (self._UpdateSourceType())
