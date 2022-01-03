@@ -522,10 +522,6 @@ document.addEventListener('DOMContentLoaded',() => {
     setInterval(autoSave, 30000);
     $('body').scrollspy({ target: '#navbar', offset: 90 });
 
-    $(window).on('activate.bs.scrollspy', function () {
-        document.location.hash = $(".nav-link.active").attr("href");
-    });
-
     $('[data-toggle="tooltip"]').tooltip({
         container: 'body',
         trigger: 'click',
