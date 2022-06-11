@@ -54,7 +54,8 @@ class generatorViewModel {
 
         this._PortMappings = ko.observableArray(); //of portMappingViewModel
         this.__NewPort = ko.observable("7777");
-        this.__NewPortType = ko.observable("0");
+        this.__NewName = ko.observable("Application Port");
+        this.__NewProtocol = ko.observable("Both");
 
         this._UpdateSourceType = ko.observable("4");
         this._UpdateSourceURL = ko.observable("");
@@ -76,6 +77,8 @@ class generatorViewModel {
         this.__SanitizedName = ko.computed(() => self.Meta_DisplayName().replace(/\s+/g, "-").replace(/[^a-z\d-_]/ig, "").toLowerCase());
         this.Meta_OS = ko.computed(() => (self._SupportsWindows() ? 1 : 0) | (self._SupportsLinux() ? 2 : 0));
         this.Meta_ConfigManifest = ko.computed(() => self.__SanitizedName() + "config.json");
+        this.Meta_PortsManifest = ko.computed(() => self.__SanitizedName() + "ports.json");
+        this.Meta_UpdatesManifest = ko.computed(() => self.__SanitizedName() + "updates.json");
         this.Meta_ConfigRoot = ko.computed(() => self.__SanitizedName() + ".kvp");
         this.Meta_DisplayImageSource = ko.computed(() => self._UpdateSourceType() == "4" ? "steam:" + self._SteamClientAppID() : "url:" + self._DisplayImageSource());
 
@@ -85,7 +88,7 @@ class generatorViewModel {
 
         this.App_ExecutableWin = ko.computed(() => self.App_WorkingDir() == "" ? self._WinExecutableName() : `${self.App_WorkingDir()}\\${self._WinExecutableName()}`);
         this.App_ExecutableLinux = ko.computed(() => self.App_WorkingDir() == "" ? self._LinuxExecutableName() : `${self.App_WorkingDir()}/${self._LinuxExecutableName()}`);
-
+        this.App_Ports = ko.computed(() => "@IncludeJson[" + self.Meta_PortsManifest() + "]");
         this.__QueryPortName = ko.observable("");
         this.Meta_EndpointURIFormat = ko.computed(() => self.__QueryPortName() != "" ? `steam://connect/{ip}:{GenericModule.App.Ports.${self.__QueryPortName()}}` : "");
 
@@ -97,7 +100,7 @@ class generatorViewModel {
             for (var i = 0; i < allPorts.length; i++)
             {
                 var portEntry = allPorts[i];
-                if (portEntry.PortType() == "2") //RCON
+                if (portEntry.Name() == "Remote Admin Port") //RCON
                 {
                     data["RemoteAdminPort"] = portEntry.Port();
                 }
@@ -107,7 +110,7 @@ class generatorViewModel {
                     var portName = "ApplicationPort" + appPortNum;
                     data[portName] = portEntry.Port();
                     appPortNum++;
-                    if (portEntry.PortType() == "1") //QueryPort
+                    if (portEntry.Name() == "Steam Query Port") //QueryPort
                     {
                         self.__QueryPortName(portName);
                     }
@@ -164,6 +167,10 @@ class generatorViewModel {
                     "key": "Endpoint URI Format",
                     "value": self.Meta_EndpointURIFormat(),
                     "longValue": true
+                },
+                {
+                    "key": "Ports",
+                    "value": self.App_Ports()
                 }
             ];
 
@@ -190,7 +197,7 @@ class generatorViewModel {
         };
 
         this.__AddPort = function(){
-            self._PortMappings.push(new portMappingViewModel(self.__NewPort(), self.__NewPortType(), self));
+            self._PortMappings.push(new portMappingViewModel(self.__NewPort(), self.__NewName(), self.__NewProtocol(), self));
         };
 
         this.__RemoveSetting = function(toRemove){
@@ -239,8 +246,8 @@ class generatorViewModel {
             self._PortMappings.push.apply(self._PortMappings, mappedPorts);
 
             self._AppSettings.removeAll();
-            var mappedPorts = ko.quickmap.to(appSettingViewModel, settings, false, {__vm: self});
-            self._AppSettings.push.apply(self._AppSettings, mappedPorts);
+            var mappedSettings = ko.quickmap.to(appSettingViewModel, settings, false, {__vm: self});
+            self._AppSettings.push.apply(self._AppSettings, mappedSettings);
         };
 
         this.__IsExporting = ko.observable(false);
@@ -331,6 +338,13 @@ class generatorViewModel {
             downloadString(JSON.stringify(asJS, omitNonPublicMembers, 4), self.Meta_ConfigManifest());
         };
 
+        this.__DownloadPortsManifest = function(){
+            if (this.__ValidationResult() < 2) { return; }
+
+            var asJS = ko.toJS(self._PortMappings());
+            downloadString(JSON.stringify(asJS, omitNonPublicMembers, 4), self.Meta_PortsManifest());
+        };
+
         this.__Invalidate = function(newValue){ 
             self.__ValidationResult(0);
         };
@@ -397,7 +411,7 @@ class generatorViewModel {
                         warning("A server management mode that uses the network was specified, but the port being used is not found within the command line arguments.", "If the application can have it's RCON port specified via the command line then you should add the {{$" + this.__QueryPortName() + "}} template item to your command line arguments");
                     }
 
-                    if (self._PortMappings().filter(p => p.PortType() == "2").length == 0)
+                    if (self._PortMappings().filter(p => p.Name() == "RCON Port").length == 0)
                     {
                         warning("A server management mode that uses the network was specified, but no RCON port has been added.", "Add the port used by this applications RCON under Networking.");
                     }
@@ -468,11 +482,13 @@ class validationResult {
 }
 
 class portMappingViewModel {
-    constructor(port, portType, vm) {
+    constructor(port, name, protocol, vm) {
         var self = this;
         this.__vm = vm;
+        this.Protocol = ko.observable(protocol);
         this.Port = ko.observable(port);
-        this.PortType = ko.observable(portType);
+        this.Name = ko.observable(name);
+        this.Ref = ko.computed(() => self.Name().replace(/\s+/g, "").replace(/[^a-z\d-_]/ig, ""));
         this.__RemovePort = () => self.__vm.__RemovePort(self);
     }
 }
