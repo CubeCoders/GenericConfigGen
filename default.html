@@ -224,7 +224,7 @@
                             <div class="list-group mx-0 list-group-horizontal">
                                 <label class="list-group-item d-flex gap-2" style="flex: 1">
                                     <input class="form-check-input flex-shrink-0" type="checkbox"
-                                           data-bind="checked: _RequiresWine">
+                                           data-bind="checked: _RequiresWine" />
                                     <span>
                                         Wine
                                         <small class="d-block text-muted">
@@ -234,7 +234,7 @@
                                 </label>
                                 <label class="list-group-item d-flex gap-2" style="flex: 1">
                                     <input class="form-check-input flex-shrink-0" type="checkbox"
-                                           data-bind="checked: _RequiresProton">
+                                           data-bind="checked: _RequiresProton" />
                                     <span>
                                         Proton
                                         <small class="d-block text-muted">
@@ -383,12 +383,14 @@
                             AMP will automatically generate firewall rules to allow the application
                             ports through
                         </div>
-                        <table class="table" class="mb-3">
+                        <table class="table mb-3">
                             <thead>
-                            <th scope="col">Port Number</th>
-                            <th scope="col">Usage Type</th>
-                            <th scope="col">Protocol</th>
-                            <th></th>
+                                <tr>
+                                    <th scope="col">Port Number</th>
+                                    <th scope="col">Usage Type</th>
+                                    <th scope="col">Protocol</th>
+                                    <th></th>
+                                </tr>
                             </thead>
                             <tbody>
                                 <!-- ko foreach: _PortMappings -->
@@ -408,7 +410,7 @@
                                     <td>
                                         <select class="form-select" data-bind="value: Protocol">
                                             <option value="Both">Both</option>
-                                            <option value="TCP">TCP</option>                                            </option>
+                                            <option value="TCP">TCP</option>
                                             <option value="UDP">UDP</option>
                                         </select>
                                     </td>
@@ -452,7 +454,7 @@
                                     <td>
                                         <select class="form-select" data-bind="value: __NewProtocol">
                                             <option value="Both">Both</option>
-                                            <option value="TCP">TCP</option>                                            </option>
+                                            <option value="TCP">TCP</option>
                                             <option value="UDP">UDP</option>
                                         </select>
                                     </td>
@@ -591,15 +593,17 @@
                         </div>
                         <h4 id="configuration">Configuration and Settings</h4>
                         <!-- <h5>Application Settings</h5> -->
-                        <table class="table" class="mb-3">
+                        <table class="table mb-3">
                             <thead>
-                            <th scope="col">Display Name</th>
-                            <th scope="col">Description</th>
-                            <th scope="col">Field Name</th>
-                            <th scope="col">Default Value</th>
-                            <th scope="col">Suffix</th>
-                            <th scope="col">Command Line</th>
-                            <th scope="col"></th>
+                                <tr>
+                                    <th scope="col">Display Name</th>
+                                    <th scope="col">Description</th>
+                                    <th scope="col">Field Name</th>
+                                    <th scope="col">Default Value</th>
+                                    <th scope="col">Suffix</th>
+                                    <th scope="col">Command Line</th>
+                                    <th scope="col"></th>
+                                </tr>
                             </thead>
                             <tbody>
                                 <!-- ko foreach: _AppSettings -->
@@ -904,28 +908,28 @@
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
-                                        <th scope="col">Category</td>
-                                        <th scope="col">Issue</td>
-                                        <th scope="col">Recommentation</td>
+                                        <th scope="col">Category</th>
+                                        <th scope="col">Issue</th>
+                                        <th scope="col">Recommentation</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <!-- ko foreach: __ValidationResults -->
                                     <tr data-bind="class: gradeClass">
-                                        <th data-bind="text: grade"></td>
+                                        <td data-bind="text: grade"></td>
                                         <td data-bind="text: issue"></td>
                                         <td data-bind="text: recommendation"></td>
                                     </tr>
                                     <!-- ko if: impact != 0 -->
                                     <tr data-bind="class: gradeClass">
-                                        <td>Impact:</th>
+                                        <td>Impact:</td>
                                         <td data-bind="text: impact" colspan="2"></td>
                                     </tr>
                                     <!-- /ko -->
                                     <!-- /ko -->
                                     <!-- ko if: __ValidationResults().length == 0 -->
                                     <tr class="table-success">
-                                        <th colspan="3">No validation issues</td>
+                                        <td colspan="3">No validation issues</td>
                                     </tr>
                                     <!-- /ko -->
                                 </tbody>

@@ -28,7 +28,7 @@ class generatorViewModel {
         this.Meta_SpecificDockerImage = "";
 
         this._SupportsWindows = ko.observable(true);
-        this._SupportsLinux = ko.observable(true);
+        this._SupportsLinux = ko.observable(true); 
         this._RequiresWine = ko.observable(false);
         this._RequiresProton = ko.observable(false);
 
@@ -70,6 +70,8 @@ class generatorViewModel {
 
         this._WinExecutableName = ko.observable("");
         this._LinuxExecutableName = ko.observable("");
+        this.App_ExecutableLinux = ko.observable("");
+        this.App_ExecutableWin = ko.observable("");
 
         this._AppSettings = ko.observableArray(); //of appSettingViewModel
         this.__AddEditSetting = ko.observable(null); //of appSettingViewModel
@@ -79,33 +81,49 @@ class generatorViewModel {
         this.__SanitizedName = ko.computed(() => self.Meta_DisplayName().replace(/\s+/g, "-").replace(/[^a-z\d-_]/ig, "").toLowerCase());
         this.Meta_OS = ko.computed(() => (self._SupportsWindows() ? 1 : 0) | (self._SupportsLinux() ? 2 : 0));
         this.Meta_ConfigManifest = ko.computed(() => self.__SanitizedName() + "config.json");
-        this.Meta_PortsManifest = ko.computed(() => self.__SanitizedName() + "ports.json");
-        this.Meta_UpdatesManifest = ko.computed(() => self.__SanitizedName() + "updates.json");
+        this._Meta_PortsManifest = ko.computed(() => self.__SanitizedName() + "ports.json");
+        this._Meta_UpdatesManifest = ko.computed(() => self.__SanitizedName() + "updates.json");
         this.Meta_ConfigRoot = ko.computed(() => self.__SanitizedName() + ".kvp");
         this.Meta_DisplayImageSource = ko.computed(() => self._UpdateSourceType() == "4" ? "steam:" + self._SteamClientAppID() : "url:" + self._DisplayImageSource());
-        if (this._RequiresWine() == true) {
-            this.Meta_SpecificDockerImage = ko.computed(() => "cubecoders/ampbase:wine");
-        } else {
-            this.Meta_SpecificDockerImage = ko.computed(() => "");
-        }
+        this.Meta_SpecificDockerImage = ko.computed(() => ``);
 
         this.App_RootDir = ko.computed(() => `./${self.__SanitizedName()}/`);
         this.App_BaseDirectory = ko.computed(() => self._UpdateSourceType() == "4" ? `./${self.__SanitizedName()}/${self._SteamServerAppID()}/` : `./${self.__SanitizedName()}/`);
         this.App_WorkingDir = ko.computed(() => self._UpdateSourceType() == "4" ? self._SteamServerAppID() : "");
 
         this.App_ExecutableWin = ko.computed(() => self.App_WorkingDir() == "" ? self._WinExecutableName() : `${self.App_WorkingDir()}\\${self._WinExecutableName()}`);
-        this.App_WindowsCommandLineArgs = ko.computed(() => "");
-        if (self._RequiresProton() == true) {
-            this.App_ExecutableLinux = "/usr/bin/xvfb-run";
-            this.App_LinuxCommandLineArgs = "-a \"{{$FullRootDir}}1580130/proton\" run \"./${self._WinExecutableName()}\"";
-        } else if (self._RequiresWine() == true) {
-            this.App_ExecutableLinux = "/usr/bin/xvfb-run";
-            this.App_LinuxCommandLineArgs = "-a wine \"./${self._WinExecutableName()}\"";
-        } else {
-            this.App_ExecutableLinux = ko.computed(() => self.App_WorkingDir() == "" ? self._LinuxExecutableName() : `${self.App_WorkingDir()}/${self._LinuxExecutableName()}`);
-            this.App_LinuxCommandLineArgs = ko.computed(() => "");
+        this.App_WindowsCommandLineArgs = ko.computed(() => ``);
+        this.App_ExecutableLinux = ko.computed(() => self.App_WorkingDir() == "" ? self._LinuxExecutableName() : `${self.App_WorkingDir()}/${self._LinuxExecutableName()}`);
+        this.App_LinuxCommandLineArgs = ko.computed(() => ``);
+
+        this._RequiresProtonProcessing = function (proton) {
+            if (proton) {
+                this.App_ExecutableLinux = ko.computed(() => `/usr/bin/xvfb-run`);
+                this.App_LinuxCommandLineArgs = ko.computed(() => `-a \"{{$FullRootDir}}1580130/proton\" run \"./` + self._WinExecutableName() + `\"`);
+                this.Meta_SpecificDockerImage = ko.computed(() => ``);
+            } else {
+                this.App_ExecutableLinux = ko.computed(() => self.App_WorkingDir() == "" ? self._LinuxExecutableName() : `${self.App_WorkingDir()}/${self._LinuxExecutableName()}`);
+                this.App_LinuxCommandLineArgs = ko.computed(() => ``);
+                this.Meta_SpecificDockerImage = ko.computed(() => ``);
+            }
         }
-        this.App_Ports = ko.computed(() => "@IncludeJson[" + self.Meta_PortsManifest() + "]");
+
+        this._RequiresWineProcessing = function (wine) {
+            if (wine) {
+                this.App_ExecutableLinux = ko.computed(() => `/usr/bin/xvfb-run`);
+                this.App_LinuxCommandLineArgs = ko.computed(() => `-a wine \"./` + self._WinExecutableName() + `\"`);
+                this.Meta_SpecificDockerImage = ko.computed(() => `cubecoders/ampbase:wine`);
+            } else {
+                this.App_ExecutableLinux = ko.computed(() => self.App_WorkingDir() == "" ? self._LinuxExecutableName() : `${self.App_WorkingDir()}/${self._LinuxExecutableName()}`);
+                this.App_LinuxCommandLineArgs = ko.computed(() => ``);
+                this.Meta_SpecificDockerImage = ko.computed(() => ``);
+            }
+        }
+
+        this._RequiresProton.subscribe(this._RequiresProtonProcessing, this);
+        this._RequiresWine.subscribe(this._RequiresWineProcessing, this);
+        
+        this.App_Ports = ko.computed(() => `@IncludeJson[` + self._Meta_PortsManifest() + `]`);
         this.__QueryPortName = ko.observable("");
         this.Meta_EndpointURIFormat = ko.computed(() => self.__QueryPortName() != "" ? `steam://connect/{ip}:{GenericModule.App.Ports.${self.__QueryPortName()}}` : "");
 
@@ -184,23 +202,13 @@ class generatorViewModel {
                     "longValue": true
                 },
                 {
-                    "key": "Ports",
-                    "value": self.App_Ports()
-                },
-                {
-                    "key": "Windows CLI Args",
-                    "value": self.App_WindowsCommandLineArgs(),
+                    "key": "Docker Image",
+                    "value": self.Meta_SpecificDockerImage(),
                     "longValue": true
                 },
                 {
-                    "key": "Linux CLI Args",
-                    "value": self.App_LinuxCommandLineArgs(),
-                    "longValue": true
-//                },
-//                {
-//                    "key": "Docker Image",
-//                    "value": self.Meta_SpecificDockerImage(),
-//                    "longValue": true
+                    "key": "Proton",
+                    "value": self._RequiresProton()
                 }
             ];
 
@@ -337,7 +345,7 @@ class generatorViewModel {
                     lines.push(`App.UpdateSources=[{\"UpdateStageName\": \"Server Download\",\"UpdateSourcePlatform\": \"All\", \"UpdateSource\": \"FetchURL\", \"UpdateSourceData\": \"${self._UpdateSourceURL()}\", \"UnzipUpdateSource\": ${self._UpdateSourceUnzip()}}]`);
                     break;
                 case "4": //Steam
-                    if (_RequiresProton == true) {
+                    if (self._RequiresProton()) {
                         lines.push(`App.UpdateSources=[{\"UpdateStageName\": \"SteamCMD Download\",\"UpdateSourcePlatform\": \"All\", \"UpdateSource\": \"SteamCMD\", \"UpdateSourceData\": \"${self._SteamServerAppID()}\"},{\"UpdateStageName\": \"Proton Compatibility Layer\",\"UpdateSourcePlatform\": \"Linux\", \"UpdateSource\": \"SteamCMD\", \"UpdateSourceData\": \"1580130\"}]`);
                     } else {
                         lines.push(`App.UpdateSources=[{\"UpdateStageName\": \"SteamCMD Download\",\"UpdateSourcePlatform\": \"All\", \"UpdateSource\": \"SteamCMD\", \"UpdateSourceData\": \"${self._SteamServerAppID()}\"}]`);
@@ -350,7 +358,7 @@ class generatorViewModel {
 
             if (self._UpdateSourceType() == "4") //SteamCMD
             {
-                if (self._RequiresProton() == true) {
+                if (self._RequiresProton()) {
                     lines.push(`App.EnvironmentVariables={\"LD_LIBRARY_PATH\": \"./linux64:%LD_LIBRARY_PATH%\", \"SteamAppId\": \"${self._SteamClientAppID()}\", \"STEAM_COMPAT_DATA_PATH\": \"{{$FullRootDir}}1580130\", \"STEAM_COMPAT_CLIENT_INSTALL_PATH\": \"{{$FullRootDir}}1580130\"}`);
                 } else {
                     lines.push(`App.EnvironmentVariables={\"LD_LIBRARY_PATH\": \"./linux64:%LD_LIBRARY_PATH%\", \"SteamAppId\": \"${self._SteamClientAppID()}\"}`);
@@ -377,7 +385,7 @@ class generatorViewModel {
             if (this.__ValidationResult() < 2) { return; }
 
             var asJS = ko.toJS(self._PortMappings());
-            downloadString(JSON.stringify(asJS, omitNonPublicMembers, 4), self.Meta_PortsManifest());
+            downloadString(JSON.stringify(asJS, omitNonPublicMembers, 4), self._Meta_PortsManifest());
         };
 
         this.__Invalidate = function (newValue) {
@@ -468,8 +476,8 @@ class generatorViewModel {
             if (self.Console_UserJoinRegex() != "" && !self.Console_UserJoinRegex().match(/\^.+\$/)) { failure("User connected expression does not match the entire line. Regular expressions for AMP must match the entire line, starting with a ^ and ending with a $.", "Update the User connected expression under Server Events to match the entire line."); }
             if (self.Console_UserLeaveRegex() != "" && !self.Console_UserLeaveRegex().match(/\^.+\$/)) { failure("User disconnected expression does not match the entire line. Regular expressions for AMP must match the entire line, starting with a ^ and ending with a $.", "Update the User disconnected expression under Server Events to match the entire line."); }
             if (self.Console_UserChatRegex() != "" && !self.Console_UserChatRegex().match(/\^.+\$/)) { failure("User chat expression does not match the entire line. Regular expressions for AMP must match the entire line, starting with a ^ and ending with a $.", "Update the User chat expression under Server Events to match the entire line."); }
-            if ((self._RequiresWine() == true && self._SupportsLinux() == false) || (self._RequiresProton() == true && self._SupportsLinux() == false)) { failure("A Linux compatibility layer was chosen, but Linux support is not checked.", "Please check both."); }
-            if (self._RequiresWine() == true && self._RequiresProton() == true) { failure("Only one Linux compatibility layer can be chosen.", "Remove one of the selections."); }
+            if ((self._RequiresWine() && !self._SupportsLinux()) || (self._RequiresProton() && !self._SupportsLinux())) { failure("A Linux compatibility layer was chosen, but Linux support is not checked.", "Please check both."); }
+            if (self._RequiresWine() && self._RequiresProton()) { failure("Only one Linux compatibility layer can be chosen.", "Remove one of the selections."); }
 
 
             //Validation Summary
@@ -489,7 +497,6 @@ class generatorViewModel {
         };
     }
 }
-
 class validationResult {
     constructor(grade, issue, recommendation, impact) {
         this.grade = grade;
