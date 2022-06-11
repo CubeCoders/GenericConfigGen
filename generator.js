@@ -87,7 +87,7 @@ class generatorViewModel {
         this.App_ExecutableLinux = ko.computed(() => self.App_WorkingDir() == "" ? self._LinuxExecutableName() : `${self.App_WorkingDir()}/${self._LinuxExecutableName()}`);
 
         this.__QueryPortName = ko.observable("");
-        this.Meta_EndpointURIFormat = ko.computed(() => self.__QueryPortName() != "" ? `steam://connect/{ip}/{GenericModule.App.${self.__QueryPortName()}}` : "");
+        this.Meta_EndpointURIFormat = ko.computed(() => self.__QueryPortName() != "" ? `steam://connect/{ip}:{GenericModule.App.Ports.${self.__QueryPortName()}}` : "");
 
         this.__BuildPortMappings = ko.computed(() => {
             var data = {};
@@ -311,7 +311,7 @@ class generatorViewModel {
 
             if (self._UpdateSourceType() == "4") //SteamCMD
             {
-                lines.push(`App.EnvironmentVariables={\"LD_LIBRARY_PATH\": \"./linux64:%LD_LIBRARY_PATH%\", \"SteamAppId\": \"${self._SteamServerAppID()}\"}`);
+                lines.push(`App.EnvironmentVariables={\"LD_LIBRARY_PATH\": \"./linux64:%LD_LIBRARY_PATH%\", \"SteamAppId\": \"${self._SteamClientAppID()}\"}`);
             }
 
             var portMappings = self.__BuildPortMappings();
@@ -482,7 +482,7 @@ class appSettingViewModel {
         var self = this;
         this.__vm = vm;
         this.DisplayName = ko.observable("");
-        this.Category = ko.observable("");
+        this.Category = ko.observable("Server Settings");
         this.Description = ko.observable("");
         this.Keywords = ko.observable("");
         this.FieldName = ko.observable("");
@@ -491,6 +491,8 @@ class appSettingViewModel {
         this.ParamFieldName = ko.computed(() => self.FieldName());
         this.IncludeInCommandLine = ko.observable(true);
         this.DefaultValue = ko.observable("");
+        this.Placeholder = this.DefaultValue
+        this.Suffix = ko.observable("");
         this._CheckedValue = ko.observable("true");
         this._UncheckedValue = ko.observable("false");
         this.EnumValues = ko.computed(() => {
