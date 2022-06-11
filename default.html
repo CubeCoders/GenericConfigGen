@@ -220,29 +220,40 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label>Which compatility layer is required?</label>
-                            <div class="list-group mx-0 list-group-horizontal">
-                                <label class="list-group-item d-flex gap-2" style="flex: 1">
-                                    <input class="form-check-input flex-shrink-0" type="checkbox"
-                                           data-bind="checked: _RequiresWine" />
+                            <label>What compatibility layer is required?</label>
+                            <div class="list-group mx-0">
+                                <label class="list-group-item d-flex gap-2">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="_compatibilityType"
+                                           value="None" data-bind="checked: _compatibility">
                                     <span>
-                                        Wine
+                                        None
                                         <small class="d-block text-muted">
-                                            Runs on Linux but requires Wine.
+                                            For applications that can run natively on Linux.
                                         </small>
                                     </span>
                                 </label>
-                                <label class="list-group-item d-flex gap-2" style="flex: 1">
-                                    <input class="form-check-input flex-shrink-0" type="checkbox"
-                                           data-bind="checked: _RequiresProton" />
+                                <label class="list-group-item d-flex gap-2">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="_compatibilityType"
+                                           value="Wine" data-bind="checked: _compatibility">
+                                    <span>
+                                        Wine
+                                        <small class="d-block text-muted">
+                                            For applications that can run on Linux, but require Wine.
+                                        </small>
+                                    </span>
+                                </label>
+                                <label class="list-group-item d-flex gap-2">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="_compatibilityType"
+                                           value="Proton" data-bind="checked: _compatibility">
                                     <span>
                                         Proton
                                         <small class="d-block text-muted">
-                                            Runs on Linux but requires Proton.
+                                            For applications that can run on Linux, but require Proton.
                                         </small>
                                     </span>
                                 </label>
                             </div>
+                            <div class="form-text"></div>
                         </div>
                         <h4 id="managementConsole">Management and Console</h4>
                         <div class="mb-3">
