@@ -91,28 +91,9 @@ class generatorViewModel {
 
         this.App_ExecutableWin = ko.computed(() => self.App_WorkingDir() == "" ? self._WinExecutableName() : `${self.App_WorkingDir()}\\${self._WinExecutableName()}`);
         this.App_WindowsCommandLineArgs = ko.computed(() => ``);
-
-        this._compatibilityProcessing = function (compat) {
-            switch (self._compatibility()) {
-                case "None":
-                    this.App_ExecutableLinux = ko.computed(() => self.App_WorkingDir() == "" ? self._LinuxExecutableName() : `${self.App_WorkingDir()}/${self._LinuxExecutableName()}`);
-                    this.App_LinuxCommandLineArgs = ko.computed(() => ``);
-                    this.Meta_SpecificDockerImage = ko.computed(() => ``);
-                    break;
-                case "Wine":
-                    this.App_ExecutableLinux = ko.computed(() => `/usr/bin/xvfb-run`);
-                    this.App_LinuxCommandLineArgs = ko.computed(() => `-a wine \"./` + self._WinExecutableName() + `\"`);
-                    this.Meta_SpecificDockerImage = ko.computed(() => `cubecoders/ampbase:wine`);
-                    break;
-                case "Proton":
-                    this.App_ExecutableLinux = ko.computed(() => `/usr/bin/xvfb-run`);
-                    this.App_LinuxCommandLineArgs = ko.computed(() => `-a \"{{$FullRootDir}}1580130/proton\" run \"./` + self._WinExecutableName() + `\"`);
-                    this.Meta_SpecificDockerImage = ko.computed(() => ``);
-                    break;
-            }
-        }
-
-            this._compatibility.subscribe(this._compatibilityProcessing, this);
+        this.App_ExecutableLinux = ko.computed(() => self._compatibility() == "None" ? (self.App_WorkingDir() == "" ? self._LinuxExecutableName() : `${self.App_WorkingDir()}/${self._LinuxExecutableName()}`) : `/usr/bin/xvfb-run`);
+        this.App_LinuxCommandLineArgs = ko.computed(() => self._compatibility() == "None" ? (self._compatibility() == "Wine" ? `-a \"{{$FullRootDir}}1580130/proton\" run \"./` + self._WinExecutableName() + `\"` : `-a wine \"./` + self._WinExecutableName() + `\"`) : ``);
+        this.Meta_SpecificDockerImage = ko.computed(() => self._compatibility() == "Wine" ? `cubecoders/ampbase:wine` : ``);
 
         this.App_Ports = ko.computed(() => `@IncludeJson[` + self._Meta_PortsManifest() + `]`);
         this.__QueryPortName = ko.observable("");
