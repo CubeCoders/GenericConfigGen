@@ -25,7 +25,7 @@ class generatorViewModel {
         this.Meta_Description = ko.observable("");
         this.Meta_Author = ko.observable("");
         this.Meta_URL = ko.observable("");
-        this.Meta_SpecificDockerImage = "";
+        this.Meta_SpecificDockerImage = ko.observable("");
 
         this._SupportsWindows = ko.observable(true);
         this._SupportsLinux = ko.observable(true);
@@ -37,8 +37,8 @@ class generatorViewModel {
         this.App_DisplayName = ko.computed(() => this.Meta_DisplayName());
 
         this.App_CommandLineArgs = ko.observable("{{$PlatformArgs}} +ip {{$ApplicationIPBinding}} +port {{$ApplicationPort1}} +queryport {{$ApplicationPort2}} +rconpassword \"{{$RemoteAdminPassword}}\" +maxusers {{$MaxUsers}} {{$FormattedArgs}}")
-        this.App_LinuxCommandLineArgs = "";
-        this.App_WindowsCommandLineArgs = "";
+        this.App_LinuxCommandLineArgs = ko.observable("");
+        this.App_WindowsCommandLineArgs = ko.observable("");
         this.App_CommandLineParameterFormat = ko.observable("-{0} \"{1}\"");
         this.App_CommandLineParameterDelimiter = ko.observable(" ");
 
@@ -84,7 +84,6 @@ class generatorViewModel {
         this._Meta_UpdatesManifest = ko.computed(() => self.__SanitizedName() + "updates.json");
         this.Meta_ConfigRoot = ko.computed(() => self.__SanitizedName() + ".kvp");
         this.Meta_DisplayImageSource = ko.computed(() => self._UpdateSourceType() == "4" ? "steam:" + self._SteamClientAppID() : "url:" + self._DisplayImageSource());
-//        this.Meta_SpecificDockerImage = ko.computed(() => ``);
 
         this.App_RootDir = ko.computed(() => `./${self.__SanitizedName()}/`);
         this.App_BaseDirectory = ko.computed(() => self._UpdateSourceType() == "4" ? `./${self.__SanitizedName()}/${self._SteamServerAppID()}/` : `./${self.__SanitizedName()}/`);
@@ -92,28 +91,29 @@ class generatorViewModel {
 
         this.App_ExecutableWin = ko.computed(() => self.App_WorkingDir() == "" ? self._WinExecutableName() : `${self.App_WorkingDir()}\\${self._WinExecutableName()}`);
         this.App_WindowsCommandLineArgs = ko.computed(() => ``);
- //       this.App_ExecutableLinux = ko.computed(() => self.App_WorkingDir() == "" ? self._LinuxExecutableName() : `${self.App_WorkingDir()}/${self._LinuxExecutableName()}`);
-//        this.App_LinuxCommandLineArgs = ko.computed(() => ``);
 
-        switch (self._compatibility()) {
-            case "None":
-                this.App_ExecutableLinux = ko.computed(() => self.App_WorkingDir() == "" ? self._LinuxExecutableName() : `${self.App_WorkingDir()}/${self._LinuxExecutableName()}`);
-                this.App_LinuxCommandLineArgs = ko.computed(() => ``);
-                this.Meta_SpecificDockerImage = ko.computed(() => ``);
-                break;
-            case "Wine":
-                this.App_ExecutableLinux = ko.computed(() => `/usr/bin/xvfb-run`);
-                this.App_LinuxCommandLineArgs = ko.computed(() => `-a wine \"./` + self._WinExecutableName() + `\"`);
-                this.Meta_SpecificDockerImage = ko.computed(() => `cubecoders/ampbase:wine`);
-                break;
-            case "Proton":
-                this.App_ExecutableLinux = ko.computed(() => `/usr/bin/xvfb-run`);
-                this.App_LinuxCommandLineArgs = ko.computed(() => `-a \"{{$FullRootDir}}1580130/proton\" run \"./` + self._WinExecutableName() + `\"`);
-                this.Meta_SpecificDockerImage = ko.computed(() => ``);
-                break;
+        this._compatibilityProcessing = function (compat) {
+            switch (self._compatibility()) {
+                case "None":
+                    this.App_ExecutableLinux = ko.computed(() => self.App_WorkingDir() == "" ? self._LinuxExecutableName() : `${self.App_WorkingDir()}/${self._LinuxExecutableName()}`);
+                    this.App_LinuxCommandLineArgs = ko.computed(() => ``);
+                    this.Meta_SpecificDockerImage = ko.computed(() => ``);
+                    break;
+                case "Wine":
+                    this.App_ExecutableLinux = ko.computed(() => `/usr/bin/xvfb-run`);
+                    this.App_LinuxCommandLineArgs = ko.computed(() => `-a wine \"./` + self._WinExecutableName() + `\"`);
+                    this.Meta_SpecificDockerImage = ko.computed(() => `cubecoders/ampbase:wine`);
+                    break;
+                case "Proton":
+                    this.App_ExecutableLinux = ko.computed(() => `/usr/bin/xvfb-run`);
+                    this.App_LinuxCommandLineArgs = ko.computed(() => `-a \"{{$FullRootDir}}1580130/proton\" run \"./` + self._WinExecutableName() + `\"`);
+                    this.Meta_SpecificDockerImage = ko.computed(() => ``);
+                    break;
+            }
         }
 
-       
+            this._compatibility.subscribe(this._compatibilityProcessing, this);
+
         this.App_Ports = ko.computed(() => `@IncludeJson[` + self._Meta_PortsManifest() + `]`);
         this.__QueryPortName = ko.observable("");
         this.Meta_EndpointURIFormat = ko.computed(() => self.__QueryPortName() != "" ? `steam://connect/{ip}:{GenericModule.App.Ports.${self.__QueryPortName()}}` : "");
@@ -129,15 +129,14 @@ class generatorViewModel {
                 {
                     data["RemoteAdminPort"] = portEntry.Port();
                 }
+                if (portEntry.Name() == "Steam Query Port") //Query Port
+                {
+                    data["SteamQueryPort"] = portEntry.Port();
+                }
                 else {
-                    if (appPortNum > 3) { continue; }
-                    var portName = "ApplicationPort" + appPortNum;
+                    var portName = "Application Port" + appPortNum;
                     data[portName] = portEntry.Port();
                     appPortNum++;
-                    if (portEntry.Name() == "Steam Query Port") //QueryPort
-                    {
-                        self.__QueryPortName(portName);
-                    }
                 }
             }
             return data;
