@@ -219,6 +219,31 @@
                                 </label>
                             </div>
                         </div>
+                        <div class="mb-3">
+                            <label>Which compatility layer is required?</label>
+                            <div class="list-group mx-0 list-group-horizontal">
+                                <label class="list-group-item d-flex gap-2" style="flex: 1">
+                                    <input class="form-check-input flex-shrink-0" type="checkbox"
+                                           data-bind="checked: _RequiresWine">
+                                    <span>
+                                        Wine
+                                        <small class="d-block text-muted">
+                                            Runs on Linux but requires Wine.
+                                        </small>
+                                    </span>
+                                </label>
+                                <label class="list-group-item d-flex gap-2" style="flex: 1">
+                                    <input class="form-check-input flex-shrink-0" type="checkbox"
+                                           data-bind="checked: _RequiresProton">
+                                    <span>
+                                        Proton
+                                        <small class="d-block text-muted">
+                                            Runs on Linux but requires Proton.
+                                        </small>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
                         <h4 id="managementConsole">Management and Console</h4>
                         <div class="mb-3">
                             <label>How is this application managed?</label>
@@ -322,37 +347,37 @@
                             </div>
                         </div>
                         <!-- <div class="mb-3">
-                            <label>Are any compatibility flags required?</label>
-                            <div class="form-text">Generally these are not needed for modern applications</div>
-                            <div class="list-group mx-0">
-                                <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="checkbox" value="">
-                                    <span>
-                                        Linux Console Unbuffering
-                                        <small class="d-block text-muted">Handle Linux applications that only
-                                            write to the console in large chunks instead of one line at a
-                                            time.</small>
-                                    </span>
-                                </label>
-                                <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="checkbox" value="">
-                                    <span>
-                                        Windows Virtual Console
-                                        <small class="d-block text-muted">Handle Windows applications that use a
-                                            console window but do not use the actual standard IO
-                                            streams.</small>
-                                    </span>
-                                </label>
-                                <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="checkbox" value="">
-                                    <span>
-                                        Legacy Windows Unity Compatibility
-                                        <small class="d-block text-muted">Used for older Unity applications that
-                                            don't write to their console properly.</small>
-                                    </span>
-                                </label>
-                            </div>
-                        </div> -->
+        <label>Are any compatibility flags required?</label>
+        <div class="form-text">Generally these are not needed for modern applications</div>
+        <div class="list-group mx-0">
+            <label class="list-group-item d-flex gap-2">
+                <input class="form-check-input flex-shrink-0" type="checkbox" value="">
+                <span>
+                    Linux Console Unbuffering
+                    <small class="d-block text-muted">Handle Linux applications that only
+                        write to the console in large chunks instead of one line at a
+                        time.</small>
+                </span>
+            </label>
+            <label class="list-group-item d-flex gap-2">
+                <input class="form-check-input flex-shrink-0" type="checkbox" value="">
+                <span>
+                    Windows Virtual Console
+                    <small class="d-block text-muted">Handle Windows applications that use a
+                        console window but do not use the actual standard IO
+                        streams.</small>
+                </span>
+            </label>
+            <label class="list-group-item d-flex gap-2">
+                <input class="form-check-input flex-shrink-0" type="checkbox" value="">
+                <span>
+                    Legacy Windows Unity Compatibility
+                    <small class="d-block text-muted">Used for older Unity applications that
+                        don't write to their console properly.</small>
+                </span>
+            </label>
+        </div>
+    </div> -->
                         <h4 id="networking">Networking</h4>
                         <div class="form-text">
                             AMP will automatically generate firewall rules to allow the application

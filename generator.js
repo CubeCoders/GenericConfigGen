@@ -1,15 +1,12 @@
-function omitNonPublicMembers(key, value)
-{
+function omitNonPublicMembers(key, value) {
     return (key.indexOf("_") === 0) ? undefined : value;
 }
 
-function omitPrivateMembers(key, value)
-{
+function omitPrivateMembers(key, value) {
     return (key.indexOf("__") === 0) ? undefined : value;
 }
 
-function downloadString(data, filename)
-{
+function downloadString(data, filename) {
     var element = document.createElement('a');
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(data));
     element.setAttribute('download', filename);
@@ -28,16 +25,21 @@ class generatorViewModel {
         this.Meta_Description = ko.observable("");
         this.Meta_Author = ko.observable("");
         this.Meta_URL = ko.observable("");
+        this.Meta_SpecificDockerImage = "";
 
         this._SupportsWindows = ko.observable(true);
         this._SupportsLinux = ko.observable(true);
+        this._RequiresWine = ko.observable(false);
+        this._RequiresProton = ko.observable(false);
 
         this.App_AdminMethod = ko.observable("STDIO");
         this.App_HasReadableConsole = ko.observable(true);
         this.App_HasWritableConsole = ko.observable(true);
         this.App_DisplayName = ko.computed(() => this.Meta_DisplayName());
 
-        this.App_CommandLineArgs = ko.observable("+ip {{$ApplicationIPBinding}} +port {{$ApplicationPort1}} +queryport {{$ApplicationPort2}} +rconpassword \"{{$RemoteAdminPassword}}\" +maxusers {{$MaxUsers}} {{$FormattedArgs}}")
+        this.App_CommandLineArgs = ko.observable("{{$PlatformArgs}} +ip {{$ApplicationIPBinding}} +port {{$ApplicationPort1}} +queryport {{$ApplicationPort2}} +rconpassword \"{{$RemoteAdminPassword}}\" +maxusers {{$MaxUsers}} {{$FormattedArgs}}")
+        this.App_LinuxCommandLineArgs = "";
+        this.App_WindowsCommandLineArgs = "";
         this.App_CommandLineParameterFormat = ko.observable("-{0} \"{1}\"");
         this.App_CommandLineParameterDelimiter = ko.observable(" ");
 
@@ -81,13 +83,28 @@ class generatorViewModel {
         this.Meta_UpdatesManifest = ko.computed(() => self.__SanitizedName() + "updates.json");
         this.Meta_ConfigRoot = ko.computed(() => self.__SanitizedName() + ".kvp");
         this.Meta_DisplayImageSource = ko.computed(() => self._UpdateSourceType() == "4" ? "steam:" + self._SteamClientAppID() : "url:" + self._DisplayImageSource());
+        if (this._RequiresWine() == true) {
+            this.Meta_SpecificDockerImage = ko.computed(() => "cubecoders/ampbase:wine");
+        } else {
+            this.Meta_SpecificDockerImage = ko.computed(() => "");
+        }
 
         this.App_RootDir = ko.computed(() => `./${self.__SanitizedName()}/`);
         this.App_BaseDirectory = ko.computed(() => self._UpdateSourceType() == "4" ? `./${self.__SanitizedName()}/${self._SteamServerAppID()}/` : `./${self.__SanitizedName()}/`);
         this.App_WorkingDir = ko.computed(() => self._UpdateSourceType() == "4" ? self._SteamServerAppID() : "");
 
         this.App_ExecutableWin = ko.computed(() => self.App_WorkingDir() == "" ? self._WinExecutableName() : `${self.App_WorkingDir()}\\${self._WinExecutableName()}`);
-        this.App_ExecutableLinux = ko.computed(() => self.App_WorkingDir() == "" ? self._LinuxExecutableName() : `${self.App_WorkingDir()}/${self._LinuxExecutableName()}`);
+        this.App_WindowsCommandLineArgs = ko.computed(() => "");
+        if (self._RequiresProton() == true) {
+            this.App_ExecutableLinux = "/usr/bin/xvfb-run";
+            this.App_LinuxCommandLineArgs = "-a \"{{$FullRootDir}}1580130/proton\" run \"./${self._WinExecutableName()}\"";
+        } else if (self._RequiresWine() == true) {
+            this.App_ExecutableLinux = "/usr/bin/xvfb-run";
+            this.App_LinuxCommandLineArgs = "-a wine \"./${self._WinExecutableName()}\"";
+        } else {
+            this.App_ExecutableLinux = ko.computed(() => self.App_WorkingDir() == "" ? self._LinuxExecutableName() : `${self.App_WorkingDir()}/${self._LinuxExecutableName()}`);
+            this.App_LinuxCommandLineArgs = ko.computed(() => "");
+        }
         this.App_Ports = ko.computed(() => "@IncludeJson[" + self.Meta_PortsManifest() + "]");
         this.__QueryPortName = ko.observable("");
         this.Meta_EndpointURIFormat = ko.computed(() => self.__QueryPortName() != "" ? `steam://connect/{ip}:{GenericModule.App.Ports.${self.__QueryPortName()}}` : "");
@@ -97,15 +114,13 @@ class generatorViewModel {
             var allPorts = self._PortMappings();
             var appPortNum = 1;
             self.__QueryPortName("");
-            for (var i = 0; i < allPorts.length; i++)
-            {
+            for (var i = 0; i < allPorts.length; i++) {
                 var portEntry = allPorts[i];
                 if (portEntry.Name() == "Remote Admin Port") //RCON
                 {
                     data["RemoteAdminPort"] = portEntry.Port();
                 }
-                else
-                {
+                else {
                     if (appPortNum > 3) { continue; }
                     var portName = "ApplicationPort" + appPortNum;
                     data[portName] = portEntry.Port();
@@ -119,11 +134,11 @@ class generatorViewModel {
             return data;
         });
 
-        this.__SampleFormattedArgs = ko.computed(function(){
+        this.__SampleFormattedArgs = ko.computed(function () {
             return self._AppSettings().filter(s => s.IncludeInCommandLine()).map(s => s.IsFlagArgument() ? s._CheckedValue() : self.App_CommandLineParameterFormat().format(s.ParamFieldName(), s.DefaultValue())).join(self.App_CommandLineParameterDelimiter());
         });
 
-        this.__SampleCommandLineFlags = ko.computed(function(){
+        this.__SampleCommandLineFlags = ko.computed(function () {
             var replacements = ko.toJS(self.__BuildPortMappings());
             replacements["ApplicationIPBinding"] = "0.0.0.0";
             replacements["FormattedArgs"] = self.__SampleFormattedArgs();
@@ -171,17 +186,32 @@ class generatorViewModel {
                 {
                     "key": "Ports",
                     "value": self.App_Ports()
+                },
+                {
+                    "key": "Windows CLI Args",
+                    "value": self.App_WindowsCommandLineArgs(),
+                    "longValue": true
+                },
+                {
+                    "key": "Linux CLI Args",
+                    "value": self.App_LinuxCommandLineArgs(),
+                    "longValue": true
+//                },
+//                {
+//                    "key": "Docker Image",
+//                    "value": self.Meta_SpecificDockerImage(),
+//                    "longValue": true
                 }
             ];
 
-            if (self._SupportsWindows()){
+            if (self._SupportsWindows()) {
                 data.push({
                     "key": "Windows Executable",
                     "value": self.App_ExecutableWin()
                 });
             }
 
-            if (self._SupportsLinux()){
+            if (self._SupportsLinux()) {
                 data.push({
                     "key": "Linux Executable",
                     "value": self.App_ExecutableLinux()
@@ -192,46 +222,46 @@ class generatorViewModel {
         });
 
         //Action methods (add/remove/update)
-        this.__RemovePort = function(toRemove){
+        this.__RemovePort = function (toRemove) {
             self._PortMappings.remove(toRemove);
         };
 
-        this.__AddPort = function(){
+        this.__AddPort = function () {
             self._PortMappings.push(new portMappingViewModel(self.__NewPort(), self.__NewName(), self.__NewProtocol(), self));
         };
 
-        this.__RemoveSetting = function(toRemove){
+        this.__RemoveSetting = function (toRemove) {
             self._AppSettings.remove(toRemove);
         };
 
-        this.__EditSetting = function(toEdit){
+        this.__EditSetting = function (toEdit) {
             self.__IsEditingSetting(true);
             self.__AddEditSetting(toEdit);
             $("#addEditSettingModal").modal('show');
         };
 
-        this.__AddSetting = function(){
+        this.__AddSetting = function () {
             self.__IsEditingSetting(false);
             self.__AddEditSetting(new appSettingViewModel(self));
             $("#addEditSettingModal").modal('show');
         };
 
-        this.__DoAddSetting = function (){
+        this.__DoAddSetting = function () {
             self._AppSettings.push(self.__AddEditSetting());
             $("#addEditSettingModal").modal('hide');
         };
 
-        this.__CloseSetting = function() {
+        this.__CloseSetting = function () {
             $("#addEditSettingModal").modal('hide');
         };
 
-        this.__Serialize = function() {
+        this.__Serialize = function () {
             var asJS = ko.toJS(self);
             var result = JSON.stringify(asJS, omitPrivateMembers);
             return result;
         };
 
-        this.__Deserialize = function(inputData) {
+        this.__Deserialize = function (inputData) {
             var asJS = JSON.parse(inputData);
             var ports = asJS._PortMappings;
             var settings = asJS._AppSettings;
@@ -240,19 +270,19 @@ class generatorViewModel {
             delete asJS._AppSettings;
 
             ko.quickmap.map(self, asJS);
-            
+
             self._PortMappings.removeAll();
-            var mappedPorts = ko.quickmap.to(portMappingViewModel, ports, false, {__vm: self});
+            var mappedPorts = ko.quickmap.to(portMappingViewModel, ports, false, { __vm: self });
             self._PortMappings.push.apply(self._PortMappings, mappedPorts);
 
             self._AppSettings.removeAll();
-            var mappedSettings = ko.quickmap.to(appSettingViewModel, settings, false, {__vm: self});
+            var mappedSettings = ko.quickmap.to(appSettingViewModel, settings, false, { __vm: self });
             self._AppSettings.push.apply(self._AppSettings, mappedSettings);
         };
 
         this.__IsExporting = ko.observable(false);
 
-        this.__Export = function() {
+        this.__Export = function () {
             self.__IsExporting(true);
             $("#importexporttextarea").val(self.__Serialize());
             $("#importexporttextarea").attr("readonly", true);
@@ -260,56 +290,58 @@ class generatorViewModel {
             autoSave();
         };
 
-        this.__CopyExportToClipboard = function(data, element) {
+        this.__CopyExportToClipboard = function (data, element) {
             navigator.clipboard.writeText($("#importexporttextarea").val());
             setTimeout(() => $(element.target).tooltip('hide'), 2000);
         };
 
-        this.__CloseImportExport = function() {
+        this.__CloseImportExport = function () {
             $("#importExportDialog").modal("hide");
         };
 
-        this.__Import = function() {
+        this.__Import = function () {
             self.__IsExporting(false);
             $("#importexporttextarea").val("");
             $("#importexporttextarea").prop("readonly", false);
             $("#importExportDialog").modal("show");
         };
 
-        this.__DoImport = function() {
+        this.__DoImport = function () {
             self.__Deserialize($("#importexporttextarea").val());
             $("#importExportDialog").modal("hide");
             autoSave();
         };
 
-        this.__Share = function(data, element) {
+        this.__Share = function (data, element) {
             var data = encodeURIComponent(self.__Serialize());
             var url = `${document.location.protocol}//${document.location.hostname}${document.location.pathname}#cdata=${data}`;
             navigator.clipboard.writeText(url);
             setTimeout(() => $(element.target).tooltip('hide'), 2000);
         };
 
-        this.__Clear = function(){
+        this.__Clear = function () {
             localStorage.configgenautosave = "";
             document.location.reload();
         }
 
-        this.__DownloadConfig = function(){
+        this.__DownloadConfig = function () {
             if (this.__ValidationResult() < 2) { return; }
 
             var lines = [];
-            for (const key of Object.keys(self).filter(k => !k.startsWith("_")))
-            {
+            for (const key of Object.keys(self).filter(k => !k.startsWith("_"))) {
                 lines.push(`${key.replace("_", ".")}=${self[key]()}`);
             }
 
-            switch (self._UpdateSourceType())
-            {
+            switch (self._UpdateSourceType()) {
                 case "1": //URL
                     lines.push(`App.UpdateSources=[{\"UpdateStageName\": \"Server Download\",\"UpdateSourcePlatform\": \"All\", \"UpdateSource\": \"FetchURL\", \"UpdateSourceData\": \"${self._UpdateSourceURL()}\", \"UnzipUpdateSource\": ${self._UpdateSourceUnzip()}}]`);
                     break;
                 case "4": //Steam
-                    lines.push(`App.UpdateSources=[{\"UpdateStageName\": \"SteamCMD Download\",\"UpdateSourcePlatform\": \"All\", \"UpdateSource\": \"SteamCMD\", \"UpdateSourceData\": \"${self._SteamServerAppID()}\"}]`);
+                    if (_RequiresProton == true) {
+                        lines.push(`App.UpdateSources=[{\"UpdateStageName\": \"SteamCMD Download\",\"UpdateSourcePlatform\": \"All\", \"UpdateSource\": \"SteamCMD\", \"UpdateSourceData\": \"${self._SteamServerAppID()}\"},{\"UpdateStageName\": \"Proton Compatibility Layer\",\"UpdateSourcePlatform\": \"Linux\", \"UpdateSource\": \"SteamCMD\", \"UpdateSourceData\": \"1580130\"}]`);
+                    } else {
+                        lines.push(`App.UpdateSources=[{\"UpdateStageName\": \"SteamCMD Download\",\"UpdateSourcePlatform\": \"All\", \"UpdateSource\": \"SteamCMD\", \"UpdateSourceData\": \"${self._SteamServerAppID()}\"}]`);
+                    }
                     break;
                 case "16": //Github
                     lines.push(`App.UpdateSources=[{\"UpdateStageName\": \"GitHub Release Download\",\"UpdateSourcePlatform\": \"All\", \"UpdateSource\": \"GithubRelease\", \"UpdateSourceData\": \"${self._UpdateSourceGitRepo()}\"}]`);
@@ -318,12 +350,15 @@ class generatorViewModel {
 
             if (self._UpdateSourceType() == "4") //SteamCMD
             {
-                lines.push(`App.EnvironmentVariables={\"LD_LIBRARY_PATH\": \"./linux64:%LD_LIBRARY_PATH%\", \"SteamAppId\": \"${self._SteamClientAppID()}\"}`);
+                if (self._RequiresProton() == true) {
+                    lines.push(`App.EnvironmentVariables={\"LD_LIBRARY_PATH\": \"./linux64:%LD_LIBRARY_PATH%\", \"SteamAppId\": \"${self._SteamClientAppID()}\", \"STEAM_COMPAT_DATA_PATH\": \"{{$FullRootDir}}1580130\", \"STEAM_COMPAT_CLIENT_INSTALL_PATH\": \"{{$FullRootDir}}1580130\"}`);
+                } else {
+                    lines.push(`App.EnvironmentVariables={\"LD_LIBRARY_PATH\": \"./linux64:%LD_LIBRARY_PATH%\", \"SteamAppId\": \"${self._SteamClientAppID()}\"}`);
+                }
             }
 
             var portMappings = self.__BuildPortMappings();
-            for (const key of Object.keys(portMappings))
-            {
+            for (const key of Object.keys(portMappings)) {
                 lines.push(`App.${key}=${portMappings[key]}`);
             }
 
@@ -331,28 +366,26 @@ class generatorViewModel {
             downloadString(output, self.Meta_ConfigRoot());
         };
 
-        this.__DownloadSettingsManifest = function(){
+        this.__DownloadSettingsManifest = function () {
             if (this.__ValidationResult() < 2) { return; }
 
             var asJS = ko.toJS(self._AppSettings());
             downloadString(JSON.stringify(asJS, omitNonPublicMembers, 4), self.Meta_ConfigManifest());
         };
 
-        this.__DownloadPortsManifest = function(){
+        this.__DownloadPortsManifest = function () {
             if (this.__ValidationResult() < 2) { return; }
 
             var asJS = ko.toJS(self._PortMappings());
             downloadString(JSON.stringify(asJS, omitNonPublicMembers, 4), self.Meta_PortsManifest());
         };
 
-        this.__Invalidate = function(newValue){ 
+        this.__Invalidate = function (newValue) {
             self.__ValidationResult(0);
         };
 
-        for (const k of Object.keys(self))
-        {
-            if (ko.isObservable(self[k]))
-            {
+        for (const k of Object.keys(self)) {
+            if (ko.isObservable(self[k])) {
                 self[k].subscribe(self.__Invalidate);
             }
         }
@@ -361,7 +394,7 @@ class generatorViewModel {
 
         this.__ValidationResults = ko.observableArray();
 
-        this.__ValidateConfig = function(){
+        this.__ValidateConfig = function () {
             autoSave();
             self.__ValidationResults.removeAll();
 
@@ -370,70 +403,62 @@ class generatorViewModel {
             var info = (issue, recommendation, impact) => self.__ValidationResults.push(new validationResult("Info", issue, recommendation, impact));
 
             //Validation Begins
-            if (self.Meta_DisplayName() == ""){
+            if (self.Meta_DisplayName() == "") {
                 failure("Missing application name", "Specify an application name under 'Basic Configuration'");
             }
 
-            if (!self._SupportsWindows() && !self._SupportsLinux())
-            {
+            if (!self._SupportsWindows() && !self._SupportsLinux()) {
                 failure("No platforms have been specified as supported.", "Specify at least one supported platform under 'Basic Information'");
             }
 
-            if (self._SupportsWindows())
-            {
+            if (self._SupportsWindows()) {
                 if (self._WinExecutableName() == "") { failure("Windows is listed as a supported platform, but no executable for this platform was specified.", "Specify an executable for this platform under 'Startup and Shutdown'"); }
                 else if (!self._WinExecutableName().toLowerCase().endsWith(".exe")) { failure("You can only start executables (.exe) files on Windows from AMP. Do not attempt to use batch files or other file types.", "Change your Windows Executable under Startup and Shutdown to be a .exe file."); }
             }
 
-            if (self._SupportsLinux())
-            {
+            if (self._SupportsLinux()) {
                 if (self._LinuxExecutableName() == "") { failure("Linux is listed as a supported platform, but no executable for this platform was specified.", "Specify an executable for this platform under 'Startup and Shutdown'"); }
                 else if (self._LinuxExecutableName().toLowerCase().endsWith(".sh")) { failure("You can only start executables files from AMP. Do not attempt to use shell scripts or other file types.", "Change your Linux Executable under Startup and Shutdown to be an actual executable rather than a script."); }
             }
 
-            switch (self.App_AdminMethod())
-            {
-                case "PinballWizard": 
+            switch (self.App_AdminMethod()) {
+                case "PinballWizard":
                 case "AMP_GSIO":
                     break;
                 case "STDIO":
-                    if (!self.App_HasReadableConsole() && !self.App_HasWritableConsole())
-                    {
+                    if (!self.App_HasReadableConsole() && !self.App_HasWritableConsole()) {
                         failure("Standard IO was selected as the management type, but the console was set as neither readable nor writable - so AMP won't be able to do anything useful.", "Either enable Reading or Writing for the console (if the application supports it) - or change the management mode to 'None'");
                     }
                     break;
                 default:
-                    if (!self.App_CommandLineArgs().contains("{{$RemoteAdminPassword}}")){
+                    if (!self.App_CommandLineArgs().contains("{{$RemoteAdminPassword}}")) {
                         warning("A server management mode is specified that requires AMP to know the password, but {{$RemoteAdminPassword}} is not found within the command line arguments.", "If the application can have it's RCON password specified via the command line then you should add the {{$RemoteAdminPassword}} template item to your command line arguments", "Without the ability to control the RCON password, AMP will not be able to use the servers RCON to provide a console or run commands.");
                     }
 
-                    if (!self.App_CommandLineArgs().contains(this.__QueryPortName())){
+                    if (!self.App_CommandLineArgs().contains(this.__QueryPortName())) {
                         warning("A server management mode that uses the network was specified, but the port being used is not found within the command line arguments.", "If the application can have it's RCON port specified via the command line then you should add the {{$" + this.__QueryPortName() + "}} template item to your command line arguments");
                     }
 
-                    if (self._PortMappings().filter(p => p.Name() == "RCON Port").length == 0)
-                    {
+                    if (self._PortMappings().filter(p => p.Name() == "RCON Port").length == 0) {
                         warning("A server management mode that uses the network was specified, but no RCON port has been added.", "Add the port used by this applications RCON under Networking.");
                     }
                     break;
             }
 
-            switch (self._UpdateSourceType())
-            {
+            switch (self._UpdateSourceType()) {
                 case "1": //Fetch from URL
                     if (self._UpdateSourceURL() == "") {
                         failure("Update method is Fetch from URL, but no download URL was specified.", "Specify the 'Update source URL' under Update Sources.");
                     }
-                    else if (self._UpdateSourceURL().toLowerCase().endsWith(".zip") && !self._UpdateSourceUnzip())
-                    {
+                    else if (self._UpdateSourceURL().toLowerCase().endsWith(".zip") && !self._UpdateSourceUnzip()) {
                         info("Download URL is a zip file, but 'Unzip once downloaded' is not turned on.", "Turn on 'Unzip once downloaded' under 'Update Sources'", "Without this setting turned on, the archive will not be extracted. If this was intentional, you can ignore this message.");
                     }
                     break;
                 case "4": //SteamCMD
-                    if (self._SteamServerAppID() == "") { 
+                    if (self._SteamServerAppID() == "") {
                         failure("Update method is SteamCMD, but no server App ID is set.", "Specify the 'Server Steam App ID' under Update Sources.");
                     }
-                    if (self._SteamClientAppID() == "") { 
+                    if (self._SteamClientAppID() == "") {
                         warning("Update method is SteamCMD, but no client App ID is set.", "Specify the 'Server Client App ID' under Update Sources.", "The client app ID is used to source the background image for the resulting instance.");
                     }
                     break;
@@ -443,22 +468,22 @@ class generatorViewModel {
             if (self.Console_UserJoinRegex() != "" && !self.Console_UserJoinRegex().match(/\^.+\$/)) { failure("User connected expression does not match the entire line. Regular expressions for AMP must match the entire line, starting with a ^ and ending with a $.", "Update the User connected expression under Server Events to match the entire line."); }
             if (self.Console_UserLeaveRegex() != "" && !self.Console_UserLeaveRegex().match(/\^.+\$/)) { failure("User disconnected expression does not match the entire line. Regular expressions for AMP must match the entire line, starting with a ^ and ending with a $.", "Update the User disconnected expression under Server Events to match the entire line."); }
             if (self.Console_UserChatRegex() != "" && !self.Console_UserChatRegex().match(/\^.+\$/)) { failure("User chat expression does not match the entire line. Regular expressions for AMP must match the entire line, starting with a ^ and ending with a $.", "Update the User chat expression under Server Events to match the entire line."); }
+            if ((self._RequiresWine() == true && self._SupportsLinux() == false) || (self._RequiresProton() == true && self._SupportsLinux() == false)) { failure("A Linux compatibility layer was chosen, but Linux support is not checked.", "Please check both."); }
+            if (self._RequiresWine() == true && self._RequiresProton() == true) { failure("Only one Linux compatibility layer can be chosen.", "Remove one of the selections."); }
+
 
             //Validation Summary
 
             var failures = self.__ValidationResults().filter(r => r.grade == "Failure").length;
             var warnings = self.__ValidationResults().filter(r => r.grade == "Warning").length;
 
-            if (failures > 0)
-            {
+            if (failures > 0) {
                 self.__ValidationResult(1);
             }
-            else if (warnings > 0)
-            {
+            else if (warnings > 0) {
                 self.__ValidationResult(2);
             }
-            else
-            {
+            else {
                 self.__ValidationResult(3);
             }
         };
@@ -472,8 +497,7 @@ class validationResult {
         this.recommendation = recommendation;
         this.impact = impact || "";
         this.gradeClass = "";
-        switch (grade)
-        {
+        switch (grade) {
             case "Failure": this.gradeClass = "table-danger"; break;
             case "Warning": this.gradeClass = "table-warning"; break;
             case "Info": this.gradeClass = "table-info"; break;
@@ -529,13 +553,13 @@ function autoSave() {
     localStorage.configgenautosave = vm.__Serialize();
 }
 
-function autoLoad(){
-    if (localStorage.configgenautosave != ""){
+function autoLoad() {
+    if (localStorage.configgenautosave != "") {
         vm.__Deserialize(localStorage.configgenautosave);
     }
 }
 
-document.addEventListener('DOMContentLoaded',() => {
+document.addEventListener('DOMContentLoaded', () => {
     ko.applyBindings(vm);
     setInterval(autoSave, 30000);
     $('body').scrollspy({ target: '#navbar', offset: 90 });
@@ -546,14 +570,12 @@ document.addEventListener('DOMContentLoaded',() => {
         placement: 'bottom'
     });
     //Check if there is anything after the # and if it starts cdata=, then import it if it does.
-    if (document.location.hash.indexOf("#cdata=") == 0)
-    {
+    if (document.location.hash.indexOf("#cdata=") == 0) {
         var data = decodeURIComponent(document.location.hash.substr(7));
         vm.__Deserialize(data);
         document.location.hash = "";
     }
-    else
-    {
+    else {
         autoLoad();
     }
 });
