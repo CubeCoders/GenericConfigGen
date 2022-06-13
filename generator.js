@@ -505,10 +505,12 @@ class appSettingViewModel {
         this.InputType = ko.observable("text")
         this.IsFlagArgument = ko.observable(false);
         this.ParamFieldName = ko.computed(() => self.FieldName());
-        this.IncludeInCommandLine = ko.observable(true);
+        this.IncludeInCommandLine = ko.observable(false);
         this.DefaultValue = ko.observable("");
-        this.Placeholder = this.DefaultValue
+        this.Placeholder = ko.computed(() => self.DefaultValue());
         this.Suffix = ko.observable("");
+        this.Hidden = ko.observable(false);
+        this.SkipIfEmpty = ko.observable(false);
         this._CheckedValue = ko.observable("true");
         this._UncheckedValue = ko.observable("false");
         this.EnumValues = ko.computed(() => {
