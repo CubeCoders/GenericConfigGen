@@ -116,7 +116,7 @@
             <main class="col-md-7 ms-sm-auto col-lg-7 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2" id="logoHeader">AMP Configuration Generator</h1>
-                    <small class="d-block text-muted">Version 1.0<br />©2021 CubeCoders Limited</small>
+                    <small class="d-block text-muted">Version 2.0<br />©2021 CubeCoders Limited</small>
                     <div class="btn-toolbar mb-2 mb-md-0">
                         <div class="btn-group me-2">
                             <button type="button" class="btn btn-sm btn-outline-primary" data-bind="click: __Share" data-toggle="tooltip" title="Share URL copied to clipboard ✓">
@@ -150,7 +150,7 @@
                         </button>
                     </div>
                 </div>
-
+                <a href="https://github.com/CubeCoders/AMP/wiki/Configuring-the-%27Generic%27-AMP-module" target="_blank">Generic Configurations Wiki</a><br><br>
                 <div class="bd-content">
                     <form id="mainform">
                         <h4 id="basicInfo">Basic Information</h4>
@@ -358,37 +358,37 @@
                             </div>
                         </div>
                         <!-- <div class="mb-3">
-        <label>Are any compatibility flags required?</label>
-        <div class="form-text">Generally these are not needed for modern applications</div>
-        <div class="list-group mx-0">
-            <label class="list-group-item d-flex gap-2">
-                <input class="form-check-input flex-shrink-0" type="checkbox" value="">
-                <span>
-                    Linux Console Unbuffering
-                    <small class="d-block text-muted">Handle Linux applications that only
-                        write to the console in large chunks instead of one line at a
-                        time.</small>
-                </span>
-            </label>
-            <label class="list-group-item d-flex gap-2">
-                <input class="form-check-input flex-shrink-0" type="checkbox" value="">
-                <span>
-                    Windows Virtual Console
-                    <small class="d-block text-muted">Handle Windows applications that use a
-                        console window but do not use the actual standard IO
-                        streams.</small>
-                </span>
-            </label>
-            <label class="list-group-item d-flex gap-2">
-                <input class="form-check-input flex-shrink-0" type="checkbox" value="">
-                <span>
-                    Legacy Windows Unity Compatibility
-                    <small class="d-block text-muted">Used for older Unity applications that
-                        don't write to their console properly.</small>
-                </span>
-            </label>
-        </div>
-    </div> -->
+                <label>Are any compatibility flags required?</label>
+                <div class="form-text">Generally these are not needed for modern applications</div>
+                <div class="list-group mx-0">
+                    <label class="list-group-item d-flex gap-2">
+                        <input class="form-check-input flex-shrink-0" type="checkbox" value="">
+                        <span>
+                            Linux Console Unbuffering
+                            <small class="d-block text-muted">Handle Linux applications that only
+                                write to the console in large chunks instead of one line at a
+                                time.</small>
+                        </span>
+                    </label>
+                    <label class="list-group-item d-flex gap-2">
+                        <input class="form-check-input flex-shrink-0" type="checkbox" value="">
+                        <span>
+                            Windows Virtual Console
+                            <small class="d-block text-muted">Handle Windows applications that use a
+                                console window but do not use the actual standard IO
+                                streams.</small>
+                        </span>
+                    </label>
+                    <label class="list-group-item d-flex gap-2">
+                        <input class="form-check-input flex-shrink-0" type="checkbox" value="">
+                        <span>
+                            Legacy Windows Unity Compatibility
+                            <small class="d-block text-muted">Used for older Unity applications that
+                                don't write to their console properly.</small>
+                        </span>
+                    </label>
+                </div>
+            </div> -->
                         <h4 id="networking">Networking</h4>
                         <div class="form-text">
                             AMP will automatically generate firewall rules to allow the application
@@ -411,18 +411,18 @@
                                                data-bind="value: Port">
                                     </td>
                                     <td>
-                                        <select class="form-select" data-bind="value: Name">
-                                            <option value="Application Port">Application Port</option>
-                                            <option value="Query Port">Steam Query Port</option>
-                                            <option value="Remote Admin Port">RCON Port</option>
+                                        <select class="form-select" data-bind="value: PortType">
+                                            <option value="0">Application Port</option>
+                                            <option value="1">Steam Query Port</option>
+                                            <option value="2">RCON Port</option>
                                             <!-- <option value="3">Other</option> -->
                                         </select>
                                     </td>
                                     <td>
                                         <select class="form-select" data-bind="value: Protocol">
-                                            <option value="Both">Both</option>
-                                            <option value="TCP">TCP</option>
-                                            <option value="UDP">UDP</option>
+                                            <option value="0">Both</option>
+                                            <option value="1">TCP</option>
+                                            <option value="2">UDP</option>
                                         </select>
                                     </td>
                                     <td style="text-align: right;">
@@ -455,18 +455,18 @@
                                                data-bind="value: __NewPort">
                                     </td>
                                     <td>
-                                        <select class="form-select" data-bind="value: __NewName">
-                                            <option value="Application Port">Application Port</option>
-                                            <option value="Query Port">Steam Query Port</option>
-                                            <option value="Remote Admin Port">RCON Port</option>
+                                        <select class="form-select" data-bind="value: __NewPortType">
+                                            <option value="0">Application Port</option>
+                                            <option value="1">Steam Query Port</option>
+                                            <option value="2">RCON Port</option>
                                             <!-- <option value="3">Other</option> -->
                                         </select>
                                     </td>
                                     <td>
                                         <select class="form-select" data-bind="value: __NewProtocol">
-                                            <option value="Both">Both</option>
-                                            <option value="TCP">TCP</option>
-                                            <option value="UDP">UDP</option>
+                                            <option value="0">Both</option>
+                                            <option value="1">TCP</option>
+                                            <option value="2">UDP</option>
                                         </select>
                                     </td>
                                     <td style="text-align: right;">
@@ -1153,27 +1153,28 @@
                         <div class="mb-3 col-6">
                             <label>
                                 <input class="form-check-input" type="checkbox"
-                                       data-bind="checked: SkipIfEmpty">
-                                <span>
-                                    Skip If Empty
-                                    <small class="d-block text-muted">
-                                        The Command Line Arg will be excluded
-                                        if no value is entered.
-                                    </small>
-                                </span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="mb-3 col-6">
-                            <label>
-                                <input class="form-check-input" type="checkbox"
                                        data-bind="checked: IncludeInCommandLine">
                                 <span>
                                     Include in formatted command line
                                     <small class="d-block text-muted">
                                         This setting controls a command line
                                         argument/flag.
+                                    </small>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-6"
+                             data-bind="visible: IncludeInCommandLine()">
+                            <label>
+                                <input class="form-check-input" type="checkbox"
+                                       data-bind="checked: SkipIfEmpty">
+                                <span>
+                                    Skip If Empty
+                                    <small class="d-block text-muted">
+                                        The Command Line Arg will be excluded
+                                        if no value is entered.
                                     </small>
                                 </span>
                             </label>

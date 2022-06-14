@@ -55,8 +55,8 @@ class generatorViewModel {
 
         this._PortMappings = ko.observableArray(); //of portMappingViewModel
         this.__NewPort = ko.observable("7777");
-        this.__NewName = ko.observable("Application Port");
-        this.__NewProtocol = ko.observable("Both");
+        this.__NewPortType = ko.observable("0");
+        this.__NewProtocol = ko.observable("0");
 
         this._UpdateSourceType = ko.observable("4");
         this._UpdateSourceURL = ko.observable("");
@@ -69,8 +69,6 @@ class generatorViewModel {
 
         this._WinExecutableName = ko.observable("");
         this._LinuxExecutableName = ko.observable("");
-        this.App_ExecutableLinux = ko.observable("");
-        this.App_ExecutableWin = ko.observable("");
 
         this._AppSettings = ko.observableArray(); //of appSettingViewModel
         this.__AddEditSetting = ko.observable(null); //of appSettingViewModel
@@ -97,7 +95,7 @@ class generatorViewModel {
 
         this.App_Ports = ko.computed(() => `@IncludeJson[` + self._Meta_PortsManifest() + `]`);
         this.__QueryPortName = ko.observable("");
-        this.Meta_EndpointURIFormat = ko.computed(() => self.__QueryPortName() != "" ? `steam://connect/{ip}:{GenericModule.App.Ports.${self.__QueryPortName()}}` : "");
+        this.Meta_EndpointURIFormat = ko.computed(() => self.__QueryPortName() != "" ? `steam://connect/{ip}:{GenericModule.App.Ports.$SteamQueryPort}` : "");
 
         this.__BuildPortMappings = ko.computed(() => {
             var data = {};
@@ -106,16 +104,13 @@ class generatorViewModel {
             self.__QueryPortName("");
             for (var i = 0; i < allPorts.length; i++) {
                 var portEntry = allPorts[i];
-                if (portEntry.Name() == "Remote Admin Port") //RCON
+                if (portEntry.PortType() == "2") //RCON
                 {
                     data["RemoteAdminPort"] = portEntry.Port();
-                }
-                if (portEntry.Name() == "Steam Query Port") //Query Port
-                {
-                    data["SteamQueryPort"] = portEntry.Port();
-                }
-                else {
-                    var portName = "Application Port" + appPortNum;
+                } else if (portEntry.PortType() == "1") {
+                    self.__QueryPortName(portName);
+                } else {
+                    var portName = "ApplicationPort" + appPortNum;
                     data[portName] = portEntry.Port();
                     appPortNum++;
                 }
@@ -147,8 +142,12 @@ class generatorViewModel {
                     "value": self.Meta_ConfigRoot()
                 },
                 {
-                    "key": "Manifest Filename",
+                    "key": "Settings Manifest",
                     "value": self.Meta_ConfigManifest()
+                },
+                {
+                    "key": "Ports Manifest",
+                    "value": self._Meta_PortsManifest()
                 },
                 {
                     "key": "Image Source",
@@ -168,7 +167,7 @@ class generatorViewModel {
                     "value": self.App_WorkingDir()
                 },
                 {
-                    "key": "Endpoint URI Format",
+                    "key": "Endpoint URI Format",
                     "value": self.Meta_EndpointURIFormat(),
                     "longValue": true
                 },
@@ -206,7 +205,7 @@ class generatorViewModel {
         };
 
         this.__AddPort = function () {
-            self._PortMappings.push(new portMappingViewModel(self.__NewPort(), self.__NewName(), self.__NewProtocol(), self));
+            self._PortMappings.push(new portMappingViewModel(self.__NewPort(), self.__NewPortType(), self.__NewProtocol(), self));
         };
 
         this.__RemoveSetting = function (toRemove) {
@@ -411,14 +410,14 @@ class generatorViewModel {
                     break;
                 default:
                     if (!self.App_CommandLineArgs().contains("{{$RemoteAdminPassword}}")) {
-                        warning("A server management mode is specified that  AMP to know the password, but {{$RemoteAdminPassword}} is not found within the command line arguments.", "If the application can have it's RCON password specified via the command line then you should add the {{$RemoteAdminPassword}} template item to your command line arguments", "Without the ability to control the RCON password, AMP will not be able to use the servers RCON to provide a console or run commands.");
+                        warning("A server management mode is specified that requires AMP to know the password, but {{$RemoteAdminPassword}} is not found within the command line arguments.", "If the application can have it's RCON password specified via the command line then you should add the {{$RemoteAdminPassword}} template item to your command line arguments", "Without the ability to control the RCON password, AMP will not be able to use the servers RCON to provide a console or run commands.");
                     }
 
                     if (!self.App_CommandLineArgs().contains(this.__QueryPortName())) {
                         warning("A server management mode that uses the network was specified, but the port being used is not found within the command line arguments.", "If the application can have it's RCON port specified via the command line then you should add the {{$" + this.__QueryPortName() + "}} template item to your command line arguments");
                     }
 
-                    if (self._PortMappings().filter(p => p.Name() == "RCON Port").length == 0) {
+                    if (self._PortMappings().filter(p => p.PortType() == "2").length == 0) {
                         warning("A server management mode that uses the network was specified, but no RCON port has been added.", "Add the port used by this applications RCON under Networking.");
                     }
                     break;
@@ -482,13 +481,13 @@ class validationResult {
 }
 
 class portMappingViewModel {
-    constructor(port, name, protocol, vm) {
+    constructor(port, portType, protocol, vm) {
         var self = this;
         this.__vm = vm;
         this.Protocol = ko.observable(protocol);
         this.Port = ko.observable(port);
-        this.Name = ko.observable(name);
-        this.Ref = ko.computed(() => self.Name().replace(/\s+/g, "").replace(/[^a-z\d-_]/ig, ""));
+        this.PortType = ko.observable(portType);
+        this.Ref = ko.computed(() => self.PortType().replace(/\s+/g, "").replace(/[^a-z\d-_]/ig, ""));
         this.__RemovePort = () => self.__vm.__RemovePort(self);
     }
 }
