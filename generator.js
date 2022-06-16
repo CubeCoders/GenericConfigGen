@@ -23,9 +23,15 @@ class generatorViewModel {
 
         this.Meta_DisplayName = ko.observable("");
         this.Meta_Description = ko.observable("");
+        this.Meta_Arch = ko.observable("x86_64");
         this.Meta_Author = ko.observable("");
         this.Meta_URL = ko.observable("");
+        this.Meta_MinAMPVersion = ko.observable("");
         this.Meta_SpecificDockerImage = ko.observable("");
+        this.Meta_DockerRequired = ko.observable("False");
+        this.Meta_ContainerPolicy = ko.observable("Supported");
+        this.Meta_Prerequsites = ko.observable("[]");
+        this.Meta_ConfigReleaseState = ko.observable("NotSpecified");
 
         this._SupportsWindows = ko.observable(true);
         this._SupportsLinux = ko.observable(true);
@@ -44,14 +50,58 @@ class generatorViewModel {
 
         this.App_RapidStartup = ko.observable("false");
         this.App_ApplicationReadyMode = ko.observable("Immediate");
-        this.App_ExitMethod = ko.observable("String");
+        this.App_ExitMethod = ko.observable("OS_CLOSE");
         this.App_ExitString = ko.observable("stop");
+        this.App_UseLinuxIOREDIR = ko.observable("False");
+        this.App_ExitTimeout = ko.observable("30");
+        this.App_ExitFile = ko.observable("app_exit.lck");
+        this.App_SupportsLiveSettingsChanges = ko.observable("False");
+        this.App_LiveSettingChangeCommandFormat = ko.observable("set {0} \"{ 1}\"");
+        this.App_ApplicationIPBinding = ko.observable("0.0.0.0");
+        this.App_AdminPortRef = ko.observable("GamePort1");
+        this.App_UniversalSleepApplicationUDPPortRef = ko.observable("GamePort1");
+        this.App_PrimaryApplicationPortRef = ko.observable("GamePort1");
+        this.App_UniversalSleepSteamQueryPortRef = ko.observable("SteamQueryPort");
+        this.App_MaxUsers = ko.observable("8");
+        this.App_UseRandomAdminPassword = ko.observable("True");
+        this.App_RemoteAdminPassword = ko.observable("");
+        this.App_AdminLoginTransform = ko.observable("None");
+        this.App_RCONConnectDelaySeconds = ko.observable("30");
+        this.App_RCONConnectRetrySeconds = ko.observable("15");
+        this.App_TelnetLoginFormat = ko.observable("{0}");
+        this.App_SteamUpdateAnonymousLogin = ko.observable("True");
+        this.App_SteamForceLoginProm = ko.observable("False");
+        this.App_SupportsUniversalSleep = ko.observable("False");
+        this.App_WakeupMode = ko.observable("Any");
+        this.App_TemplateMatchRegex = ko.observable("{{(\\$?[\\w]+)}}");
+        this.App_MonitorChildProcess = ko.observable("False");
+        this.App_MonitorChildProcessWaitMs = ko.observable("1000");
+        this.App_MonitorChildProcessName = ko.observable("");
+        this.App_FilterMatchRegex = ko.observable("");
+        this.App_FilterMatchReplacement = ko.observable("");
+        this.App_MonitorChildProcessName = ko.observable("");
+        this.App_MonitorChildProcessName = ko.observable("");
+        this.App_MonitorChildProcessName = ko.observable("");
+        this.App_MonitorChildProcessName = ko.observable("");
+        this.App_MonitorChildProcessName = ko.observable("");
+        this.App_MonitorChildProcessName = ko.observable("");
 
         this.Console_ThrowawayMessageRegex = ko.observable("^(WARNING|ERROR): Shader.+$");
         this.Console_AppReadyRegex = ko.observable("^Server is ready.$");
         this.Console_UserJoinRegex = ko.observable("^User (?<username>.+?) \\((?<userid>-?\d+)\\) connected from \\[::ffff:(?<endpoint>.+?)\\]$");
         this.Console_UserLeaveRegex = ko.observable("^User (?<username>.+?) \\((?<userid>-?\d+)\\) disconnected\\. Reason: (.+?)$");
         this.Console_UserChatRegex = ko.observable("^(?<username>.+?): (?<message>.+)$");
+        this.Console_UpdateAvailableRegex = ko.observable("^\\[\\d\\d:\\d\\d:\\d\\d\\] \\[INFO\\] A new server update is available! v[\\d\\.]+.$");
+        this.Console_MetricsRegex = ko.observable("");
+        this.Console_SuppressLogAtStart = ko.observable("False");
+        this.Console_ActivateLogRegex = ko.observable("");
+        this.Console_UserActions = ko.observable("{}");
+        this.Console_SleepMode = ko.observable("False");
+        this.Console_SleepOnStart = ko.observable("False");
+        this.Console_SleepDelayMinutes = ko.observable("5");
+        this.Console_DozeDelay = ko.observable("2");
+        this.Console_AutoRetryCount = ko.observable("5");
+        this.Console_SleepStartThresholdSeconds = ko.observable("25");
 
         this._PortMappings = ko.observableArray(); //of portMappingViewModel
         this.__NewPort = ko.observable("7777");
@@ -92,7 +142,7 @@ class generatorViewModel {
         this.App_ExecutableWin = ko.computed(() => self.App_WorkingDir() == "" ? self._WinExecutableName() : `${self.App_WorkingDir()}\\${self._WinExecutableName()}`);
         this.App_WindowsCommandLineArgs = ko.computed(() => ``);
         this.App_ExecutableLinux = ko.computed(() => self._compatibility() == "None" ? (self.App_WorkingDir() == "" ? self._LinuxExecutableName() : `${self.App_WorkingDir()}/${self._LinuxExecutableName()}`) : `/usr/bin/xvfb-run`);
-        this.App_LinuxCommandLineArgs = ko.computed(() => self._compatibility() == "None" ? (self._compatibility() == "Wine" ? `-a \"{{$FullRootDir}}1580130/proton\" run \"./` + self._WinExecutableName() + `\"` : `-a wine \"./` + self._WinExecutableName() + `\"`) : ``);
+        this.App_LinuxCommandLineArgs = ko.computed(() => self._compatibility() == "None" ? `` : (self._compatibility() == "Wine" ? `-a wine \"./` + self._WinExecutableName() + `\"` : `-a \"{{$FullRootDir}}1580130/proton\" run \"./` + self._WinExecutableName() + `\"`));
         this.Meta_SpecificDockerImage = ko.computed(() => self._compatibility() == "Wine" ? `cubecoders/ampbase:wine` : ``);
 
         this.App_Ports = ko.computed(() => `@IncludeJson[` + self._Meta_PortsManifest() + `]`);
