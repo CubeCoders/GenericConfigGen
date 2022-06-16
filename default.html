@@ -157,7 +157,7 @@
                         <div class="row">
                             <div class="mb-3 col-6">
                                 <label for="applicationNameField">What is the name of the application?</label>
-                                <input type="text" class="form-control" id="applicationNameField"
+                                <input type="text" class="form-control" id="applicationNameField" placeholder="Valheim"
                                        data-bind="value: Meta_DisplayName, valueUpdate: 'input'">
                                 <div class="form-text">
                                     This is what will show up within AMP as the name of the
@@ -166,7 +166,7 @@
                             </div>
                             <div class="mb-3 col-6">
                                 <label for="applicationDescriptionField">Description</label>
-                                <input type="text" class="form-control" id="applicationDescriptionField"
+                                <input type="text" class="form-control" id="applicationDescriptionField" placeholder="Valheim Dedicated Server"
                                        data-bind="value: Meta_Description">
                                 <div class="form-text">
                                     Optional: useful for describing different variants/configurations
@@ -179,13 +179,13 @@
                             <div class="mb-3 col-6">
                                 <label for="applicationAuthorField">Configuration Author</label>
                                 <input type="text" class="form-control" id="applicationAuthorField"
-                                       data-bind="value: Meta_Author" placeholder="Joe Bloggs">
+                                       data-bind="value: Meta_Author" placeholder="CubeCoders">
                                 <div class="form-text">Who are you? Take some credit for your work!</div>
                             </div>
                             <div class="mb-3 col-6">
                                 <label for="applicationURLField">Application URL</label>
                                 <input type="url" class="form-control" id="applicationURLField"
-                                       data-bind="value: Meta_URL" placeholder="https://example.com/someapp">
+                                       data-bind="value: Meta_URL" placeholder="https://store.steampowered.com/app/892970/Valheim/">
                                 <div class="form-text">
                                     A link to where you can learn more about the application, such as
                                     a store listing.
@@ -397,7 +397,7 @@
                         <table class="table mb-3">
                             <thead>
                                 <tr>
-                                    <th scope="col">Port Number</th>
+                                    <th scope="col">Number</th>
                                     <th scope="col">Type</th>
                                     <th scope="col">Name</th>
                                     <th scope="col">Description</th>
@@ -414,7 +414,7 @@
                                     </td>
                                     <td>
                                         <select class="form-select" data-bind="value: _PortType">
-                                            <option value="0">Custom</option>
+                                            <option value="0">Custom Port</option>
                                             <option value="1">Steam Query Port</option>
                                             <option value="2">RCON Port</option>
                                             <!-- <option value="3">Other</option> -->
@@ -422,11 +422,11 @@
                                     </td>
                                     <td>
                                         <input type="text" placeholder="Main Game Port"
-                                               data-bind="value: Name">
+                                               data-bind="value: _Name">
                                     </td>
                                     <td>
                                         <input type="text" placeholder="Port for main traffic"
-                                               data-bind="value: Description">
+                                               data-bind="value: _Description">
                                     </td>
                                     <td>
                                         <select class="form-select" data-bind="value: _Protocol">
@@ -453,7 +453,7 @@
                                 <tr>
                                     <td colspan="3">
                                         <small class="d-block text-muted">
-                                            You may add up to 3 ports. The RCON port does
+                                            You may add any number of ports. The RCON port does
                                             not count towards this limit.<br />Maximum of 1 Steam Query and 1 RCON
                                             Port.
                                         </small>
@@ -584,7 +584,7 @@
                                 <div class="mb-3 col-6">
                                     <label for="applicationSteamIDField">Server Steam App ID</label>
                                     <input type="text" class="form-control" id="applicationSteamIDField"
-                                           data-bind="value: _SteamServerAppID, valueUpdate: 'input'" placeholder="232250">
+                                           data-bind="value: _SteamServerAppID, valueUpdate: 'input'" placeholder="896660">
                                     <div class="form-text">
                                         The App ID for the dedicated server application. You can find
                                         this via <a href="https://steamdb.info">SteamDB</a>.
@@ -593,7 +593,7 @@
                                 <div class="mb-3 col-6">
                                     <label for="applicationClientIDField">Client Steam App ID</label>
                                     <input type="text" class="form-control" id="applicationClientIDField"
-                                           data-bind="value: _SteamClientAppID, valueUpdate: 'input'" placeholder="440">
+                                           data-bind="value: _SteamClientAppID, valueUpdate: 'input'" placeholder="892970">
                                     <div class="form-text">
                                         The App ID for the game itself. You can find this via <a href="https://steamdb.info">SteamDB</a>.
                                     </div>

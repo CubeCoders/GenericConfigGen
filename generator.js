@@ -462,10 +462,12 @@ class portMappingViewModel {
         this._Protocol = ko.observable(protocol);
         this.Protocol = ko.computed(() => self._Protocol() == "0" ? `Both` : (self._Protocol() == "1" ? `TCP` : `UDP` ));
         this.Port = ko.observable(port);
-        this.Name = ko.observable(portName);
-        this.Description = ko.observable(portDescription);
         this._PortType = ko.observable(portType);
-        this.Ref = ko.computed(() => self._PortType() == "0" ? self.Name().replace(/\s+/g, "").replace(/[^a-z\d-_]/ig, "") : (self._PortType() == "1" ? `SteamQueryPort` : `RemoteAdminPort`));
+        this._Name = ko.observable(portName);
+        this.Name = ko.computed(() => self._PortType() == "0" ? self._Name() : (self._PortType() == "1" ? `Steam Query Port` : `Remote Admin Port` ));
+        this._Description = ko.observable(portDescription);
+        this.Description = ko.computed(() => self._Description() == "0" ? self._Description() : (self._PortType() == "1" ? `Port used for Steam queries and server list` : `Port used for RCON administration`));
+        this.Ref = ko.computed(() => self._PortType() == "0" ? self._Name().replace(/\s+/g, "").replace(/[^a-z\d-_]/ig, "") : (self._PortType() == "1" ? `SteamQueryPort` : `RemoteAdminPort`));
         this.__RemovePort = () => self.__vm.__RemovePort(self);
     }
 }
