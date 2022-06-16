@@ -398,7 +398,8 @@
                             <thead>
                                 <tr>
                                     <th scope="col">Port Number</th>
-                                    <th scope="col">Usage Type</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Name</th>
                                     <th scope="col">Protocol</th>
                                     <th></th>
                                 </tr>
@@ -411,15 +412,19 @@
                                                data-bind="value: Port">
                                     </td>
                                     <td>
-                                        <select class="form-select" data-bind="value: PortType">
-                                            <option value="0">Application Port</option>
+                                        <select class="form-select" data-bind="value: _PortType">
+                                            <option value="0">Custom</option>
                                             <option value="1">Steam Query Port</option>
                                             <option value="2">RCON Port</option>
                                             <!-- <option value="3">Other</option> -->
                                         </select>
                                     </td>
                                     <td>
-                                        <select class="form-select" data-bind="value: Protocol">
+                                        <input type="text" placeholder="Main Game Port"
+                                               data-bind="value: Name">
+                                    </td>
+                                    <td>
+                                        <select class="form-select" data-bind="value: _Protocol">
                                             <option value="0">Both</option>
                                             <option value="1">TCP</option>
                                             <option value="2">UDP</option>
@@ -461,6 +466,10 @@
                                             <option value="2">RCON Port</option>
                                             <!-- <option value="3">Other</option> -->
                                         </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" placeholder="Main Game Port"
+                                               data-bind="value: __NewName">
                                     </td>
                                     <td>
                                         <select class="form-select" data-bind="value: __NewProtocol">
@@ -874,8 +883,6 @@
                         <h4 id="validateReview">Validate and Review</h4>
                         <div class="mb-3">
                             <label>Generated Command Line Arguments</label>
-                            <input type="text" readonly class="form-control"
-                                   data-bind="value: __SampleCommandLineFlags">
                             <div class="form-text">
                                 This is generated assuming the default values and default port
                                 numbers, these will change based on user-specified values or assignments made by AMP.

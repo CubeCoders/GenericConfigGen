@@ -55,6 +55,7 @@ class generatorViewModel {
 
         this._PortMappings = ko.observableArray(); //of portMappingViewModel
         this.__NewPort = ko.observable("7777");
+        this.__NewName = ko.observable("");
         this.__NewPortType = ko.observable("0");
         this.__NewProtocol = ko.observable("0");
 
@@ -94,43 +95,21 @@ class generatorViewModel {
         this.Meta_SpecificDockerImage = ko.computed(() => self._compatibility() == "Wine" ? `cubecoders/ampbase:wine` : ``);
 
         this.App_Ports = ko.computed(() => `@IncludeJson[` + self._Meta_PortsManifest() + `]`);
-        this.__QueryPortName = ko.observable("");
-        this.Meta_EndpointURIFormat = ko.computed(() => self.__QueryPortName() != "" ? `steam://connect/{ip}:{GenericModule.App.Ports.$SteamQueryPort}` : "");
-
-        this.__BuildPortMappings = ko.computed(() => {
-            var data = {};
-            var allPorts = self._PortMappings();
-            var appPortNum = 1;
-            self.__QueryPortName("");
-            for (var i = 0; i < allPorts.length; i++) {
-                var portEntry = allPorts[i];
-                if (portEntry.PortType() == "2") //RCON
-                {
-                    data["RemoteAdminPort"] = portEntry.Port();
-                } else if (portEntry.PortType() == "1") {
-                    self.__QueryPortName(portName);
-                } else {
-                    var portName = "ApplicationPort" + appPortNum;
-                    data[portName] = portEntry.Port();
-                    appPortNum++;
-                }
-            }
-            return data;
-        });
+        this.Meta_EndpointURIFormat = ko.computed(() => `steam://connect/{ip}:{GenericModule.App.Ports.$SteamQueryPort}`);
 
         this.__SampleFormattedArgs = ko.computed(function () {
             return self._AppSettings().filter(s => s.IncludeInCommandLine()).map(s => s.IsFlagArgument() ? s._CheckedValue() : self.App_CommandLineParameterFormat().format(s.ParamFieldName(), s.DefaultValue())).join(self.App_CommandLineParameterDelimiter());
         });
-
+/*
         this.__SampleCommandLineFlags = ko.computed(function () {
-            var replacements = ko.toJS(self.__BuildPortMappings());
+            var replacements;
             replacements["ApplicationIPBinding"] = "0.0.0.0";
             replacements["FormattedArgs"] = self.__SampleFormattedArgs();
             replacements["MaxUsers"] = "10";
             replacements["RemoteAdminPassword"] = "r4nd0m-pa55w0rd-g0e5_h3r3";
             return self.App_CommandLineArgs().template(replacements);
         });
-
+*/
         this.__GenData = ko.computed(function () {
             var data = [
                 {
@@ -205,7 +184,7 @@ class generatorViewModel {
         };
 
         this.__AddPort = function () {
-            self._PortMappings.push(new portMappingViewModel(self.__NewPort(), self.__NewPortType(), self.__NewProtocol(), self));
+            self._PortMappings.push(new portMappingViewModel(self.__NewPort(), self.__NewName(), self.__NewPortType(), self.__NewProtocol(), self));
         };
 
         this.__RemoveSetting = function (toRemove) {
@@ -333,11 +312,6 @@ class generatorViewModel {
                 } else {
                     lines.push(`App.EnvironmentVariables={\"LD_LIBRARY_PATH\": \"./linux64:%LD_LIBRARY_PATH%\", \"SteamAppId\": \"${self._SteamClientAppID()}\"}`);
                 }
-            }
-
-            var portMappings = self.__BuildPortMappings();
-            for (const key of Object.keys(portMappings)) {
-                lines.push(`App.${key}=${portMappings[key]}`);
             }
 
             var output = lines.sort().join("\n");
@@ -481,13 +455,15 @@ class validationResult {
 }
 
 class portMappingViewModel {
-    constructor(port, portType, protocol, vm) {
+    constructor(port, portName, portType, protocol, vm) {
         var self = this;
         this.__vm = vm;
-        this.Protocol = ko.observable(protocol);
+        this._Protocol = ko.observable(protocol);
+        this.Protocol = ko.computed(() => self._Protocol() == "0" ? `Both` : (self._Protocol() == "1" ? `TCP` : `UDP` ));
         this.Port = ko.observable(port);
-        this.PortType = ko.observable(portType);
-        this.Ref = ko.computed(() => self.PortType().replace(/\s+/g, "").replace(/[^a-z\d-_]/ig, ""));
+        this.Name = ko.observable(portName);
+        this._PortType = ko.observable(portType);
+        this.Ref = ko.computed(() => self._PortType() == "0" ? self.Name().replace(/\s+/g, "").replace(/[^a-z\d-_]/ig, "") : (self._PortType() == "1" ? `SteamQueryPort` : `RemoteAdminPort`));
         this.__RemovePort = () => self.__vm.__RemovePort(self);
     }
 }
