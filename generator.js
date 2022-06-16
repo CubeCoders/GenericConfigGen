@@ -56,6 +56,7 @@ class generatorViewModel {
         this._PortMappings = ko.observableArray(); //of portMappingViewModel
         this.__NewPort = ko.observable("7777");
         this.__NewName = ko.observable("");
+        this.__NewDescription = ko.observable("");
         this.__NewPortType = ko.observable("0");
         this.__NewProtocol = ko.observable("0");
 
@@ -184,7 +185,7 @@ class generatorViewModel {
         };
 
         this.__AddPort = function () {
-            self._PortMappings.push(new portMappingViewModel(self.__NewPort(), self.__NewName(), self.__NewPortType(), self.__NewProtocol(), self));
+            self._PortMappings.push(new portMappingViewModel(self.__NewPort(), self.__NewName(), self.__NewDescription(), self.__NewPortType(), self.__NewProtocol(), self));
         };
 
         this.__RemoveSetting = function (toRemove) {
@@ -455,13 +456,14 @@ class validationResult {
 }
 
 class portMappingViewModel {
-    constructor(port, portName, portType, protocol, vm) {
+    constructor(port, portName, portDescription, portType, protocol, vm) {
         var self = this;
         this.__vm = vm;
         this._Protocol = ko.observable(protocol);
         this.Protocol = ko.computed(() => self._Protocol() == "0" ? `Both` : (self._Protocol() == "1" ? `TCP` : `UDP` ));
         this.Port = ko.observable(port);
         this.Name = ko.observable(portName);
+        this.Description = ko.observable(portDescription);
         this._PortType = ko.observable(portType);
         this.Ref = ko.computed(() => self._PortType() == "0" ? self.Name().replace(/\s+/g, "").replace(/[^a-z\d-_]/ig, "") : (self._PortType() == "1" ? `SteamQueryPort` : `RemoteAdminPort`));
         this.__RemovePort = () => self.__vm.__RemovePort(self);

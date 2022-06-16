@@ -400,6 +400,7 @@
                                     <th scope="col">Port Number</th>
                                     <th scope="col">Type</th>
                                     <th scope="col">Name</th>
+                                    <th scope="col">Description</th>
                                     <th scope="col">Protocol</th>
                                     <th></th>
                                 </tr>
@@ -422,6 +423,10 @@
                                     <td>
                                         <input type="text" placeholder="Main Game Port"
                                                data-bind="value: Name">
+                                    </td>
+                                    <td>
+                                        <input type="text" placeholder="Port for main traffic"
+                                               data-bind="value: Description">
                                     </td>
                                     <td>
                                         <select class="form-select" data-bind="value: _Protocol">
@@ -461,7 +466,7 @@
                                     </td>
                                     <td>
                                         <select class="form-select" data-bind="value: __NewPortType">
-                                            <option value="0">Application Port</option>
+                                            <option value="0">Custom Port</option>
                                             <option value="1">Steam Query Port</option>
                                             <option value="2">RCON Port</option>
                                             <!-- <option value="3">Other</option> -->
@@ -470,6 +475,10 @@
                                     <td>
                                         <input type="text" placeholder="Main Game Port"
                                                data-bind="value: __NewName">
+                                    </td>
+                                    <td>
+                                        <input type="text" placeholder="Port for main traffic"
+                                               data-bind="value: __NewDescription">
                                     </td>
                                     <td>
                                         <select class="form-select" data-bind="value: __NewProtocol">
