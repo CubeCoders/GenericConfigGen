@@ -110,6 +110,11 @@ class generatorViewModel {
         this.__NewPortType = ko.observable("0");
         this.__NewProtocol = ko.observable("0");
 
+        this._ConfigFileMappings = ko.observableArray(); //of configFileMappingViewModel
+        this.__NewConfigFile = ko.observable("");
+        this.__NewAutoMap = ko.observable(true);
+        this.__NewConfigType = ko.observable("");
+
         this._UpdateSourceType = ko.observable("4");
         this._UpdateSourceURL = ko.observable("");
         this._UpdateSourceGitRepo = ko.observable("");
@@ -130,6 +135,7 @@ class generatorViewModel {
         this.__SanitizedName = ko.computed(() => self.Meta_DisplayName().replace(/\s+/g, "-").replace(/[^a-z\d-_]/ig, "").toLowerCase());
         this.Meta_OS = ko.computed(() => (self._SupportsWindows() ? 1 : 0) | (self._SupportsLinux() ? 2 : 0));
         this.Meta_ConfigManifest = ko.computed(() => self.__SanitizedName() + "config.json");
+        this.Meta_MetaConfigManifest = ko.computed(() => self.__SanitizedName() + "metaconfig.json");
         this._Meta_PortsManifest = ko.computed(() => self.__SanitizedName() + "ports.json");
         this._Meta_UpdatesManifest = ko.computed(() => self.__SanitizedName() + "updates.json");
         this.Meta_ConfigRoot = ko.computed(() => self.__SanitizedName() + ".kvp");
@@ -151,16 +157,16 @@ class generatorViewModel {
         this.__SampleFormattedArgs = ko.computed(function () {
             return self._AppSettings().filter(s => s.IncludeInCommandLine()).map(s => s.IsFlagArgument() ? s._CheckedValue() : self.App_CommandLineParameterFormat().format(s.ParamFieldName(), s.DefaultValue())).join(self.App_CommandLineParameterDelimiter());
         });
-/*
-        this.__SampleCommandLineFlags = ko.computed(function () {
-            var replacements;
-            replacements["ApplicationIPBinding"] = "0.0.0.0";
-            replacements["FormattedArgs"] = self.__SampleFormattedArgs();
-            replacements["MaxUsers"] = "10";
-            replacements["RemoteAdminPassword"] = "r4nd0m-pa55w0rd-g0e5_h3r3";
-            return self.App_CommandLineArgs().template(replacements);
-        });
-*/
+        /*
+                this.__SampleCommandLineFlags = ko.computed(function () {
+                    var replacements;
+                    replacements["ApplicationIPBinding"] = "0.0.0.0";
+                    replacements["FormattedArgs"] = self.__SampleFormattedArgs();
+                    replacements["MaxUsers"] = "10";
+                    replacements["RemoteAdminPassword"] = "r4nd0m-pa55w0rd-g0e5_h3r3";
+                    return self.App_CommandLineArgs().template(replacements);
+                });
+        */
         this.__GenData = ko.computed(function () {
             var data = [
                 {
@@ -178,6 +184,10 @@ class generatorViewModel {
                 {
                     "key": "Ports Manifest",
                     "value": self._Meta_PortsManifest()
+                },
+                {
+                    "key": "Config Files Manifest",
+                    "value": self.Meta_MetaConfigManifest()
                 },
                 {
                     "key": "Image Source",
@@ -233,6 +243,14 @@ class generatorViewModel {
             self._PortMappings.push(new portMappingViewModel(self.__NewPort(), self.__NewName(), self.__NewDescription(), self.__NewPortType(), self.__NewProtocol(), self));
         };
 
+        this.__RemoveConfigFile = function (toRemove) {
+            self._ConfigFileMappings.remove(toRemove);
+        };
+
+        this.__AddConfigFile = function () {
+            self._ConfigFileMappings.push(new configFileMappingViewModel(self.__NewConfigFile(), self.__NewAutoMap(), self.__NewConfigType(), self));
+        };
+
         this.__RemoveSetting = function (toRemove) {
             self._AppSettings.remove(toRemove);
         };
@@ -267,9 +285,11 @@ class generatorViewModel {
         this.__Deserialize = function (inputData) {
             var asJS = JSON.parse(inputData);
             var ports = asJS._PortMappings;
+            var configFiles = asJS._ConfigFileMappings;
             var settings = asJS._AppSettings;
 
             delete asJS._PortMappings;
+            delete asJS._ConfigFileMappings;
             delete asJS._AppSettings;
 
             ko.quickmap.map(self, asJS);
@@ -277,6 +297,10 @@ class generatorViewModel {
             self._PortMappings.removeAll();
             var mappedPorts = ko.quickmap.to(portMappingViewModel, ports, false, { __vm: self });
             self._PortMappings.push.apply(self._PortMappings, mappedPorts);
+
+            self._ConfigFileMappings.removeAll();
+            var mappedConfigFiles = ko.quickmap.to(configFileMappingViewModel, configFiles, false, { __vm: self });
+            self._ConfigFileMappings.push.apply(self._ConfigFileMappings, mappedConfigFiles);
 
             self._AppSettings.removeAll();
             var mappedSettings = ko.quickmap.to(appSettingViewModel, settings, false, { __vm: self });
@@ -376,6 +400,13 @@ class generatorViewModel {
 
             var asJS = ko.toJS(self._PortMappings());
             downloadString(JSON.stringify(asJS, omitNonPublicMembers, 4), self._Meta_PortsManifest());
+        };
+
+        this.__DownloadConfigFilesManifest = function () {
+            if (this.__ValidationResult() < 2) { return; }
+
+            var asJS = ko.toJS(self._ConfigFileMappings());
+            downloadString(JSON.stringify(asJS, omitNonPublicMembers, 4), self.Meta_MetaConfigManifest());
         };
 
         this.__Invalidate = function (newValue) {
@@ -505,15 +536,28 @@ class portMappingViewModel {
         var self = this;
         this.__vm = vm;
         this._Protocol = ko.observable(protocol);
-        this.Protocol = ko.computed(() => self._Protocol() == "0" ? `Both` : (self._Protocol() == "1" ? `TCP` : `UDP` ));
+        this.Protocol = ko.computed(() => self._Protocol() == "0" ? `Both` : (self._Protocol() == "1" ? `TCP` : `UDP`));
         this.Port = ko.observable(port);
         this._PortType = ko.observable(portType);
         this._Name = ko.observable(portName);
-        this.Name = ko.computed(() => self._PortType() == "0" ? self._Name() : (self._PortType() == "1" ? `Steam Query Port` : `Remote Admin Port` ));
+        this.Name = ko.computed(() => self._PortType() == "0" ? self._Name() : (self._PortType() == "1" ? `Steam Query Port` : `Remote Admin Port`));
         this._Description = ko.observable(portDescription);
         this.Description = ko.computed(() => self._Description() == "0" ? self._Description() : (self._PortType() == "1" ? `Port used for Steam queries and server list` : `Port used for RCON administration`));
         this.Ref = ko.computed(() => self._PortType() == "0" ? self._Name().replace(/\s+/g, "").replace(/[^a-z\d-_]/ig, "") : (self._PortType() == "1" ? `SteamQueryPort` : `RemoteAdminPort`));
         this.__RemovePort = () => self.__vm.__RemovePort(self);
+    }
+}
+
+class configFileMappingViewModel {
+    constructor(configFile, autoMap, configType, vm) {
+        var self = this;
+        this.__vm = vm;
+        this.ConfigFile = ko.observable(configFile);
+        this._ConfigType = ko.observable(configType);
+        this.ConfigType = ko.computed(() => self._ConfigType() == "0" ? `json` : (self._ConfigType() == "1" ? `ini` : (self._ConfigType() == "2" ? `xml` : (self._ConfigType() == "3" ? `kvp` : ``))));
+        this._AutoMap = ko.observable(autoMap);
+        this.AutoMap = ko.computed(() => self._ConfigType() == "4" ? false : self._AutoMap());
+        this.__RemoveConfigFile = () => self.__vm.__RemoveConfigFile(self);
     }
 }
 

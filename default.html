@@ -358,37 +358,37 @@
                             </div>
                         </div>
                         <!-- <div class="mb-3">
-                <label>Are any compatibility flags required?</label>
-                <div class="form-text">Generally these are not needed for modern applications</div>
-                <div class="list-group mx-0">
-                    <label class="list-group-item d-flex gap-2">
-                        <input class="form-check-input flex-shrink-0" type="checkbox" value="">
-                        <span>
-                            Linux Console Unbuffering
-                            <small class="d-block text-muted">Handle Linux applications that only
-                                write to the console in large chunks instead of one line at a
-                                time.</small>
-                        </span>
-                    </label>
-                    <label class="list-group-item d-flex gap-2">
-                        <input class="form-check-input flex-shrink-0" type="checkbox" value="">
-                        <span>
-                            Windows Virtual Console
-                            <small class="d-block text-muted">Handle Windows applications that use a
-                                console window but do not use the actual standard IO
-                                streams.</small>
-                        </span>
-                    </label>
-                    <label class="list-group-item d-flex gap-2">
-                        <input class="form-check-input flex-shrink-0" type="checkbox" value="">
-                        <span>
-                            Legacy Windows Unity Compatibility
-                            <small class="d-block text-muted">Used for older Unity applications that
-                                don't write to their console properly.</small>
-                        </span>
-                    </label>
-                </div>
-            </div> -->
+                            <label>Are any compatibility flags required?</label>
+                            <div class="form-text">Generally these are not needed for modern applications</div>
+                            <div class="list-group mx-0">
+                                <label class="list-group-item d-flex gap-2">
+                                    <input class="form-check-input flex-shrink-0" type="checkbox" value="">
+                                    <span>
+                                        Linux Console Unbuffering
+                                        <small class="d-block text-muted">Handle Linux applications that only
+                                            write to the console in large chunks instead of one line at a
+                                            time.</small>
+                                    </span>
+                                </label>
+                                <label class="list-group-item d-flex gap-2">
+                                    <input class="form-check-input flex-shrink-0" type="checkbox" value="">
+                                    <span>
+                                        Windows Virtual Console
+                                        <small class="d-block text-muted">Handle Windows applications that use a
+                                            console window but do not use the actual standard IO
+                                            streams.</small>
+                                    </span>
+                                </label>
+                                <label class="list-group-item d-flex gap-2">
+                                    <input class="form-check-input flex-shrink-0" type="checkbox" value="">
+                                    <span>
+                                        Legacy Windows Unity Compatibility
+                                        <small class="d-block text-muted">Used for older Unity applications that
+                                            don't write to their console properly.</small>
+                                    </span>
+                                </label>
+                            </div>
+                        </div> -->
                         <h4 id="networking">Networking</h4>
                         <div class="form-text">
                             AMP will automatically generate firewall rules to allow the application
@@ -672,7 +672,80 @@
                                 </tr>
                             </tfoot>
                         </table>
-                        <!-- <h5>Configuration Files</h5> -->
+                        <h5 id="configurationFiles">Configuration Files</h5>
+                        <div class="form-text">
+                            Select the location of any game server configuration files AMP should manage. Location relative to Base Directory.
+                        </div>
+                        <table class="table mb-3">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Config File</th>
+                                    <th scope="col">Config Type</th>
+                                    <th scope="col">AutoMap</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- ko foreach: _ConfigFileMappings -->
+                                <tr>
+                                    <td>
+                                        <input type="text" placeholder="Configs/Network.eco"
+                                               data-bind="value: ConfigFile">
+                                    </td>
+                                    <td>
+                                        <select class="form-select" data-bind="value: _ConfigType">
+                                            <option value="0">JSON</option>
+                                            <option value="1">INI</option>
+                                            <option value="2">XML</option>
+                                            <option value="3">KVP</option>
+                                            <option value="4">Other</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="checkbox"
+                                               data-bind="checked: _AutoMap">
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <button type="button" class="btn btn-danger"
+                                                data-bind="click: __RemoveConfigFile">
+                                            Delete Config File
+                                        </button>
+                                    </td>
+                                </tr>
+                                <!-- /ko -->
+                                <!-- ko if: _ConfigFileMappings().length == 0 -->
+                                <tr>
+                                    <td colspan="3">No config files have been added.</td>
+                                </tr>
+                                <!-- /ko -->
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td>
+                                        <input type="text" placeholder="Configs/Network.eco"
+                                               data-bind="value: __NewConfigFile">
+                                    </td>
+                                    <td>
+                                        <select class="form-select" data-bind="value: __NewConfigType">
+                                            <option value="0">JSON</option>
+                                            <option value="1">INI</option>
+                                            <option value="2">XML</option>
+                                            <option value="3">KVP</option>
+                                            <option value="4">Other</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="checkbox"
+                                               data-bind="checked: __NewAutoMap">
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <button type="button" class="btn btn-primary" data-bind="click: __AddConfigFile">
+                                            Add Config File
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
                         <h4 id="startupShutdown">Startup and Shutdown</h4>
                         <h5>Application and Parameters</h5>
                         <div class="row mb-3">
@@ -984,6 +1057,13 @@
                                     </svg>
                                     &nbsp;Download Ports Manifest
                                 </button>
+                                <button type="button" class="btn btn-primary mb-3" data-bind="enable: __ValidationResult() > 1, click: __DownloadConfigFilesManifest">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                                        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"></path>
+                                        <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"></path>
+                                    </svg>
+                                    &nbsp;Download Config Files Manifest
+                                </button>
                             </div>
                             <p class="p-3 mb-2 bg-warning text-dark">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
@@ -1231,7 +1311,7 @@
                             </label>
                             <input type="text" class="form-control" id="settingUncheckedValueField"
                                    data-bind="value: _UncheckedValue">
-                        </div>                                                                                                                                                                                                                        
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
