@@ -146,7 +146,7 @@ class generatorViewModel {
         this.Meta_SpecificDockerImage = ko.computed(() => self._compatibility() == "Wine" ? `cubecoders/ampbase:wine` : ``);
 
         this.App_Ports = ko.computed(() => `@IncludeJson[` + self._Meta_PortsManifest() + `]`);
-        this.Meta_EndpointURIFormat = ko.computed(() => `steam://connect/{ip}:{GenericModule.App.Ports.$SteamQueryPort}`);
+        this.Meta_EndpointURIFormat = ko.observable(`steam://connect/{ip}:{GenericModule.App.Ports.$SteamQueryPort}`);
 
         this.__SampleFormattedArgs = ko.computed(function () {
             return self._AppSettings().filter(s => s.IncludeInCommandLine()).map(s => s.IsFlagArgument() ? s._CheckedValue() : self.App_CommandLineParameterFormat().format(s.ParamFieldName(), s.DefaultValue())).join(self.App_CommandLineParameterDelimiter());
@@ -195,11 +195,6 @@ class generatorViewModel {
                 {
                     "key": "Working Directory",
                     "value": self.App_WorkingDir()
-                },
-                {
-                    "key": "Endpoint URI Format",
-                    "value": self.Meta_EndpointURIFormat(),
-                    "longValue": true
                 },
                 {
                     "key": "Docker Image",
