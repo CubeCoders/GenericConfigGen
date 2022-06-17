@@ -42,7 +42,7 @@ class generatorViewModel {
         this.App_HasWritableConsole = ko.observable(true);
         this.App_DisplayName = ko.computed(() => this.Meta_DisplayName());
 
-        this.App_CommandLineArgs = ko.observable("{{$PlatformArgs}} +ip {{$ApplicationIPBinding}} +port {{$ApplicationPort1}} +queryport {{$ApplicationPort2}} +rconpassword \"{{$RemoteAdminPassword}}\" +maxusers {{$MaxUsers}} {{$FormattedArgs}}")
+        this.App_CommandLineArgs = ko.observable("{{$PlatformArgs}} +ip {{$ApplicationIPBinding}} +port {{$GamePort1}} +queryport {{$SteamQueryPort}} +rconpassword \"{{$RemoteAdminPassword}}\" +maxusers {{$MaxUsers}} {{$FormattedArgs}}")
         this.App_LinuxCommandLineArgs = ko.observable("");
         this.App_WindowsCommandLineArgs = ko.observable("");
         this.App_CommandLineParameterFormat = ko.observable("-{0} \"{1}\"");
