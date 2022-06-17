@@ -80,11 +80,6 @@ class generatorViewModel {
         this.App_FilterMatchRegex = ko.observable("");
         this.App_FilterMatchReplacement = ko.observable("");
         this.App_MonitorChildProcessName = ko.observable("");
-        this.App_MonitorChildProcessName = ko.observable("");
-        this.App_MonitorChildProcessName = ko.observable("");
-        this.App_MonitorChildProcessName = ko.observable("");
-        this.App_MonitorChildProcessName = ko.observable("");
-        this.App_MonitorChildProcessName = ko.observable("");
 
         this.Console_ThrowawayMessageRegex = ko.observable("^(WARNING|ERROR): Shader.+$");
         this.Console_AppReadyRegex = ko.observable("^Server is ready.$");
@@ -463,7 +458,7 @@ class generatorViewModel {
                     if (!self.App_CommandLineArgs().contains("{{$RemoteAdminPassword}}")) {
                         warning("A server management mode is specified that requires AMP to know the password, but {{$RemoteAdminPassword}} is not found within the command line arguments.", "If the application can have it's RCON password specified via the command line then you should add the {{$RemoteAdminPassword}} template item to your command line arguments", "Without the ability to control the RCON password, AMP will not be able to use the servers RCON to provide a console or run commands.");
                     }
-
+/*
                     if (!self.App_CommandLineArgs().contains(this.__QueryPortName())) {
                         warning("A server management mode that uses the network was specified, but the port being used is not found within the command line arguments.", "If the application can have it's RCON port specified via the command line then you should add the {{$" + this.__QueryPortName() + "}} template item to your command line arguments");
                     }
@@ -471,7 +466,7 @@ class generatorViewModel {
                     if (self._PortMappings().filter(p => p.PortType() == "2").length == 0) {
                         warning("A server management mode that uses the network was specified, but no RCON port has been added.", "Add the port used by this applications RCON under Networking.");
                     }
-                    break;
+*/                    break;
             }
 
             switch (self._UpdateSourceType()) {
@@ -540,10 +535,10 @@ class portMappingViewModel {
         this.Port = ko.observable(port);
         this._PortType = ko.observable(portType);
         this._Name = ko.observable(portName);
-        this.Name = ko.computed(() => self._PortType() == "0" ? self._Name() : (self._PortType() == "1" ? `Steam Query Port` : `Remote Admin Port`));
+        this.Name = ko.computed(() => self._PortType() == "0" ? self._Name() : (self._PortType() == "1" ? `Steam Query Port` : (self._PortType() == "2" ? `Remote Admin Port` : `Game Port 1`)));
         this._Description = ko.observable(portDescription);
-        this.Description = ko.computed(() => self._Description() == "0" ? self._Description() : (self._PortType() == "1" ? `Port used for Steam queries and server list` : `Port used for RCON administration`));
-        this.Ref = ko.computed(() => self._PortType() == "0" ? self._Name().replace(/\s+/g, "").replace(/[^a-z\d-_]/ig, "") : (self._PortType() == "1" ? `SteamQueryPort` : `RemoteAdminPort`));
+        this.Description = ko.computed(() => self._Description() == "0" ? self._Description() : (self._PortType() == "1" ? `Port used for Steam queries and server list` : (self._PortType() == "2" ? `Port used for RCON administration` : `Port used for main game traffic`)));
+        this.Ref = ko.computed(() => self._PortType() == "0" ? self._Name().replace(/\s+/g, "").replace(/[^a-z\d-_]/ig, "") : (self._PortType() == "1" ? `SteamQueryPort` : (self._PortType() == "2" ? `RemoteAdminPort` : `GamePort1`)));
         this.__RemovePort = () => self.__vm.__RemovePort(self);
     }
 }
