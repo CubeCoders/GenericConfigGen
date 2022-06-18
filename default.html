@@ -108,6 +108,15 @@
                                 </svg>
                                 Validate and Review
                             </a>
+                            <!-- div class="mb-3">
+                                <label>Generated Command Line Arguments</label>
+                                <input type="text" readonly class="form-control"
+                                       data-bind="value: __SampleCommandLineFlags">
+                                <div class="form-text">
+                                    This is generated assuming the default values and default port
+                                    numbers, these will change based on user-specified values or assignments made by AMP.
+                                </div>
+                            </div> -->
                         </li>
                     </ul>
                 </div>
@@ -359,37 +368,37 @@
                             </div>
                         </div>
                         <!-- <div class="mb-3">
-                            <label>Are any compatibility flags required?</label>
-                            <div class="form-text">Generally these are not needed for modern applications</div>
-                            <div class="list-group mx-0">
-                                <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="checkbox" value="">
-                                    <span>
-                                        Linux Console Unbuffering
-                                        <small class="d-block text-muted">Handle Linux applications that only
-                                            write to the console in large chunks instead of one line at a
-                                            time.</small>
-                                    </span>
-                                </label>
-                                <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="checkbox" value="">
-                                    <span>
-                                        Windows Virtual Console
-                                        <small class="d-block text-muted">Handle Windows applications that use a
-                                            console window but do not use the actual standard IO
-                                            streams.</small>
-                                    </span>
-                                </label>
-                                <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="checkbox" value="">
-                                    <span>
-                                        Legacy Windows Unity Compatibility
-                                        <small class="d-block text-muted">Used for older Unity applications that
-                                            don't write to their console properly.</small>
-                                    </span>
-                                </label>
-                            </div>
-                        </div> -->
+        <label>Are any compatibility flags required?</label>
+        <div class="form-text">Generally these are not needed for modern applications</div>
+        <div class="list-group mx-0">
+            <label class="list-group-item d-flex gap-2">
+                <input class="form-check-input flex-shrink-0" type="checkbox" value="">
+                <span>
+                    Linux Console Unbuffering
+                    <small class="d-block text-muted">Handle Linux applications that only
+                        write to the console in large chunks instead of one line at a
+                        time.</small>
+                </span>
+            </label>
+            <label class="list-group-item d-flex gap-2">
+                <input class="form-check-input flex-shrink-0" type="checkbox" value="">
+                <span>
+                    Windows Virtual Console
+                    <small class="d-block text-muted">Handle Windows applications that use a
+                        console window but do not use the actual standard IO
+                        streams.</small>
+                </span>
+            </label>
+            <label class="list-group-item d-flex gap-2">
+                <input class="form-check-input flex-shrink-0" type="checkbox" value="">
+                <span>
+                    Legacy Windows Unity Compatibility
+                    <small class="d-block text-muted">Used for older Unity applications that
+                        don't write to their console properly.</small>
+                </span>
+            </label>
+        </div>
+    </div> -->
                         <br /><hr /><br />
                         <h4 id="networking">Networking</h4>
                         <div class="form-text">
@@ -498,6 +507,51 @@
                         </table>
                         <br /><hr /><br />
                         <h4 id="updateSources">Update Sources</h4>
+                        <table class="table mb-3">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Stage Name</th>
+                                    <th scope="col">Source Type</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- ko foreach: _UpdateStages -->
+                                <tr>
+                                    <td data-bind="text: UpdateStageName"></td>
+                                    <td data-bind="text: UpdateSource"></td>
+                                    <td style="text-align: right;">
+                                        <button type="button" class="btn btn-primary"
+                                                data-bind="click: __EditStage">
+                                            Edit
+                                        </button>
+                                        <button type="button" class="btn btn-danger"
+                                                data-bind="click: __RemoveStage">
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                                <!-- /ko -->
+                                <!-- ko if: _UpdateStages().length == 0 -->
+                                <tr>
+                                    <td colspan="6">No update sources added.</td>
+                                </tr>
+                                <!-- /ko -->
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="5"></td>
+                                    <td colspan="5"></td>
+                                    <td colspan="2" style="text-align: right;">
+                                        <button type="button" class="btn btn-primary"
+                                                data-bind="click: __AddStage">
+                                            Add Stage
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
                         <div class="mb-3">
                             <label>How is this application downloaded and updated?</label>
                             <div class="list-group mx-0 mb-3">
@@ -1071,6 +1125,13 @@
                                     </svg>
                                     &nbsp;Download Config Files Manifest
                                 </button>
+                                <button type="button" class="btn btn-primary mb-3" data-bind="enable: __ValidationResult() > 1, click: __DownloadStagesManifest">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                                        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"></path>
+                                        <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"></path>
+                                    </svg>
+                                    &nbsp;Download Update Stages Manifest
+                                </button>
                             </div>
                             <p class="p-3 mb-2 bg-warning text-dark">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
@@ -1329,6 +1390,74 @@
                     </button>
                     <button type="button" class="btn btn-secondary"
                             data-bind="click: __vm.__CloseSetting">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="addEditStageModal" data-bind="with: __AddEditStage">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"
+                        data-bind="text: __vm.__IsEditingStage() ? 'Edit Stage' : 'Add New Stage'"></h5>
+                    <button type="button" class="close" data-bind="click: __vm.__CloseStage">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Source Types<br /><br />
+                    CopyFilePath - Copies a file from on directory to another.<br />
+                    CreateSymlink - Linux only, Creates a symlink pointing to the file/directory listed.<br />
+                    Executable - Runs an executable/shell script (not bat files!)<br />
+                    ExtractArchive - Extracts a zip archive.<br />
+                    FetchURL - Downloads from a fixed URL. Used with CopyFilePath to move the file.<br />
+                    GithubRelease - Downloads the release version specified (latest if omitted).<br />
+                    SetExecutableFlag - Linux only, marks the filename as executable.<br />
+                    StartApplication - Starts/stops the game server one time. Uuseful if a game generates directories and config files on first start.<br />
+                    SteamCMD - Downloads an application by the Steam App ID.<br /><br />
+                    <div class="row">
+                        <div class="mb-3 col-6">
+                            <label for="stageSourceTypeField">
+                                Source Type
+                            </label>
+                            <select class="form-select" id="stageSourceTypeField" data-bind="value: _UpdateSource">
+                                <option value="0">CopyFilePath</option>
+                                <option value="1">CreateSymlink</option>
+                                <option value="2">Executable</option>
+                                <option value="3">ExtractArchive</option>
+                                <option value="4">FetchURL</option>
+                                <option value="5">GithubRelease</option>
+                                <option value="6">SetExecutableFlag</option>
+                                <option value="7">StartApplication</option>
+                                <option value="8">SteamCMD</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-6">
+                            <label for="stageNamField">
+                                Stage Name
+                                <small class="d-block text-muted">
+                                    The name of the stage as it will appear within AMPs
+                                    notification.
+                                </small>
+                            </label>
+                            <input type="text" class="form-control" id="stageNameField"
+                                   data-bind="value: UpdateStageName" placeholder="Config File Download">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary"
+                            data-bind="visible: !__vm.__IsEditingStage(), click: __vm.__DoAddStage">
+                        Add New
+                        Stage
+                    </button>
+                    <button type="button" class="btn btn-secondary"
+                            data-bind="click: __vm.__CloseStage">
                         Close
                     </button>
                 </div>

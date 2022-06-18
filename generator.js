@@ -126,13 +126,17 @@ class generatorViewModel {
         this.__AddEditSetting = ko.observable(null); //of appSettingViewModel
         this.__IsEditingSetting = ko.observable(false);
 
+        this._UpdateStages = ko.observableArray(); //of updateStageViewModel
+        this.__AddEditStage = ko.observable(null); //of updateStageViewModel
+        this.__IsEditingStage = ko.observable(false);
+
         //Computed values
         this.__SanitizedName = ko.computed(() => self.Meta_DisplayName().replace(/\s+/g, "-").replace(/[^a-z\d-_]/ig, "").toLowerCase());
         this.Meta_OS = ko.computed(() => (self._SupportsWindows() ? 1 : 0) | (self._SupportsLinux() ? 2 : 0));
         this.Meta_ConfigManifest = ko.computed(() => self.__SanitizedName() + "config.json");
         this.Meta_MetaConfigManifest = ko.computed(() => self.__SanitizedName() + "metaconfig.json");
         this._Meta_PortsManifest = ko.computed(() => self.__SanitizedName() + "ports.json");
-        this._Meta_UpdatesManifest = ko.computed(() => self.__SanitizedName() + "updates.json");
+        this._Meta_StagesManifest = ko.computed(() => self.__SanitizedName() + "updates.json");
         this.Meta_ConfigRoot = ko.computed(() => self.__SanitizedName() + ".kvp");
         this.Meta_DisplayImageSource = ko.computed(() => self._UpdateSourceType() == "4" ? "steam:" + self._SteamClientAppID() : "url:" + self._DisplayImageSource());
 
@@ -152,16 +156,16 @@ class generatorViewModel {
         this.__SampleFormattedArgs = ko.computed(function () {
             return self._AppSettings().filter(s => s.IncludeInCommandLine()).map(s => s.IsFlagArgument() ? s._CheckedValue() : self.App_CommandLineParameterFormat().format(s.ParamFieldName(), s.DefaultValue())).join(self.App_CommandLineParameterDelimiter());
         });
-        /*
-                this.__SampleCommandLineFlags = ko.computed(function () {
-                    var replacements;
-                    replacements["ApplicationIPBinding"] = "0.0.0.0";
-                    replacements["FormattedArgs"] = self.__SampleFormattedArgs();
-                    replacements["MaxUsers"] = "10";
-                    replacements["RemoteAdminPassword"] = "r4nd0m-pa55w0rd-g0e5_h3r3";
-                    return self.App_CommandLineArgs().template(replacements);
-                });
-        */
+
+/*        this.__SampleCommandLineFlags = ko.computed(function () {
+            var replacements = ko.toJS(self.__BuildPortMappings());
+            replacements["ApplicationIPBinding"] = "0.0.0.0";
+            replacements["FormattedArgs"] = self.__SampleFormattedArgs();
+            replacements["MaxUsers"] = "10";
+            replacements["RemoteAdminPassword"] = "r4nd0m-pa55w0rd-g0e5_h3r3";
+            return self.App_CommandLineArgs().template(replacements);
+        });
+*/
         this.__GenData = ko.computed(function () {
             var data = [
                 {
@@ -271,6 +275,31 @@ class generatorViewModel {
             $("#addEditSettingModal").modal('hide');
         };
 
+        this.__RemoveStage = function (toRemove) {
+            self._UpdateStages.remove(toRemove);
+        };
+
+        this.__EditStage = function (toEdit) {
+            self.__IsEditingStage(true);
+            self.__AddEditStage(toEdit);
+            $("#addEditStageModal").modal('show');
+        };
+
+        this.__AddStage = function () {
+            self.__IsEditingStage(false);
+            self.__AddEditStage(new updateStageViewModel(self));
+            $("#addEditStageModal").modal('show');
+        };
+
+        this.__DoAddStage = function () {
+            self._UpdateStages.push(self.__AddEditStage());
+            $("#addEditStageModal").modal('hide');
+        };
+
+        this.__CloseStage = function () {
+            $("#addEditStageModal").modal('hide');
+        };
+
         this.__Serialize = function () {
             var asJS = ko.toJS(self);
             var result = JSON.stringify(asJS, omitPrivateMembers);
@@ -282,10 +311,12 @@ class generatorViewModel {
             var ports = asJS._PortMappings;
             var configFiles = asJS._ConfigFileMappings;
             var settings = asJS._AppSettings;
+            var stages = asJS._UpdateStages;
 
             delete asJS._PortMappings;
             delete asJS._ConfigFileMappings;
             delete asJS._AppSettings;
+            delete asJS._UpdateStages;
 
             ko.quickmap.map(self, asJS);
 
@@ -300,6 +331,10 @@ class generatorViewModel {
             self._AppSettings.removeAll();
             var mappedSettings = ko.quickmap.to(appSettingViewModel, settings, false, { __vm: self });
             self._AppSettings.push.apply(self._AppSettings, mappedSettings);
+
+            self._UpdateStages.removeAll();
+            var mappedStages = ko.quickmap.to(updateStageViewModel, settings, false, { __vm: self });
+            self._UpdateStages.push.apply(self._UpdateStages, mappedStages);
         };
 
         this.__IsExporting = ko.observable(false);
@@ -388,6 +423,13 @@ class generatorViewModel {
 
             var asJS = ko.toJS(self._AppSettings());
             downloadString(JSON.stringify(asJS, omitNonPublicMembers, 4), self.Meta_ConfigManifest());
+        };
+
+        this.__DownloadStagesManifest = function () {
+            if (this.__ValidationResult() < 2) { return; }
+
+            var asJS = ko.toJS(self._UpdateStages());
+            downloadString(JSON.stringify(asJS, omitNonPublicMembers, 4), self._Meta_StagesManifest());
         };
 
         this.__DownloadPortsManifest = function () {
@@ -585,6 +627,18 @@ class appSettingViewModel {
         });
         this.__RemoveSetting = () => self.__vm.__RemoveSetting(self);
         this.__EditSetting = () => self.__vm.__EditSetting(self);
+    }
+}
+
+class updateStageViewModel {
+    constructor(vm) {
+        var self = this;
+        this.__vm = vm;
+        this.UpdateStageName = ko.observable("");
+        this._UpdateSource = ko.observable("8");
+        this.UpdateSource = ko.computed(() => self._UpdateSource() == "0" ? `CopyFilePath` : (self._UpdateSource() == "1" ? `CreateSymlink` : (self._UpdateSource() == "2" ? `Executable` : (self._UpdateSource() == "3" ? `ExtractArchive` : (self._UpdateSource() == "4" ? `FetchURL` : (self._UpdateSource() == "5" ? `GithubRelease` : (self._UpdateSource() == "6" ? `SetExecutableFlag` : (self._UpdateSource() == "7" ? `StartApplication` : `SteamCMD`))))))));
+        this.__RemoveStage = () => self.__vm.__RemoveStage(self);
+        this.__EditStage = () => self.__vm.__EditStage(self);
     }
 }
 
