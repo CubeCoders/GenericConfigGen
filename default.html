@@ -368,37 +368,37 @@
                             </div>
                         </div>
                         <!-- <div class="mb-3">
-        <label>Are any compatibility flags required?</label>
-        <div class="form-text">Generally these are not needed for modern applications</div>
-        <div class="list-group mx-0">
-            <label class="list-group-item d-flex gap-2">
-                <input class="form-check-input flex-shrink-0" type="checkbox" value="">
-                <span>
-                    Linux Console Unbuffering
-                    <small class="d-block text-muted">Handle Linux applications that only
-                        write to the console in large chunks instead of one line at a
-                        time.</small>
-                </span>
-            </label>
-            <label class="list-group-item d-flex gap-2">
-                <input class="form-check-input flex-shrink-0" type="checkbox" value="">
-                <span>
-                    Windows Virtual Console
-                    <small class="d-block text-muted">Handle Windows applications that use a
-                        console window but do not use the actual standard IO
-                        streams.</small>
-                </span>
-            </label>
-            <label class="list-group-item d-flex gap-2">
-                <input class="form-check-input flex-shrink-0" type="checkbox" value="">
-                <span>
-                    Legacy Windows Unity Compatibility
-                    <small class="d-block text-muted">Used for older Unity applications that
-                        don't write to their console properly.</small>
-                </span>
-            </label>
-        </div>
-    </div> -->
+                            <label>Are any compatibility flags required?</label>
+                            <div class="form-text">Generally these are not needed for modern applications</div>
+                            <div class="list-group mx-0">
+                                <label class="list-group-item d-flex gap-2">
+                                    <input class="form-check-input flex-shrink-0" type="checkbox" value="">
+                                    <span>
+                                        Linux Console Unbuffering
+                                        <small class="d-block text-muted">Handle Linux applications that only
+                                            write to the console in large chunks instead of one line at a
+                                            time.</small>
+                                    </span>
+                                </label>
+                                <label class="list-group-item d-flex gap-2">
+                                    <input class="form-check-input flex-shrink-0" type="checkbox" value="">
+                                    <span>
+                                        Windows Virtual Console
+                                        <small class="d-block text-muted">Handle Windows applications that use a
+                                            console window but do not use the actual standard IO
+                                            streams.</small>
+                                    </span>
+                                </label>
+                                <label class="list-group-item d-flex gap-2">
+                                    <input class="form-check-input flex-shrink-0" type="checkbox" value="">
+                                    <span>
+                                        Legacy Windows Unity Compatibility
+                                        <small class="d-block text-muted">Used for older Unity applications that
+                                            don't write to their console properly.</small>
+                                    </span>
+                                </label>
+                            </div>
+                        </div> -->
                         <br /><hr /><br />
                         <h4 id="networking">Networking</h4>
                         <div class="form-text">
@@ -540,7 +540,6 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="5"></td>
                                     <td colspan="5"></td>
                                     <td colspan="2" style="text-align: right;">
                                         <button type="button" class="btn btn-primary"
@@ -1408,16 +1407,18 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    Source Types<br /><br />
-                    CopyFilePath - Copies a file from on directory to another.<br />
-                    CreateSymlink - Linux only, Creates a symlink pointing to the file/directory listed.<br />
-                    Executable - Runs an executable/shell script (not bat files!)<br />
-                    ExtractArchive - Extracts a zip archive.<br />
-                    FetchURL - Downloads from a fixed URL. Used with CopyFilePath to move the file.<br />
-                    GithubRelease - Downloads the release version specified (latest if omitted).<br />
-                    SetExecutableFlag - Linux only, marks the filename as executable.<br />
-                    StartApplication - Starts/stops the game server one time. Uuseful if a game generates directories and config files on first start.<br />
-                    SteamCMD - Downloads an application by the Steam App ID.<br /><br />
+                    <h5 class="modal-title">Source Type Details</h5>
+                    <ul>
+                        <li>CopyFilePath - Copies a file from one directory to another.</li>
+                        <li>CreateSymlink - Linux only, Creates a symlink pointing to the file/directory listed.</li>
+                        <li>Executable - Runs an executable/shell script (not bat files!)</li>
+                        <li>ExtractArchive - Extracts a zip archive.</li>
+                        <li>FetchURL - Downloads from a fixed URL. Used with CopyFilePath to move the file.</li>
+                        <li>GithubRelease - Downloads the release version specified (latest if omitted).</li>
+                        <li>SetExecutableFlag - Linux only, marks the filename as executable.</li>
+                        <li>StartApplication - Starts the game server one tim e. Uuseful if a game generates config files on first run.</li>
+                        <li>SteamCMD - Downloads an application by the Steam App ID.</li>
+                    </ul><hr />
                     <div class="row">
                         <div class="mb-3 col-6">
                             <label for="stageSourceTypeField">
@@ -1435,18 +1436,106 @@
                                 <option value="8">SteamCMD</option>
                             </select>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="mb-3 col-6">
                             <label for="stageNamField">
                                 Stage Name
                                 <small class="d-block text-muted">
-                                    The name of the stage as it will appear within AMPs
-                                    notification.
+                                    This will show as the notification while updating.
                                 </small>
                             </label>
                             <input type="text" class="form-control" id="stageNameField"
-                                   data-bind="value: UpdateStageName" placeholder="Config File Download">
+                                   data-bind="value: UpdateStageName" placeholder="Config File Download" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-6">
+                            <label for="stageSourcePlatformField">
+                                Platform
+                                <small class="d-block text-muted">
+                                    The OS the stage should be run on.
+                                </small>
+                            </label>
+                            <select class="form-select" id="stageSourcePlatformField" data-bind="value: _UpdateSourcePlatform">
+                                <option value="0">All</option>
+                                <option value="1">Windows</option>
+                                <option value="2">Linux</option>
+                            </select>
+                        </div>
+                        <div class="mb-3 col-6">
+                            <label for="stageConditionField">
+                                Condition Setting
+                                <small class="d-block text-muted">
+                                    Run this stage based on another setting.
+                                </small>
+                            </label>
+                            <input type="text" class="form-control" id="stageConditionField"
+                                   data-bind="value: _UpdateSourceConditionSetting" placeholder="UpdateStream">
+                        </div>
+                    </div><hr />
+                    <div class="row">
+                        <div class="mb-3 col-6">
+                            <label for="stageSourceDataField">
+                                Stage Data
+                                <small class="d-block text-muted">
+                                    The OS the stage should be run on.
+                                </small>
+                            </label>
+                            <input type="text" class="form-control" id="stageSourceDataField"
+                                   data-bind="value: _UpdateSourceData" placeholder="">
+                        </div>
+                        <div class="mb-3 col-6">
+                            <label for="stageArgsField">
+                                Stage Args
+                                <small class="d-block text-muted">
+                                    Run this stage based on another setting.
+                                </small>
+                            </label>
+                            <input type="text" class="form-control" id="stageArgsField"
+                                   data-bind="value: _UpdateSourceArgs" placeholder="UpdateStream">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-6">
+                            <label for="stageSourceVersionField">
+                                Source Version
+                                <small class="d-block text-muted">
+                                    The branch to download from. Can be hardcoded or the Field Name of an input.
+                                </small>
+                            </label>
+                            <input type="text" class="form-control" id="stageSourceVersionField"
+                                   data-bind="value: _UpdateSourceVersion" placeholder="{{ReleaseStream}}">
+                        </div>
+                        <div class="mb-3 col-6">
+                            <label for="stageTargetField">
+                                Source Target
+                                <small class="d-block text-muted">
+                                    The destination for the stage.
+                                </small>
+                            </label>
+                            <input type="text" class="form-control" id="stageTargetField"
+                                   data-bind="value: _UpdateSourceTarget" placeholder="UpdateStream">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-6">
+                            <label for="stageUnzipField">
+                                Unzip Source
+                                <small class="d-block text-muted">
+                                    The branch to download from. Can be hardcoded or the Field Name of an input.
+                                </small>
+                            </label>
+                            <input type="text" class="form-control" id="stageUnzipField"
+                                   data-bind="value: _UnzipUpdateSource" placeholder="{{ReleaseStream}}">
+                        </div>
+                        <div class="mb-3 col-6">
+                            <label for="stageOverwriteField">
+                                Overwrite
+                                <small class="d-block text-muted">
+                                    The destination for the stage.
+                                </small>
+                            </label>
+                            <input type="text" class="form-control" id="stageOverwriteField"
+                                   data-bind="value: _OverwriteExistingFiles" placeholder="UpdateStream">
                         </div>
                     </div>
                 </div>

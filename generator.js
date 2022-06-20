@@ -151,21 +151,22 @@ class generatorViewModel {
         this.Meta_SpecificDockerImage = ko.computed(() => self._compatibility() == "Wine" ? `cubecoders/ampbase:wine` : ``);
 
         this.App_Ports = ko.computed(() => `@IncludeJson[` + self._Meta_PortsManifest() + `]`);
+        this.App_UpdateSources = ko.computed(() => `@IncludeJson[` + self._Meta_StagesManifest() + `]`);
         this.Meta_EndpointURIFormat = ko.observable(`steam://connect/{ip}:{GenericModule.App.Ports.$SteamQueryPort}`);
 
         this.__SampleFormattedArgs = ko.computed(function () {
             return self._AppSettings().filter(s => s.IncludeInCommandLine()).map(s => s.IsFlagArgument() ? s._CheckedValue() : self.App_CommandLineParameterFormat().format(s.ParamFieldName(), s.DefaultValue())).join(self.App_CommandLineParameterDelimiter());
         });
 
-/*        this.__SampleCommandLineFlags = ko.computed(function () {
-            var replacements = ko.toJS(self.__BuildPortMappings());
-            replacements["ApplicationIPBinding"] = "0.0.0.0";
-            replacements["FormattedArgs"] = self.__SampleFormattedArgs();
-            replacements["MaxUsers"] = "10";
-            replacements["RemoteAdminPassword"] = "r4nd0m-pa55w0rd-g0e5_h3r3";
-            return self.App_CommandLineArgs().template(replacements);
-        });
-*/
+        /*        this.__SampleCommandLineFlags = ko.computed(function () {
+                    var replacements = ko.toJS(self.__BuildPortMappings());
+                    replacements["ApplicationIPBinding"] = "0.0.0.0";
+                    replacements["FormattedArgs"] = self.__SampleFormattedArgs();
+                    replacements["MaxUsers"] = "10";
+                    replacements["RemoteAdminPassword"] = "r4nd0m-pa55w0rd-g0e5_h3r3";
+                    return self.App_CommandLineArgs().template(replacements);
+                });
+        */
         this.__GenData = ko.computed(function () {
             var data = [
                 {
@@ -389,22 +390,23 @@ class generatorViewModel {
                 lines.push(`${key.replace("_", ".")}=${self[key]()}`);
             }
 
-            switch (self._UpdateSourceType()) {
-                case "1": //URL
-                    lines.push(`App.UpdateSources=[{\"UpdateStageName\": \"Server Download\",\"UpdateSourcePlatform\": \"All\", \"UpdateSource\": \"FetchURL\", \"UpdateSourceData\": \"${self._UpdateSourceURL()}\", \"UnzipUpdateSource\": ${self._UpdateSourceUnzip()}}]`);
-                    break;
-                case "4": //Steam
-                    if (self._compatibility() == "Proton") {
-                        lines.push(`App.UpdateSources=[{\"UpdateStageName\": \"SteamCMD Download\",\"UpdateSourcePlatform\": \"All\", \"UpdateSource\": \"SteamCMD\", \"UpdateSourceData\": \"${self._SteamServerAppID()}\"},{\"UpdateStageName\": \"Proton Compatibility Layer\",\"UpdateSourcePlatform\": \"Linux\", \"UpdateSource\": \"SteamCMD\", \"UpdateSourceData\": \"1580130\"}]`);
-                    } else {
-                        lines.push(`App.UpdateSources=[{\"UpdateStageName\": \"SteamCMD Download\",\"UpdateSourcePlatform\": \"All\", \"UpdateSource\": \"SteamCMD\", \"UpdateSourceData\": \"${self._SteamServerAppID()}\"}]`);
-                    }
-                    break;
-                case "16": //Github
-                    lines.push(`App.UpdateSources=[{\"UpdateStageName\": \"GitHub Release Download\",\"UpdateSourcePlatform\": \"All\", \"UpdateSource\": \"GithubRelease\", \"UpdateSourceData\": \"${self._UpdateSourceGitRepo()}\"}]`);
-                    break;
-            }
-
+            /*
+                        switch (self._UpdateSourceType()) {
+                            case "1": //URL
+                                lines.push(`App.UpdateSources=[{\"UpdateStageName\": \"Server Download\",\"UpdateSourcePlatform\": \"All\", \"UpdateSource\": \"FetchURL\", \"UpdateSourceData\": \"${self._UpdateSourceURL()}\", \"UnzipUpdateSource\": ${self._UpdateSourceUnzip()}}]`);
+                                break;
+                            case "4": //Steam
+                                if (self._compatibility() == "Proton") {
+                                    lines.push(`App.UpdateSources=[{\"UpdateStageName\": \"SteamCMD Download\",\"UpdateSourcePlatform\": \"All\", \"UpdateSource\": \"SteamCMD\", \"UpdateSourceData\": \"${self._SteamServerAppID()}\"},{\"UpdateStageName\": \"Proton Compatibility Layer\",\"UpdateSourcePlatform\": \"Linux\", \"UpdateSource\": \"SteamCMD\", \"UpdateSourceData\": \"1580130\"}]`);
+                                } else {
+                                    lines.push(`App.UpdateSources=[{\"UpdateStageName\": \"SteamCMD Download\",\"UpdateSourcePlatform\": \"All\", \"UpdateSource\": \"SteamCMD\", \"UpdateSourceData\": \"${self._SteamServerAppID()}\"}]`);
+                                }
+                                break;
+                            case "16": //Github
+                                lines.push(`App.UpdateSources=[{\"UpdateStageName\": \"GitHub Release Download\",\"UpdateSourcePlatform\": \"All\", \"UpdateSource\": \"GithubRelease\", \"UpdateSourceData\": \"${self._UpdateSourceGitRepo()}\"}]`);
+                                break;
+                        }
+            */
             if (self._UpdateSourceType() == "4") //SteamCMD
             {
                 if (self._compatibility() == "Proton") {
@@ -636,6 +638,16 @@ class updateStageViewModel {
         this.__vm = vm;
         this.UpdateStageName = ko.observable("");
         this._UpdateSource = ko.observable("8");
+        this._UpdateSourcePlatform = ko.observable("0");
+        this._UpdateSourceData = ko.observable("");
+        this._UpdateSourceArgs = ko.observable("");
+        this._UpdateSourceVersion = ko.observable("");
+        this._UpdateSourceTarget = ko.observable("");
+        this._UpdateSourceConditionSetting = ko.observable("");
+        this._UpdateSourceConditionValue = ko.observable(null);
+        this._UnzipUpdateSource = ko.observable(true);
+        this._OverwriteExistingFiles = ko.observable(false);
+        this.UpdateSourcePlatform = ko.computed(() => self._UpdateSourcePlatform() == "0" ? `All` : (self._UpdateSourcePlatform() == "1" ? `Windows` : `Linux`));
         this.UpdateSource = ko.computed(() => self._UpdateSource() == "0" ? `CopyFilePath` : (self._UpdateSource() == "1" ? `CreateSymlink` : (self._UpdateSource() == "2" ? `Executable` : (self._UpdateSource() == "3" ? `ExtractArchive` : (self._UpdateSource() == "4" ? `FetchURL` : (self._UpdateSource() == "5" ? `GithubRelease` : (self._UpdateSource() == "6" ? `SetExecutableFlag` : (self._UpdateSource() == "7" ? `StartApplication` : `SteamCMD`))))))));
         this.__RemoveStage = () => self.__vm.__RemoveStage(self);
         this.__EditStage = () => self.__vm.__EditStage(self);
