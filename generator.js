@@ -647,6 +647,7 @@ class updateStageViewModel {
         this._UpdateSourceConditionValue = ko.observable(null);
         this._UnzipUpdateSource = ko.observable(true);
         this._OverwriteExistingFiles = ko.observable(false);
+        this._DeleteAfterExtract = ko.observable(true);
         this.UpdateSourcePlatform = ko.computed(() => self._UpdateSourcePlatform() == "0" ? `All` : (self._UpdateSourcePlatform() == "1" ? `Windows` : `Linux`));
         this.UpdateSource = ko.computed(() => self._UpdateSource() == "0" ? `CopyFilePath` : (self._UpdateSource() == "1" ? `CreateSymlink` : (self._UpdateSource() == "2" ? `Executable` : (self._UpdateSource() == "3" ? `ExtractArchive` : (self._UpdateSource() == "4" ? `FetchURL` : (self._UpdateSource() == "5" ? `GithubRelease` : (self._UpdateSource() == "6" ? `SetExecutableFlag` : (self._UpdateSource() == "7" ? `StartApplication` : `SteamCMD`))))))));
         this.__RemoveStage = () => self.__vm.__RemoveStage(self);

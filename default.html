@@ -5,10 +5,22 @@
     <title>AMP Configuration Generator</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    <meta name="color-scheme" content="light dark">
+    <script>
+        if (window.matchMedia("(prefers-color-scheme: dark)").media === "not all") {
+            document.documentElement.style.display = "none";
+            document.head.insertAdjacentHTML(
+                "beforeend",
+                "<link id=\"css\" rel=\"stylesheet\" href=\"../dist/css/bootstrap.css\" onload=\"document.documentElement.style.display = ''\">"
+            );
+        }
+    </script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-dark-5@1.1.3/dist/css/bootstrap-night.min.css" rel="stylesheet" media="(prefers-color-scheme: dark)">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-dark-5@1.1.3/dist/css/bootstrap.min.css" rel="stylesheet" media="(prefers-color-scheme: light)">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+<!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    -->
     <link href="style.css" rel="stylesheet">
     <script type="text/javascript" src="common.js"></script>
     <script type="text/javascript" src="knockout.quickmap.js"></script>
@@ -18,6 +30,7 @@
             integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
             crossorigin="anonymous"></script>
     <script type="text/javascript" src="generator.js"></script>
+    <script type="text/javascript" src="darkmode.js"></script>
 </head>
 
 <body data-spy="scroll" data-target="#navbar" data-offset="0">
@@ -1416,7 +1429,7 @@
                         <li>FetchURL - Downloads from a fixed URL. Used with CopyFilePath to move the file.</li>
                         <li>GithubRelease - Downloads the release version specified (latest if omitted).</li>
                         <li>SetExecutableFlag - Linux only, marks the filename as executable.</li>
-                        <li>StartApplication - Starts the game server one tim e. Uuseful if a game generates config files on first run.</li>
+                        <li>StartApplication - Starts the game server one time. Useful if a game generates config files on first run.</li>
                         <li>SteamCMD - Downloads an application by the Steam App ID.</li>
                     </ul><hr />
                     <div class="row">
@@ -1465,77 +1478,238 @@
                             <label for="stageConditionField">
                                 Condition Setting
                                 <small class="d-block text-muted">
-                                    Run this stage based on another setting.
+                                    Run this stage based on another setting. Place the variable name here and the value in Condition Value.
                                 </small>
                             </label>
                             <input type="text" class="form-control" id="stageConditionField"
-                                   data-bind="value: _UpdateSourceConditionSetting" placeholder="UpdateStream">
-                        </div>
-                    </div><hr />
-                    <div class="row">
-                        <div class="mb-3 col-6">
-                            <label for="stageSourceDataField">
-                                Stage Data
-                                <small class="d-block text-muted">
-                                    The OS the stage should be run on.
-                                </small>
-                            </label>
-                            <input type="text" class="form-control" id="stageSourceDataField"
-                                   data-bind="value: _UpdateSourceData" placeholder="">
-                        </div>
-                        <div class="mb-3 col-6">
-                            <label for="stageArgsField">
-                                Stage Args
-                                <small class="d-block text-muted">
-                                    Run this stage based on another setting.
-                                </small>
-                            </label>
-                            <input type="text" class="form-control" id="stageArgsField"
-                                   data-bind="value: _UpdateSourceArgs" placeholder="UpdateStream">
+                                   data-bind="value: _UpdateSourceConditionSetting" placeholder="GitHubDownload">
                         </div>
                     </div>
                     <div class="row">
                         <div class="mb-3 col-6">
+                            <label for="stageConditionValueField">
+                                Condition Value
+                                <small class="d-block text-muted">
+                                    The value of the Condition Setting that allows this stage to run.
+                                </small>
+                            </label>
+                            <input type="text" class="form-control" id="stageConditionValueField"
+                                   data-bind="value: _UpdateSourceConditionValue" placeholder="true">
+                        </div>
+                    </div><hr />
+                    <div class="row">
+                        <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '4'">
+                            <label for="stageSourceDataField">
+                                Stage Data
+                                <small class="d-block text-muted">
+                                    The URL of the file to download.
+                                </small>
+                            </label>
+                            <input type="text" class="form-control" id="stageSourceDataField"
+                                   data-bind="value: _UpdateSourceData" placeholder="https://raw.githubusercontent.com/CubeCoders/AMPTemplates/main/terrariaserverconfig.txt">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '0'">
+                            <label for="stageArgsField">
+                                Stage Args
+                                <small class="d-block text-muted">
+                                    Source File to copy including the Root Directory.
+                                </small>
+                            </label>
+                            <input type="text" class="form-control" id="stageArgsField"
+                                   data-bind="value: _UpdateSourceArgs" placeholder="./v-rising/1829350/file.txt">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '1'">
+                            <label for="stageArgsField">
+                                Stage Args
+                                <small class="d-block text-muted">
+                                    The file/directory to create a symlink of including the Root Directory.
+                                </small>
+                            </label>
+                            <input type="text" class="form-control" id="stageArgsField"
+                                   data-bind="value: _UpdateSourceArgs" placeholder="./v-rising/1829350/file.txt">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '2'">
+                            <label for="stageArgsField">
+                                Stage Args
+                                <small class="d-block text-muted">
+                                    The arguments to append to the executable.
+                                </small>
+                            </label>
+                            <input type="text" class="form-control" id="stageArgsField"
+                                   data-bind="value: _UpdateSourceArgs" placeholder="-config -force">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '3'">
+                            <label for="stageArgsField">
+                                Stage Args
+                                <small class="d-block text-muted">
+                                    The zip file to extract including the Root Directory.
+                                </small>
+                            </label>
+                            <input type="text" class="form-control" id="stageArgsField"
+                                   data-bind="value: _UpdateSourceArgs" placeholder="./pk/374040/dedicated_server.zip">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '5'">
+                            <label for="stageArgsField">
+                                Stage Args
+                                <small class="d-block text-muted">
+                                    The GitHub repo to download the release from.
+                                </small>
+                            </label>
+                            <input type="text" class="form-control" id="stageArgsField"
+                                   data-bind="value: _UpdateSourceArgs" placeholder="tModLoader/tModLoader">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '6'">
+                            <label for="stageArgsField">
+                                Stage Args
+                                <small class="d-block text-muted">
+                                    The file to mark executable.
+                                </small>
+                            </label>
+                            <input type="text" class="form-control" id="stageArgsField"
+                                   data-bind="value: _UpdateSourceArgs" placeholder="dedicated_server.x86_64">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '1'">
+                            <label for="stageSourceDataField">
+                                Stage Data
+                                <small class="d-block text-muted">
+                                    The location to place the symlink including the Root Directory.
+                                </small>
+                            </label>
+                            <input type="text" class="form-control" id="stageSourceDataField"
+                                   data-bind="value: _UpdateSourceData" placeholder="./v-rising/1829350/save/config.cfg">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '2'">
+                            <label for="stageSourceDataField">
+                                Stage Data
+                                <small class="d-block text-muted">
+                                    The location and name of the executable including the Root Directory.
+                                </small>
+                            </label>
+                            <input type="text" class="form-control" id="stageSourceDataField"
+                                   data-bind="value: _UpdateSourceData" placeholder="./v-rising/1829350/save/config.cfg">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '5'">
+                            <label for="stageSourceDataField">
+                                Stage Data
+                                <small class="d-block text-muted">
+                                    The file to download from the release.
+                                </small>
+                            </label>
+                            <input type="text" class="form-control" id="stageSourceDataField"
+                                   data-bind="value: _UpdateSourceData" placeholder="tModLoader.zip">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '0'">
+                            <label for="stageSourceDataField">
+                                Stage Data
+                                <small class="d-block text-muted">
+                                    The destination file location/name including the Root Directory.
+                                </small>
+                            </label>
+                            <input type="text" class="form-control" id="stageSourceDataField"
+                                   data-bind="value: _UpdateSourceData" placeholder="https://raw.githubusercontent.com/CubeCoders/AMPTemplates/main/terrariaserverconfig.txt">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '8'">
+                            <label for="stageSourceDataField">
+                                Stage Data
+                                <small class="d-block text-muted">
+                                    The App ID of the application to download. You can find this via <a href="https://steamdb.info" target="_blank">SteamDB</a>.
+                                </small>
+                            </label>
+                            <input type="text" class="form-control" id="stageSourceDataField"
+                                   data-bind="value: _UpdateSourceData" placeholder="896660">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '8'"">
                             <label for="stageSourceVersionField">
                                 Source Version
                                 <small class="d-block text-muted">
-                                    The branch to download from. Can be hardcoded or the Field Name of an input.
+                                    The branch to download from. Can be hardcoded or the Field Name of an input. Public branch if left blank.
                                 </small>
                             </label>
                             <input type="text" class="form-control" id="stageSourceVersionField"
                                    data-bind="value: _UpdateSourceVersion" placeholder="{{ReleaseStream}}">
                         </div>
-                        <div class="mb-3 col-6">
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '0' || _UpdateSource() == '4' || _UpdateSource() == '8'">
                             <label for="stageTargetField">
                                 Source Target
                                 <small class="d-block text-muted">
-                                    The destination for the stage.
-                                </small>
+                                    Where to download relative to the Root Directory.                                </small>
                             </label>
                             <input type="text" class="form-control" id="stageTargetField"
-                                   data-bind="value: _UpdateSourceTarget" placeholder="UpdateStream">
+                                   data-bind="value: _UpdateSourceTarget" placeholder="serverfiles">
                         </div>
                     </div>
                     <div class="row">
-                        <div class="mb-3 col-6">
+                        <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '3'">
+                            <label for="stageTargetField">
+                                Source Target
+                                <small class="d-block text-muted">
+                                    Where to extract the file to relative to Root Directory.
+                                </small>
+                            </label>
+                            <input type="text" class="form-control" id="stageTargetField"
+                                   data-bind="value: _UpdateSourceTarget" placeholder="./pk/374040/">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '0' || _UpdateSource() == '4'">
                             <label for="stageUnzipField">
                                 Unzip Source
                                 <small class="d-block text-muted">
-                                    The branch to download from. Can be hardcoded or the Field Name of an input.
+                                    Whether the file is unzipped during this stage.
                                 </small>
                             </label>
                             <input type="text" class="form-control" id="stageUnzipField"
                                    data-bind="value: _UnzipUpdateSource" placeholder="{{ReleaseStream}}">
                         </div>
-                        <div class="mb-3 col-6">
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '0' || _UpdateSource() == '4'">
                             <label for="stageOverwriteField">
                                 Overwrite
                                 <small class="d-block text-muted">
-                                    The destination for the stage.
+                                    Existing files will be overwritten when Update is performed.
                                 </small>
                             </label>
                             <input type="text" class="form-control" id="stageOverwriteField"
                                    data-bind="value: _OverwriteExistingFiles" placeholder="UpdateStream">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '0' || _UpdateSource() == '4'">
+                            <label for="stageUnzipField">
+                                Delete After Extract
+                                <small class="d-block text-muted">
+                                    Remove the original file to save space.
+                                </small>
+                            </label>
+                            <input type="text" class="form-control" id="stageUnzipField"
+                                   data-bind="value: _DeleteAfterExtract">
                         </div>
                     </div>
                 </div>
