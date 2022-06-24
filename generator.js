@@ -334,7 +334,7 @@ class generatorViewModel {
             self._AppSettings.push.apply(self._AppSettings, mappedSettings);
 
             self._UpdateStages.removeAll();
-            var mappedStages = ko.quickmap.to(updateStageViewModel, settings, false, { __vm: self });
+            var mappedStages = ko.quickmap.to(updateStageViewModel, stages, false, { __vm: self });
             self._UpdateStages.push.apply(self._UpdateStages, mappedStages);
         };
 
@@ -587,6 +587,16 @@ class portMappingViewModel {
     }
 }
 
+class enumMappingViewModel {
+    constructor(enumKey, enumValue, vm) {
+        var self = this;
+        this.__vm = vm;
+        this._enumKey = ko.observable(enumKey);
+        this._enumValue = ko.observable(enumValue);
+        this.__RemoveEnum = () => self.__vm.__RemoveEnum(self);
+    }
+}
+
 class configFileMappingViewModel {
     constructor(configFile, autoMap, configType, vm) {
         var self = this;
@@ -620,15 +630,48 @@ class appSettingViewModel {
         this.SkipIfEmpty = ko.observable(false);
         this._CheckedValue = ko.observable("true");
         this._UncheckedValue = ko.observable("false");
-        this.EnumValues = ko.computed(() => {
-            if (self.InputType() != "checkbox") { return {}; }
+/*        this.EnumValues = ko.computed(() => {
+            if (self.InputType() != "checkbox" && self.InputType() != "enum") { return {}; }
             var result = {};
-            result[self._CheckedValue()] = "True";
-            result[self._UncheckedValue()] = "False";
+            result[self._CheckedValue()] = enumMappingViewModel._enumKey;
+            result[self._CheckedValue()] = enumMappingViewModel._enumValue;
             return result;
         });
+*/
+        var EnumValues = JSON.parse(self._EnumMappings);
+        for (var i = 0; i < self._EnumMappings.counters.length; i++) {
+            var counter = self._EnumMappings.counters[i];
+            console.log(counter.counter_name);
+        }
+        this.EnumValues = ko.observable(EnumValues);
         this.__RemoveSetting = () => self.__vm.__RemoveSetting(self);
         this.__EditSetting = () => self.__vm.__EditSetting(self);
+
+        this._EnumMappings = ko.observableArray(); //of enumMappingViewModel
+        this.__NewEnumKey = ko.observable("");
+        this.__NewEnumValue = ko.observable("");
+
+        this.__RemoveEnum = function (toRemove) {
+            self._EnumMappings.remove(toRemove);
+        };
+
+        this.__AddEnum = function () {
+            self._EnumMappings.push(new enumMappingViewModel(self.__NewEnumKey(), self.__NewEnumValue(), self));
+        };
+
+        this.__Deserialize = function (inputData) {
+            var asJS = JSON.parse(inputData);
+            var enumSettings = asJS._EnumMappings;
+
+            delete asJS._EnumMappings;
+
+            ko.quickmap.map(self, asJS);
+
+            self._EnumMappings.removeAll();
+            var mappedEnums = ko.quickmap.to(portMappingViewModel, enumSettings, false, { __vm: self });
+            self._EnumMappings.push.apply(self._EnumMappings, mappedEnums);
+        };
+
     }
 }
 
@@ -643,9 +686,9 @@ class updateStageViewModel {
         this._UpdateSourceArgs = ko.observable("");
         this._UpdateSourceVersion = ko.observable("");
         this._UpdateSourceTarget = ko.observable("");
-        this._UpdateSourceConditionSetting = ko.observable("");
+        this._UpdateSourceConditionSetting = ko.observable(null);
         this._UpdateSourceConditionValue = ko.observable(null);
-        this._UnzipUpdateSource = ko.observable(true);
+        this._UnzipUpdateSource = ko.observable(false);
         this._OverwriteExistingFiles = ko.observable(false);
         this._DeleteAfterExtract = ko.observable(true);
         this.UpdateSourcePlatform = ko.computed(() => self._UpdateSourcePlatform() == "0" ? `All` : (self._UpdateSourcePlatform() == "1" ? `Windows` : `Linux`));

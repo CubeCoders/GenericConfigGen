@@ -30,7 +30,6 @@
             integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
             crossorigin="anonymous"></script>
     <script type="text/javascript" src="generator.js"></script>
-    <script type="text/javascript" src="darkmode.js"></script>
 </head>
 
 <body data-spy="scroll" data-target="#navbar" data-offset="0">
@@ -1368,6 +1367,53 @@
                                 </span>
                             </label>
                         </div>
+                        <table class="table mb-3" data-bind="visible: InputType() == 'enum'">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Enum Key</th>
+                                    <th scope="col">Enum Value</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- ko foreach: _EnumMappings -->
+                                <tr>
+                                    <td>
+                                        <input type="text" data-bind="value: _enumKey">
+                                    </td>
+                                    <td>
+                                        <input type="text" data-bind="value: _enumValue">
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <button type="button" class="btn btn-danger"
+                                                data-bind="click: __RemoveEnum">
+                                            Delete Enum
+                                        </button>
+                                    </td>
+                                </tr>
+                                <!-- /ko -->
+                                <!-- ko if: _EnumMappings().length == 0 -->
+                                <tr>
+                                    <td colspan="3">No enums have been added.</td>
+                                </tr>
+                                <!-- /ko -->
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td>
+                                        <input type="text" data-bind="value: __NewEnumKey">
+                                    </td>
+                                    <td>
+                                        <input type="text" data-bind="value: __NewEnumValue">
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <button type="button" class="btn btn-primary" data-bind="click: __AddEnum">
+                                            Add Enum
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
                     </div>
                     <div class="row" data-bind="visible: InputType() == 'checkbox'">
                         <div class="mb-3 col-6">
@@ -1642,7 +1688,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '8'"">
+                        <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '8'">
                             <label for="stageSourceVersionField">
                                 Source Version
                                 <small class="d-block text-muted">
@@ -1678,38 +1724,44 @@
                     </div>
                     <div class="row">
                         <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '0' || _UpdateSource() == '4'">
-                            <label for="stageUnzipField">
-                                Unzip Source
-                                <small class="d-block text-muted">
-                                    Whether the file is unzipped during this stage.
-                                </small>
+                            <label class="list-group-item d-flex gap-2" style="flex: 1">
+                                <input class="form-check-input flex-shrink-0" type="checkbox"
+                                       data-bind="checked: _UnzipUpdateSource">
+                                <span>
+                                    Unzip Source
+                                    <small class="d-block text-muted">
+                                        Whether the file is unzipped during this stage.
+                                    </small>
+                                </span>
                             </label>
-                            <input type="text" class="form-control" id="stageUnzipField"
-                                   data-bind="value: _UnzipUpdateSource" placeholder="{{ReleaseStream}}">
                         </div>
                     </div>
                     <div class="row">
                         <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '0' || _UpdateSource() == '4'">
-                            <label for="stageOverwriteField">
-                                Overwrite
-                                <small class="d-block text-muted">
-                                    Existing files will be overwritten when Update is performed.
-                                </small>
+                            <label class="list-group-item d-flex gap-2" style="flex: 1">
+                                <input class="form-check-input flex-shrink-0" type="checkbox"
+                                       data-bind="checked: _OverwriteExistingFiles">
+                                <span>
+                                    Overwrite
+                                    <small class="d-block text-muted">
+                                        Existing files will be overwritten when Update is performed.
+                                    </small>
+                                </span>
                             </label>
-                            <input type="text" class="form-control" id="stageOverwriteField"
-                                   data-bind="value: _OverwriteExistingFiles" placeholder="UpdateStream">
                         </div>
                     </div>
                     <div class="row">
                         <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '0' || _UpdateSource() == '4'">
-                            <label for="stageUnzipField">
-                                Delete After Extract
-                                <small class="d-block text-muted">
-                                    Remove the original file to save space.
-                                </small>
+                            <label class="list-group-item d-flex gap-2" style="flex: 1">
+                                <input class="form-check-input flex-shrink-0" type="checkbox"
+                                       data-bind="checked: _DeleteAfterExtract">
+                                <span>
+                                    Delete After Extract
+                                    <small class="d-block text-muted">
+                                        Remove the original file to save space.
+                                    </small>
+                                </span>
                             </label>
-                            <input type="text" class="form-control" id="stageUnzipField"
-                                   data-bind="value: _DeleteAfterExtract">
                         </div>
                     </div>
                 </div>
