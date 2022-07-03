@@ -587,16 +587,6 @@ class portMappingViewModel {
     }
 }
 
-class enumMappingViewModel {
-    constructor(enumKey, enumValue, vm) {
-        var self = this;
-        this.__vm = vm;
-        this._enumKey = ko.observable(enumKey);
-        this._enumValue = ko.observable(enumValue);
-        this.__RemoveEnum = () => self.__vm.__RemoveEnum(self);
-    }
-}
-
 class configFileMappingViewModel {
     constructor(configFile, autoMap, configType, vm) {
         var self = this;
@@ -630,20 +620,26 @@ class appSettingViewModel {
         this.SkipIfEmpty = ko.observable(false);
         this._CheckedValue = ko.observable("true");
         this._UncheckedValue = ko.observable("false");
-/*        this.EnumValues = ko.computed(() => {
-            if (self.InputType() != "checkbox" && self.InputType() != "enum") { return {}; }
-            var result = {};
-            result[self._CheckedValue()] = enumMappingViewModel._enumKey;
-            result[self._CheckedValue()] = enumMappingViewModel._enumValue;
-            return result;
+        this.EnumValues = ko.computed(() => {
+            if (self.InputType() == "checkbox") {
+                var result = {};
+                result[self._CheckedValue()] = "True";
+                result[self._UncheckedValue()] = "False";
+                return result;
+            } else if (self.InputType() == "enum") {
+
+            } else {
+                return {};
+            }
         });
-*/
+/*
         var EnumValues = JSON.parse(self._EnumMappings);
         for (var i = 0; i < self._EnumMappings.counters.length; i++) {
             var counter = self._EnumMappings.counters[i];
             console.log(counter.counter_name);
         }
         this.EnumValues = ko.observable(EnumValues);
+*/
         this.__RemoveSetting = () => self.__vm.__RemoveSetting(self);
         this.__EditSetting = () => self.__vm.__EditSetting(self);
 
@@ -668,10 +664,20 @@ class appSettingViewModel {
             ko.quickmap.map(self, asJS);
 
             self._EnumMappings.removeAll();
-            var mappedEnums = ko.quickmap.to(portMappingViewModel, enumSettings, false, { __vm: self });
+            var mappedEnums = ko.quickmap.to(enumMappingViewModel, enumSettings, false, { __vm: self });
             self._EnumMappings.push.apply(self._EnumMappings, mappedEnums);
         };
 
+    }
+}
+
+class enumMappingViewModel {
+    constructor(enumKey, enumValue, vm) {
+        var self = this;
+        this.__vm = vm;
+        this._enumKey = ko.observable(enumKey);
+        this._enumValue = ko.observable(enumValue);
+        this.__RemoveEnum = () => self.__vm.__RemoveEnum(self);
     }
 }
 
