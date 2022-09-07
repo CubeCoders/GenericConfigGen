@@ -87,7 +87,7 @@ class generatorViewModel {
         this.App_ExecutableLinux = ko.computed(() => self.App_WorkingDir() == "" ? self._LinuxExecutableName() : `${self.App_WorkingDir()}/${self._LinuxExecutableName()}`);
 
         this.__QueryPortName = ko.observable("");
-        this.Meta_EndpointURIFormat = ko.computed(() => self.__QueryPortName() != "" ? `steam://connect/{ip}/{GenericModule.App.${self.__QueryPortName()}}` : "");
+        this.Meta_EndpointURIFormat = ko.computed(() => self.__QueryPortName() != "" ? `steam://connect/{ip}:{GenericModule.App.${self.__QueryPortName()}}` : "");
 
         this.__BuildPortMappings = ko.computed(() => {
             var data = {};
@@ -311,7 +311,7 @@ class generatorViewModel {
 
             if (self._UpdateSourceType() == "4") //SteamCMD
             {
-                lines.push(`App.EnvironmentVariables={\"LD_LIBRARY_PATH\": \"./linux64:%LD_LIBRARY_PATH%\", \"SteamAppId\": \"${self._SteamServerAppID()}\"}`);
+                lines.push(`App.EnvironmentVariables={\"LD_LIBRARY_PATH\": \"./linux64:%LD_LIBRARY_PATH%\", \"SteamAppId\": \"${self._SteamClientAppID()}\"}`);
             }
 
             var portMappings = self.__BuildPortMappings();
