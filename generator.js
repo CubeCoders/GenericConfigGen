@@ -607,7 +607,7 @@ class appSettingViewModel {
         this.DisplayName = ko.observable("");
         this.Category = ko.observable("Server Settings");
         this.Description = ko.observable("");
-        this.Keywords = ko.observable("");
+        this.Keywords = ko.computed(() => self.DisplayName().toLowerCase().replaceAll(" ", ","));
         this.FieldName = ko.observable("");
         this.InputType = ko.observable("text")
         this.IsFlagArgument = ko.observable(false);
