@@ -620,18 +620,7 @@ class appSettingViewModel {
         this.SkipIfEmpty = ko.observable(false);
         this._CheckedValue = ko.observable("true");
         this._UncheckedValue = ko.observable("false");
-        this.EnumValues = ko.computed(() => {
-            if (self.InputType() == "checkbox") {
-                var result = {};
-                result[self._CheckedValue()] = "True";
-                result[self._UncheckedValue()] = "False";
-                return result;
-            } else if (self.InputType() == "enum") {
 
-            } else {
-                return {};
-            }
-        });
 /*
         var EnumValues = JSON.parse(self._EnumMappings);
         for (var i = 0; i < self._EnumMappings.counters.length; i++) {
@@ -667,7 +656,23 @@ class appSettingViewModel {
             var mappedEnums = ko.quickmap.to(enumMappingViewModel, enumSettings, false, { __vm: self });
             self._EnumMappings.push.apply(self._EnumMappings, mappedEnums);
         };
-
+        
+        this.EnumValues = ko.computed(() => {
+            if (self.InputType() == "checkbox") {
+                var result = {};
+                result[self._CheckedValue()] = "True";
+                result[self._UncheckedValue()] = "False";
+                return result;
+            } else if (self.InputType() == "enum") {
+                var result = {};
+                for (let i = 0; i < self._EnumMappings().length; i++) {
+                    result[self._EnumMappings()[i]._enumKey()] = self._EnumMappings()[i]._enumValue();
+                }
+                return result;
+            } else {
+                return {};
+            }
+        });
     }
 }
 
