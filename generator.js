@@ -620,15 +620,6 @@ class appSettingViewModel {
         this.SkipIfEmpty = ko.observable(false);
         this._CheckedValue = ko.observable("true");
         this._UncheckedValue = ko.observable("false");
-
-/*
-        var EnumValues = JSON.parse(self._EnumMappings);
-        for (var i = 0; i < self._EnumMappings.counters.length; i++) {
-            var counter = self._EnumMappings.counters[i];
-            console.log(counter.counter_name);
-        }
-        this.EnumValues = ko.observable(EnumValues);
-*/
         this.__RemoveSetting = () => self.__vm.__RemoveSetting(self);
         this.__EditSetting = () => self.__vm.__EditSetting(self);
 
