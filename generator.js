@@ -81,11 +81,11 @@ class generatorViewModel {
         this.App_FilterMatchReplacement = ko.observable("");
         this.App_MonitorChildProcessName = ko.observable("");
 
-        this.Console_ThrowawayMessageRegex = ko.observable("^(WARNING|ERROR): Shader.+$");
-        this.Console_AppReadyRegex = ko.observable("^Server is ready.$");
-        this.Console_UserJoinRegex = ko.observable("^User (?<username>.+?) \\((?<userid>-?\d+)\\) connected from \\[::ffff:(?<endpoint>.+?)\\]$");
-        this.Console_UserLeaveRegex = ko.observable("^User (?<username>.+?) \\((?<userid>-?\d+)\\) disconnected\\. Reason: (.+?)$");
-        this.Console_UserChatRegex = ko.observable("^(?<username>.+?): (?<message>.+)$");
+        this.Console_ThrowawayMessageRegex = ko.observable("(WARNING|ERROR): Shader.+");
+        this._Console_AppReadyRegex = ko.observable("");
+        this._Console_UserJoinRegex = ko.observable("");
+        this._Console_UserLeaveRegex = ko.observable("");
+        this._Console_UserChatRegex = ko.observable("");
         this.Console_UpdateAvailableRegex = ko.observable("^\\[\\d\\d:\\d\\d:\\d\\d\\] \\[INFO\\] A new server update is available! v[\\d\\.]+.$");
         this.Console_MetricsRegex = ko.observable("");
         this.Console_SuppressLogAtStart = ko.observable("False");
@@ -131,6 +131,10 @@ class generatorViewModel {
         this.__IsEditingStage = ko.observable(false);
 
         //Computed values
+        this.Console_AppReadyRegex = ko.computed(() => WildcardToRegex(self._Console_AppReadyRegex()));
+        this.Console_UserJoinRegex = ko.computed(() => WildcardToRegex(self._Console_UserJoinRegex()));
+        this.Console_UserLeaveRegex = ko.computed(() => WildcardToRegex(self._Console_UserLeaveRegex()));
+        this.Console_UserChatRegex = ko.computed(() => WildcardToRegex(self._Console_UserChatRegex()));
         this.__SanitizedName = ko.computed(() => self.Meta_DisplayName().replace(/\s+/g, "-").replace(/[^a-z\d-_]/ig, "").toLowerCase());
         this.Meta_OS = ko.computed(() => (self._SupportsWindows() ? 1 : 0) | (self._SupportsLinux() ? 2 : 0));
         this.Meta_ConfigManifest = ko.computed(() => self.__SanitizedName() + "config.json");

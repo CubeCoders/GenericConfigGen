@@ -30,3 +30,33 @@ if (!String.prototype.template) {
         });
     };
 }
+
+function WildcardToRegex(pattern) {
+    if (pattern == null) { return null; }
+
+    var escapeReplace = function (data, original, replacement) {
+        var searchRegex = new RegExp("\\\\+\\" + original);
+        var newRegex = data.replace(searchRegex, function (match) {
+            var count = match.length - 1;
+            var halfCount = Math.floor(count / 2);
+            var newSlashes = Array(halfCount).join("\\");
+            var result = newSlashes + ((halfCount % 2 === 0) ? replacement : original);
+            return result;
+        });
+        return newRegex;
+    };
+    
+    var toRegex = function (pattern, starMatchesEmpty) {
+        var reg = "^" + pattern.replace(/([.*+?^${}()|[\]/\\])/g, "\\$1") + "$";
+        console.log(reg);
+        reg = reg.replace(/\d+/g, "\\d+"); // replace all numbers with \d+
+        reg = reg.replace(/\s+/g, "\\s+"); // replace all numbers with \d+
+        reg = reg.replace(/\\\*\\\{(\w+)\\\}/g, "(?<$1>.+)"); // replace *{} with named capture group
+        reg = reg.replace(/\(\?<misc>\.\+\)/g, ".*"); // replace *{} with named capture group
+//        reg = escapeReplace(reg, "?", "(.)");
+//        reg = escapeReplace(reg, "*", starMatchesEmpty === true ? "(.*?)" : "(.+?)");
+        return reg;
+    };
+    
+    return toRegex(pattern, false);
+}
