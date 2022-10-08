@@ -688,6 +688,7 @@ class updateStageViewModel {
         this.UpdateStageName = ko.observable("");
         this._UpdateSource = ko.observable("8");
         this._UpdateSourcePlatform = ko.observable("0");
+        this._ForceDownloadPlatform = ko.observable(null);
         this.UpdateSourceData = ko.observable("");
         this.UpdateSourceArgs = ko.observable("");
         this.UpdateSourceVersion = ko.observable("");
@@ -697,7 +698,8 @@ class updateStageViewModel {
         this.UnzipUpdateSource = ko.observable(false);
         this.OverwriteExistingFiles = ko.observable(false);
         this.DeleteAfterExtract = ko.observable(true);
-        this.UpdateSourcePlatform = ko.computed(() => self._UpdateSourcePlatform() == "0" ? `All` : (self._UpdateSourcePlatform() == "1" ? `Windows` : `Linux`));
+        this.UpdateSourcePlatform = ko.computed(() => self._UpdateSourcePlatform() == "0" ? `All` : (self._UpdateSourcePlatform() == "1" ? `Linux` : `Windows`));
+        this.ForceDownloadPlatform = ko.computed(() => self._ForceDownloadPlatform() == "0" ? null : (self._ForceDownloadPlatform() == "1" ? `Linux` : `Windows`));
         this.UpdateSource = ko.computed(() => self._UpdateSource() == "0" ? `CopyFilePath` : (self._UpdateSource() == "1" ? `CreateSymlink` : (self._UpdateSource() == "2" ? `Executable` : (self._UpdateSource() == "3" ? `ExtractArchive` : (self._UpdateSource() == "4" ? `FetchURL` : (self._UpdateSource() == "5" ? `GithubRelease` : (self._UpdateSource() == "6" ? `SetExecutableFlag` : (self._UpdateSource() == "7" ? `StartApplication` : `SteamCMD`))))))));
         this.__RemoveStage = () => self.__vm.__RemoveStage(self);
         this.__EditStage = () => self.__vm.__EditStage(self);

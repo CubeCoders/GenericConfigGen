@@ -1422,8 +1422,8 @@
                             </label>
                             <select class="form-select" id="stageSourcePlatformField" data-bind="value: _UpdateSourcePlatform">
                                 <option value="0">All</option>
-                                <option value="1">Windows</option>
-                                <option value="2">Linux</option>
+                                <option value="1">Linux</option>
+                                <option value="2">Windows</option>
                             </select>
                         </div>
                         <div class="mb-3 col-6">
@@ -1606,11 +1606,27 @@
                         </div>
                     </div>
                     <div class="row">
+                        <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '8'">
+                            <label for="stageForcePlatformField">
+                                Force Download Platform
+                                <small class="d-block text-muted">
+                                    Forces Steam to download the version for this OS. (Useful for Wine/Proton)
+                                </small>
+                            </label>
+                            <select class="form-select" id="stageForcePlatformField" data-bind="value: _ForceDownloadPlatform">
+                                <option value="0">N/A</option>
+                                <option value="1">Linux</option>
+                                <option value="2">Windows</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '0' || _UpdateSource() == '4' || _UpdateSource() == '8'">
                             <label for="stageTargetField">
                                 Source Target
                                 <small class="d-block text-muted">
-                                    Where to download relative to the Root Directory.                                </small>
+                                    Where to download relative to the Root Directory.
+                                </small>
                             </label>
                             <input type="text" class="form-control" id="stageTargetField"
                                    data-bind="value: UpdateSourceTarget" placeholder="serverfiles">
@@ -1671,18 +1687,18 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary"
-                            data-bind="visible: !__vm.__IsEditingStage(), click: __vm.__DoAddStage">
-                        Add New
-                        Stage
-                    </button>
-                    <button type="button" class="btn btn-secondary"
-                            data-bind="click: __vm.__CloseStage">
-                        Close
-                    </button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary"
+                                data-bind="visible: !__vm.__IsEditingStage(), click: __vm.__DoAddStage">
+                            Add New
+                            Stage
+                        </button>
+                        <button type="button" class="btn btn-secondary"
+                                data-bind="click: __vm.__CloseStage">
+                            Close
+                        </button>
+                    </div>
                 </div>
-            </div>
         </div>
     </div>
 
