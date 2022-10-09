@@ -21,21 +21,24 @@ class generatorViewModel {
     constructor() {
         var self = this;
 
+        this._compatibility = ko.observable("None");
         this.Meta_DisplayName = ko.observable("");
         this.Meta_Description = ko.observable("");
         this.Meta_Arch = ko.observable("x86_64");
         this.Meta_Author = ko.observable("");
         this.Meta_URL = ko.observable("");
-        this.Meta_MinAMPVersion = ko.observable("");
-        this.Meta_SpecificDockerImage = ko.observable("");
+        this.Meta_MinAMPVersion = ko.observable("2.4.0.6");
+        this.Meta_SpecificDockerImage = ko.computed(() => self._compatibility() == "Wine" ? `cubecoders/ampbase:wine` : ``);
         this.Meta_DockerRequired = ko.observable("False");
         this.Meta_ContainerPolicy = ko.observable("Supported");
+        this.Meta_ContainerPolicyReason = ko.observable("");
         this.Meta_Prerequsites = ko.observable("[]");
+        this.Meta_ExtraContainerPackages = ko.observable("");
         this.Meta_ConfigReleaseState = ko.observable("NotSpecified");
+        this.Meta_NoCommercialUsage = ko.observable("False");
 
         this._SupportsWindows = ko.observable(true);
         this._SupportsLinux = ko.observable(true);
-        this._compatibility = ko.observable("None");
 
         this.App_AdminMethod = ko.observable("STDIO");
         this.App_HasReadableConsole = ko.observable(true);
@@ -43,7 +46,6 @@ class generatorViewModel {
         this.App_DisplayName = ko.computed(() => this.Meta_DisplayName());
 
         this.App_CommandLineArgs = ko.observable("{{$PlatformArgs}} +ip {{$ApplicationIPBinding}} +port {{$GamePort1}} +queryport {{$SteamQueryPort}} +rconpassword \"{{$RemoteAdminPassword}}\" +maxusers {{$MaxUsers}} {{$FormattedArgs}}")
-        this.App_LinuxCommandLineArgs = ko.observable("");
         this.App_WindowsCommandLineArgs = ko.observable("");
         this.App_CommandLineParameterFormat = ko.observable("-{0} \"{1}\"");
         this.App_CommandLineParameterDelimiter = ko.observable(" ");
@@ -68,6 +70,8 @@ class generatorViewModel {
         this.App_AdminLoginTransform = ko.observable("None");
         this.App_RCONConnectDelaySeconds = ko.observable("30");
         this.App_RCONConnectRetrySeconds = ko.observable("15");
+        this.App_RCONHeartbeatCommand = ko.observable("ping");
+        this.App_RCONHeartbeatMinutes = ko.observable("0");
         this.App_TelnetLoginFormat = ko.observable("{0}");
         this.App_SteamUpdateAnonymousLogin = ko.observable("True");
         this.App_SteamForceLoginProm = ko.observable("False");
@@ -77,10 +81,11 @@ class generatorViewModel {
         this.App_MonitorChildProcess = ko.observable("False");
         this.App_MonitorChildProcessWaitMs = ko.observable("1000");
         this.App_MonitorChildProcessName = ko.observable("");
-        this.App_FilterMatchRegex = ko.observable("");
-        this.App_FilterMatchReplacement = ko.observable("");
-        this.App_MonitorChildProcessName = ko.observable("");
+        this.App_Compatibility = ko.observable("None");
+        this.App_AppSettings = ko.observableArray();
 
+        this.Console_FilterMatchRegex = ko.observable("");
+        this.Console_FilterMatchReplacement = ko.observable("");
         this.Console_ThrowawayMessageRegex = ko.observable("(WARNING|ERROR): Shader.+");
         this._Console_AppReadyRegex = ko.observable("");
         this._Console_UserJoinRegex = ko.observable("");
@@ -149,10 +154,8 @@ class generatorViewModel {
         this.App_WorkingDir = ko.computed(() => self._UpdateSourceType() == "4" ? self._SteamServerAppID() : "");
 
         this.App_ExecutableWin = ko.computed(() => self.App_WorkingDir() == "" ? self._WinExecutableName() : `${self.App_WorkingDir()}\\${self._WinExecutableName()}`);
-        this.App_WindowsCommandLineArgs = ko.computed(() => ``);
         this.App_ExecutableLinux = ko.computed(() => self._compatibility() == "None" ? (self.App_WorkingDir() == "" ? self._LinuxExecutableName() : `${self.App_WorkingDir()}/${self._LinuxExecutableName()}`) : `/usr/bin/xvfb-run`);
         this.App_LinuxCommandLineArgs = ko.computed(() => self._compatibility() == "None" ? `` : (self._compatibility() == "Wine" ? `-a wine \"./` + self._WinExecutableName() + `\"` : `-a \"{{$FullRootDir}}1580130/proton\" run \"./` + self._WinExecutableName() + `\"`));
-        this.Meta_SpecificDockerImage = ko.computed(() => self._compatibility() == "Wine" ? `cubecoders/ampbase:wine` : ``);
 
         this.App_Ports = ko.computed(() => `@IncludeJson[` + self._Meta_PortsManifest() + `]`);
         this.App_UpdateSources = ko.computed(() => `@IncludeJson[` + self._Meta_StagesManifest() + `]`);
@@ -516,26 +519,26 @@ class generatorViewModel {
                     }
 */                    break;
             }
-/*
-            switch (self._UpdateSourceType()) {
-                case "1": //Fetch from URL
-                    if (self._UpdateSourceURL() == "") {
-                        failure("Update method is Fetch from URL, but no download URL was specified.", "Specify the 'Update source URL' under Update Sources.");
-                    }
-                    else if (self._UpdateSourceURL().toLowerCase().endsWith(".zip") && !self._UpdateSourceUnzip()) {
-                        info("Download URL is a zip file, but 'Unzip once downloaded' is not turned on.", "Turn on 'Unzip once downloaded' under 'Update Sources'", "Without this setting turned on, the archive will not be extracted. If this was intentional, you can ignore this message.");
-                    }
-                    break;
-                case "4": //SteamCMD
-                    if (self._SteamServerAppID() == "") {
-                        failure("Update method is SteamCMD, but no server App ID is set.", "Specify the 'Server Steam App ID' under Update Sources.");
-                    }
-                    if (self._SteamClientAppID() == "") {
-                        warning("Update method is SteamCMD, but no client App ID is set.", "Specify the 'Server Client App ID' under Update Sources.", "The client app ID is used to source the background image for the resulting instance.");
-                    }
-                    break;
-            }
-*/
+            /*
+                        switch (self._UpdateSourceType()) {
+                            case "1": //Fetch from URL
+                                if (self._UpdateSourceURL() == "") {
+                                    failure("Update method is Fetch from URL, but no download URL was specified.", "Specify the 'Update source URL' under Update Sources.");
+                                }
+                                else if (self._UpdateSourceURL().toLowerCase().endsWith(".zip") && !self._UpdateSourceUnzip()) {
+                                    info("Download URL is a zip file, but 'Unzip once downloaded' is not turned on.", "Turn on 'Unzip once downloaded' under 'Update Sources'", "Without this setting turned on, the archive will not be extracted. If this was intentional, you can ignore this message.");
+                                }
+                                break;
+                            case "4": //SteamCMD
+                                if (self._SteamServerAppID() == "") {
+                                    failure("Update method is SteamCMD, but no server App ID is set.", "Specify the 'Server Steam App ID' under Update Sources.");
+                                }
+                                if (self._SteamClientAppID() == "") {
+                                    warning("Update method is SteamCMD, but no client App ID is set.", "Specify the 'Server Client App ID' under Update Sources.", "The client app ID is used to source the background image for the resulting instance.");
+                                }
+                                break;
+                        }
+            */
             if (self.Console_AppReadyRegex() != "" && !self.Console_AppReadyRegex().match(/\^.+\$/)) { failure("Server ready expression does not match the entire line. Regular expressions for AMP must match the entire line, starting with a ^ and ending with a $.", "Update the Server Ready expression under Server Events to match the entire line."); }
             if (self.Console_UserJoinRegex() != "" && !self.Console_UserJoinRegex().match(/\^.+\$/)) { failure("User connected expression does not match the entire line. Regular expressions for AMP must match the entire line, starting with a ^ and ending with a $.", "Update the User connected expression under Server Events to match the entire line."); }
             if (self.Console_UserLeaveRegex() != "" && !self.Console_UserLeaveRegex().match(/\^.+\$/)) { failure("User disconnected expression does not match the entire line. Regular expressions for AMP must match the entire line, starting with a ^ and ending with a $.", "Update the User disconnected expression under Server Events to match the entire line."); }
@@ -651,7 +654,7 @@ class appSettingViewModel {
             var mappedEnums = ko.quickmap.to(enumMappingViewModel, enumSettings, false, { __vm: self });
             self._EnumMappings.push.apply(self._EnumMappings, mappedEnums);
         };
-        
+
         this.EnumValues = ko.computed(() => {
             if (self.InputType() == "checkbox") {
                 var result = {};
