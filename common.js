@@ -48,7 +48,6 @@ function WildcardToRegex(pattern) {
     
     var toRegex = function (pattern, starMatchesEmpty) {
         var reg = "^" + pattern.replace(/([.*+?^${}()|[\]/\\])/g, "\\$1") + "$";
-        console.log(reg);
         reg = reg.replace(/\d+/g, "\\d+"); // replace all numbers with \d+
         reg = reg.replace(/\s+/g, "\\s+"); // replace all numbers with \d+
         reg = reg.replace(/\\\*\\\{(\w+)\\\}/g, "(?<$1>.+)"); // replace *{} with named capture group

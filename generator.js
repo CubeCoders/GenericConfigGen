@@ -36,6 +36,7 @@ class generatorViewModel {
         this.Meta_ExtraContainerPackages = ko.observable("");
         this.Meta_ConfigReleaseState = ko.observable("NotSpecified");
         this.Meta_NoCommercialUsage = ko.observable("False");
+        this.Meta_EndpointURIFormat = ko.observable(`steam://connect/{ip}:{GenericModule.App.Ports.$SteamQueryPort}`);
 
         this._SupportsWindows = ko.observable(true);
         this._SupportsLinux = ko.observable(true);
@@ -44,12 +45,10 @@ class generatorViewModel {
         this.App_HasReadableConsole = ko.observable(true);
         this.App_HasWritableConsole = ko.observable(true);
         this.App_DisplayName = ko.computed(() => this.Meta_DisplayName());
-
         this.App_CommandLineArgs = ko.observable("{{$PlatformArgs}} +ip {{$ApplicationIPBinding}} +port {{$GamePort1}} +queryport {{$SteamQueryPort}} +rconpassword \"{{$RemoteAdminPassword}}\" +maxusers {{$MaxUsers}} {{$FormattedArgs}}")
         this.App_WindowsCommandLineArgs = ko.observable("");
         this.App_CommandLineParameterFormat = ko.observable("-{0} \"{1}\"");
         this.App_CommandLineParameterDelimiter = ko.observable(" ");
-
         this.App_RapidStartup = ko.observable("false");
         this.App_ApplicationReadyMode = ko.observable("Immediate");
         this.App_ExitMethod = ko.observable("OS_CLOSE");
@@ -58,7 +57,7 @@ class generatorViewModel {
         this.App_ExitTimeout = ko.observable("30");
         this.App_ExitFile = ko.observable("app_exit.lck");
         this.App_SupportsLiveSettingsChanges = ko.observable("False");
-        this.App_LiveSettingChangeCommandFormat = ko.observable("set {0} \"{ 1}\"");
+        this.App_LiveSettingChangeCommandFormat = ko.observable("set {0} \"{1}\"");
         this.App_ApplicationIPBinding = ko.observable("0.0.0.0");
         this.App_AdminPortRef = ko.observable("GamePort1");
         this.App_UniversalSleepApplicationUDPPortRef = ko.observable("GamePort1");
@@ -159,7 +158,6 @@ class generatorViewModel {
 
         this.App_Ports = ko.computed(() => `@IncludeJson[` + self._Meta_PortsManifest() + `]`);
         this.App_UpdateSources = ko.computed(() => `@IncludeJson[` + self._Meta_StagesManifest() + `]`);
-        this.Meta_EndpointURIFormat = ko.observable(`steam://connect/{ip}:{GenericModule.App.Ports.$SteamQueryPort}`);
 
         this.__SampleFormattedArgs = ko.computed(function () {
             return self._AppSettings().filter(s => s.IncludeInCommandLine()).map(s => s.IsFlagArgument() ? s._CheckedValue() : self.App_CommandLineParameterFormat().format(s.ParamFieldName(), s.DefaultValue())).join(self.App_CommandLineParameterDelimiter());
