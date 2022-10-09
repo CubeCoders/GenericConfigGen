@@ -149,8 +149,42 @@ class generatorViewModel {
         this.Meta_DisplayImageSource = ko.computed(() => self._UpdateSourceType() == "4" ? "steam:" + self._SteamClientAppID() : "url:" + self._DisplayImageSource());
 
         this.App_RootDir = ko.computed(() => `./${self.__SanitizedName()}/`);
-        this.App_BaseDirectory = ko.computed(() => self._UpdateSourceType() == "4" ? `./${self.__SanitizedName()}/${self._SteamServerAppID()}/` : `./${self.__SanitizedName()}/`);
-        this.App_WorkingDir = ko.computed(() => self._UpdateSourceType() == "4" ? self._SteamServerAppID() : "");
+        
+        this.App_BaseDirectory = ko.computed(() => {
+            if (self._UpdateStages().length != 0) {
+                var appIDCheck = "0";
+                for (let i = 0; i < self._UpdateStages().length; i++) {
+                    if (self._UpdateStages()[i]._UpdateSource() == 8 && appIDCheck == 0) {
+                        appIDCheck = self._UpdateStages()[i].UpdateSourceData();
+                    }
+                }
+                if (appIDCheck != 0) {
+                    return self.App_RootDir() + appIDCheck + '/';
+                } else {
+                    return self.App_RootDir() + 'serverfiles/';
+                }
+            } else {
+                return self.App_RootDir() + 'serverfiles/';
+            }
+        });
+        
+        this.App_WorkingDir = ko.computed(() => {
+            if (self._UpdateStages().length != 0) {
+                var appIDCheck = "0";
+                for (let i = 0; i < self._UpdateStages().length; i++) {
+                    if (self._UpdateStages()[i]._UpdateSource() == 8 && appIDCheck == 0) {
+                        appIDCheck = self._UpdateStages()[i].UpdateSourceData();
+                    }
+                }
+                if (appIDCheck != 0) {
+                    return appIDCheck;
+                } else {
+                    return 'serverfiles';
+                }
+            } else {
+                return 'serverfiles';
+            }
+        });
 
         this.App_ExecutableWin = ko.computed(() => self.App_WorkingDir() == "" ? self._WinExecutableName() : `${self.App_WorkingDir()}\\${self._WinExecutableName()}`);
         this.App_ExecutableLinux = ko.computed(() => self._compatibility() == "None" ? (self.App_WorkingDir() == "" ? self._LinuxExecutableName() : `${self.App_WorkingDir()}/${self._LinuxExecutableName()}`) : `/usr/bin/xvfb-run`);
