@@ -28,7 +28,7 @@ class generatorViewModel {
         this.Meta_Author = ko.observable("");
         this.Meta_URL = ko.observable("");
         this.Meta_MinAMPVersion = ko.observable("2.4.0.6");
-        this.Meta_SpecificDockerImage = ko.computed(() => self._compatibility() == "Wine" ? `cubecoders/ampbase:wine` : ``);
+        this.Meta_SpecificDockerImage = ko.computed(() => self._compatibility() != "None" ? `cubecoders/ampbase:wine` : ``);
         this.Meta_DockerRequired = ko.observable("False");
         this.Meta_ContainerPolicy = ko.observable("Supported");
         this.Meta_ContainerPolicyReason = ko.observable("");
@@ -45,7 +45,7 @@ class generatorViewModel {
         this.App_HasReadableConsole = ko.observable(true);
         this.App_HasWritableConsole = ko.observable(true);
         this.App_DisplayName = ko.computed(() => this.Meta_DisplayName());
-        this.App_CommandLineArgs = ko.observable("{{$PlatformArgs}} +ip {{$ApplicationIPBinding}} +port {{$GamePort1}} +queryport {{$SteamQueryPort}} +rconpassword \"{{$RemoteAdminPassword}}\" +maxusers {{$MaxUsers}} {{$FormattedArgs}}")
+        this.App_CommandLineArgs = ko.observable("{{$PlatformArgs}} {{$FormattedArgs}}")
         this.App_WindowsCommandLineArgs = ko.observable("");
         this.App_CommandLineParameterFormat = ko.observable("-{0} \"{1}\"");
         this.App_CommandLineParameterDelimiter = ko.observable(" ");
@@ -59,7 +59,7 @@ class generatorViewModel {
         this.App_SupportsLiveSettingsChanges = ko.observable("False");
         this.App_LiveSettingChangeCommandFormat = ko.observable("set {0} \"{1}\"");
         this.App_ApplicationIPBinding = ko.observable("0.0.0.0");
-        this.App_AdminPortRef = ko.observable("GamePort1");
+        this.App_AdminPortRef = ko.observable("RemoteAdminPort");
         this.App_UniversalSleepApplicationUDPPortRef = ko.observable("GamePort1");
         this.App_PrimaryApplicationPortRef = ko.observable("GamePort1");
         this.App_UniversalSleepSteamQueryPortRef = ko.observable("SteamQueryPort");
@@ -192,20 +192,45 @@ class generatorViewModel {
 
         this.App_Ports = ko.computed(() => `@IncludeJson[` + self._Meta_PortsManifest() + `]`);
         this.App_UpdateSources = ko.computed(() => `@IncludeJson[` + self._Meta_StagesManifest() + `]`);
-
+/*
+        this.__BuildPortMappings = ko.computed(() => {
+            var data = {};
+            var allPorts = self._PortMappings();
+            var appPortNum = 1;
+            self.__QueryPortName("");
+            for (var i = 0; i < allPorts.length; i++) {
+                var portEntry = allPorts[i];
+                if (portEntry.PortType() == "2") //RCON
+                {
+                    data["RemoteAdminPort"] = portEntry.Port();
+                }
+                else {
+                    if (appPortNum > 3) { continue; }
+                    var portName = "ApplicationPort" + appPortNum;
+                    data[portName] = portEntry.Port();
+                    appPortNum++;
+                    if (portEntry.PortType() == "1") //QueryPort
+                    {
+                        self.__QueryPortName(portName);
+                    }
+                }
+            }
+            return data;
+        });
+*/        
         this.__SampleFormattedArgs = ko.computed(function () {
             return self._AppSettings().filter(s => s.IncludeInCommandLine()).map(s => s.IsFlagArgument() ? s._CheckedValue() : self.App_CommandLineParameterFormat().format(s.ParamFieldName(), s.DefaultValue())).join(self.App_CommandLineParameterDelimiter());
         });
-
-        /*        this.__SampleCommandLineFlags = ko.computed(function () {
-                    var replacements = ko.toJS(self.__BuildPortMappings());
-                    replacements["ApplicationIPBinding"] = "0.0.0.0";
-                    replacements["FormattedArgs"] = self.__SampleFormattedArgs();
-                    replacements["MaxUsers"] = "10";
-                    replacements["RemoteAdminPassword"] = "r4nd0m-pa55w0rd-g0e5_h3r3";
-                    return self.App_CommandLineArgs().template(replacements);
-                });
-        */
+/*
+        this.__SampleCommandLineFlags = ko.computed(function () {
+            var replacements = ko.toJS(self.__BuildPortMappings());
+            replacements["ApplicationIPBinding"] = "0.0.0.0";
+            replacements["FormattedArgs"] = self.__SampleFormattedArgs();
+            replacements["MaxUsers"] = "10";
+            replacements["RemoteAdminPassword"] = "r4nd0m-pa55w0rd-g0e5_h3r3";
+            return self.App_CommandLineArgs().template(replacements);
+        });
+*/
         this.__GenData = ko.computed(function () {
             var data = [
                 {

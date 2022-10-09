@@ -125,7 +125,7 @@
                                     This is generated assuming the default values and default port
                                     numbers, these will change based on user-specified values or assignments made by AMP.
                                 </div>
-                            </div> -->
+                            </div-->
                         </li>
                     </ul>
                 </div>
@@ -331,7 +331,7 @@
                                            value="QuakeRCON" data-bind="checked: App_AdminMethod">
                                     <span>Quake RCON</span>
                                 </label>
-                                <label class="list-group-item d-flex gap-2">
+                                <!--label class="list-group-item d-flex gap-2">
                                     <input class="form-check-input flex-shrink-0" type="radio" name="manageType"
                                            value="AMP_GSIO" data-bind="checked: App_AdminMethod">
                                     <span>
@@ -341,7 +341,7 @@
                                             GameServer/IO Standard.
                                         </small>
                                     </span>
-                                </label>
+                                </label-->
                             </div>
                             <div class="form-text"></div>
                         </div>
@@ -376,38 +376,44 @@
                                 </label>
                             </div>
                         </div>
-                        <!-- <div class="mb-3">
-        <label>Are any compatibility flags required?</label>
-        <div class="form-text">Generally these are not needed for modern applications</div>
-        <div class="list-group mx-0">
-            <label class="list-group-item d-flex gap-2">
-                <input class="form-check-input flex-shrink-0" type="checkbox" value="">
-                <span>
-                    Linux Console Unbuffering
-                    <small class="d-block text-muted">Handle Linux applications that only
-                        write to the console in large chunks instead of one line at a
-                        time.</small>
-                </span>
-            </label>
-            <label class="list-group-item d-flex gap-2">
-                <input class="form-check-input flex-shrink-0" type="checkbox" value="">
-                <span>
-                    Windows Virtual Console
-                    <small class="d-block text-muted">Handle Windows applications that use a
-                        console window but do not use the actual standard IO
-                        streams.</small>
-                </span>
-            </label>
-            <label class="list-group-item d-flex gap-2">
-                <input class="form-check-input flex-shrink-0" type="checkbox" value="">
-                <span>
-                    Legacy Windows Unity Compatibility
-                    <small class="d-block text-muted">Used for older Unity applications that
-                        don't write to their console properly.</small>
-                </span>
-            </label>
-        </div>
-    </div> -->
+                        <!--div class="mb-3">
+                            <label>Are any compatibility flags required?</label>
+                            <div class="form-text">Generally these are not needed for modern applications</div>
+                            <div class="list-group mx-0">
+                                <label class="list-group-item d-flex gap-2">
+                                    <input class="form-check-input flex-shrink-0" type="checkbox" value="">
+                                    <span>
+                                        Linux Console Unbuffering
+                                        <small class="d-block text-muted">
+                                            Handle Linux applications that only
+                                            write to the console in large chunks instead of one line at a
+                                            time.
+                                        </small>
+                                    </span>
+                                </label>
+                                <label class="list-group-item d-flex gap-2">
+                                    <input class="form-check-input flex-shrink-0" type="checkbox" value="">
+                                    <span>
+                                        Windows Virtual Console
+                                        <small class="d-block text-muted">
+                                            Handle Windows applications that use a
+                                            console window but do not use the actual standard IO
+                                            streams.
+                                        </small>
+                                    </span>
+                                </label>
+                                <label class="list-group-item d-flex gap-2">
+                                    <input class="form-check-input flex-shrink-0" type="checkbox" value="">
+                                    <span>
+                                        Legacy Windows Unity Compatibility
+                                        <small class="d-block text-muted">
+                                            Used for older Unity applications that
+                                            don't write to their console properly.
+                                        </small>
+                                    </span>
+                                </label>
+                            </div>
+                        </div-->
                         <br /><hr /><br />
                         <h4 id="networking">Networking</h4>
                         <div class="form-text">
@@ -458,7 +464,7 @@
                                     <td style="text-align: right;">
                                         <button type="button" class="btn btn-danger"
                                                 data-bind="click: __RemovePort">
-                                            Delete Port
+                                            Delete
                                         </button>
                                     </td>
                                 </tr>
@@ -508,7 +514,7 @@
                                     </td>
                                     <td style="text-align: right;">
                                         <button type="button" class="btn btn-primary" data-bind="click: __AddPort">
-                                            Add Port
+                                            Add
                                         </button>
                                     </td>
                                 </tr>
@@ -549,7 +555,7 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="5"></td>
+                                    <td colspan="2"></td>
                                     <td colspan="2" style="text-align: right;">
                                         <button type="button" class="btn btn-primary"
                                                 data-bind="click: __AddStage">
@@ -566,10 +572,8 @@
                             <thead>
                                 <tr>
                                     <th scope="col">Display Name</th>
-                                    <th scope="col">Description</th>
                                     <th scope="col">Field Name</th>
                                     <th scope="col">Default Value</th>
-                                    <th scope="col">Suffix</th>
                                     <th scope="col">Command Line</th>
                                     <th scope="col"></th>
                                 </tr>
@@ -578,10 +582,8 @@
                                 <!-- ko foreach: _AppSettings -->
                                 <tr>
                                     <td data-bind="text: DisplayName"></td>
-                                    <td data-bind="text: Description"></td>
                                     <td data-bind="text: FieldName"></td>
                                     <td data-bind="text: DefaultValue"></td>
-                                    <td data-bind="text: Suffix"></td>
                                     <td data-bind="text: IncludeInCommandLine() ? '✓' : '✗'"></td>
                                     <td style="text-align: right;">
                                         <button type="button" class="btn btn-primary"
@@ -603,7 +605,7 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="5"></td>
+                                    <td colspan="4"></td>
                                     <td colspan="2" style="text-align: right;">
                                         <button type="button" class="btn btn-primary"
                                                 data-bind="click: __AddSetting">
