@@ -466,7 +466,7 @@ class generatorViewModel {
             document.location.reload();
         }
 
-        this._GithubManifest = function () {
+        this.__GithubManifest = function () {
             function guid() {
                 return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
                     var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
@@ -522,7 +522,7 @@ class generatorViewModel {
             zip.file(self._Meta_StagesManifest(), JSON.stringify(asJSUpdateStages, omitNonPublicMembers, 4));
             zip.file(self._Meta_PortsManifest(), JSON.stringify(asJSPortMappings, omitNonPublicMembers, 4));
             zip.file(self.Meta_MetaConfigManifest(), JSON.stringify(asJSConfigFileMappings, omitNonPublicMembers, 4));
-            zip.file("manifest.json", self._GithubManifest());
+            zip.file("manifest.json", self.__GithubManifest());
             zip.generateAsync({ type: "blob" })
                 .then(function (content) {
                     saveAs(content, "configs.zip");
