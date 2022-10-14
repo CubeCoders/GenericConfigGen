@@ -26,6 +26,8 @@ class generatorViewModel {
         this.Meta_Description = ko.observable("");
         this.Meta_Arch = ko.observable("x86_64");
         this.Meta_Author = ko.observable("");
+        this._Meta_GithubOrigin = ko.computed(() => 'https://github.com/' + self.Meta_Author() + '/AMPTemplates.git');
+        this._Meta_GithubURL = ko.computed(() => 'https://github.com/' + self.Meta_Author() + '/AMPTemplates');
         this.Meta_URL = ko.observable("");
         this.Meta_MinAMPVersion = ko.observable("2.4.0.6");
         this.Meta_SpecificDockerImage = ko.computed(() => self._compatibility() != "None" ? `cubecoders/ampbase:wine` : ``);
@@ -146,7 +148,25 @@ class generatorViewModel {
         this._Meta_PortsManifest = ko.computed(() => self.__SanitizedName() + "ports.json");
         this._Meta_StagesManifest = ko.computed(() => self.__SanitizedName() + "updates.json");
         this.Meta_ConfigRoot = ko.computed(() => self.__SanitizedName() + ".kvp");
-        this.Meta_DisplayImageSource = ko.computed(() => self._UpdateSourceType() == "4" ? "steam:" + self._SteamClientAppID() : "url:" + self._DisplayImageSource());
+//        this.Meta_DisplayImageSource = ko.computed(() => self._UpdateSourceType() == "4" ? "steam:" + self._SteamClientAppID() : "url:" + self._DisplayImageSource());
+
+        this.Meta_DisplayImageSource = ko.computed(() => {
+            if (self._UpdateStages().length != 0) {
+                var appIDCheck = "0";
+                for (let i = 0; i < self._UpdateStages().length; i++) {
+                    if (self._UpdateStages()[i]._UpdateSource() == 8 && appIDCheck == 0) {
+                        appIDCheck = self._UpdateStages()[i].UpdateSourceData();
+                    }
+                }
+                if (appIDCheck != 0) {
+                    return 'steam:' + appIDCheck;
+                } else {
+                    return 'url:' + self._DisplayImageSource();
+                }
+            } else {
+                return 'url:' + self._DisplayImageSource();
+            }
+        });
 
         this.App_RootDir = ko.computed(() => `./${self.__SanitizedName()}/`);
         
@@ -446,6 +466,17 @@ class generatorViewModel {
             document.location.reload();
         }
 
+        this._GithubManifest = function () {
+            function guid() {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+            }
+            var githubManifest = JSON.stringify({ id: guid(), authors: [self.Meta_Author()], origin: self._Meta_GithubOrigin(), url: self._Meta_GithubURL(), imagefile: "", prefix: self.Meta_Author() }, null, 4);
+            return githubManifest;
+        }
+
         this.__DownloadConfig = function () {
             if (this.__ValidationResult() < 2) { return; }
 
@@ -481,35 +512,21 @@ class generatorViewModel {
             }
 
             var output = lines.sort().join("\n");
-            downloadString(output, self.Meta_ConfigRoot());
-        };
-
-        this.__DownloadSettingsManifest = function () {
-            if (this.__ValidationResult() < 2) { return; }
-
-            var asJS = ko.toJS(self._AppSettings());
-            downloadString(JSON.stringify(asJS, omitNonPublicMembers, 4), self.Meta_ConfigManifest());
-        };
-
-        this.__DownloadStagesManifest = function () {
-            if (this.__ValidationResult() < 2) { return; }
-
-            var asJS = ko.toJS(self._UpdateStages());
-            downloadString(JSON.stringify(asJS, omitNonPublicMembers, 4), self._Meta_StagesManifest());
-        };
-
-        this.__DownloadPortsManifest = function () {
-            if (this.__ValidationResult() < 2) { return; }
-
-            var asJS = ko.toJS(self._PortMappings());
-            downloadString(JSON.stringify(asJS, omitNonPublicMembers, 4), self._Meta_PortsManifest());
-        };
-
-        this.__DownloadConfigFilesManifest = function () {
-            if (this.__ValidationResult() < 2) { return; }
-
-            var asJS = ko.toJS(self._ConfigFileMappings());
-            downloadString(JSON.stringify(asJS, omitNonPublicMembers, 4), self.Meta_MetaConfigManifest());
+            var asJSAppSettings = ko.toJS(self._AppSettings());
+            var asJSUpdateStages = ko.toJS(self._UpdateStages());
+            var asJSPortMappings = ko.toJS(self._PortMappings());
+            var asJSConfigFileMappings = ko.toJS(self._ConfigFileMappings());
+            var zip = new JSZip();
+            zip.file(self.Meta_ConfigRoot(), output);
+            zip.file(self.Meta_ConfigManifest(), JSON.stringify(asJSAppSettings, omitNonPublicMembers, 4));
+            zip.file(self._Meta_StagesManifest(), JSON.stringify(asJSUpdateStages, omitNonPublicMembers, 4));
+            zip.file(self._Meta_PortsManifest(), JSON.stringify(asJSPortMappings, omitNonPublicMembers, 4));
+            zip.file(self.Meta_MetaConfigManifest(), JSON.stringify(asJSConfigFileMappings, omitNonPublicMembers, 4));
+            zip.file("manifest.json", self._GithubManifest());
+            zip.generateAsync({ type: "blob" })
+                .then(function (content) {
+                    saveAs(content, "configs.zip");
+                });
         };
 
         this.__Invalidate = function (newValue) {
