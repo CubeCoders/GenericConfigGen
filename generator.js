@@ -155,7 +155,7 @@ class generatorViewModel {
                 var appIDCheck = "0";
                 for (let i = 0; i < self._UpdateStages().length; i++) {
                     if (self._UpdateStages()[i]._UpdateSource() == 8 && appIDCheck == 0) {
-                        appIDCheck = self._UpdateStages()[i].UpdateSourceArgs();
+                        appIDCheck = self._UpdateStages()[i].UpdateSourceData();
                     }
                 }
                 if (appIDCheck != 0) {
