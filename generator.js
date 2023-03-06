@@ -29,7 +29,7 @@ class generatorViewModel {
         this._Meta_GithubOrigin = ko.computed(() => 'https://github.com/' + self.Meta_Author() + '/AMPTemplates.git');
         this._Meta_GithubURL = ko.computed(() => 'https://github.com/' + self.Meta_Author() + '/AMPTemplates');
         this.Meta_URL = ko.observable("");
-        this.Meta_MinAMPVersion = ko.observable("2.4.0.6");
+        this.Meta_MinAMPVersion = ko.observable("2.4.2.0");
         this.Meta_SpecificDockerImage = ko.computed(() => self._compatibility() != "None" ? `cubecoders/ampbase:wine` : ``);
         this.Meta_DockerRequired = ko.observable("False");
         this.Meta_ContainerPolicy = ko.observable("Supported");
