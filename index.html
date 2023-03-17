@@ -926,7 +926,7 @@
                             <label for="appUserDisconnExprField">
                                 User disconnected expression
                                 <small class="d-block text-muted">
-                                    Must contain a *{username}, *{userid}, or *{sessionid}.
+                                    Must contain a *{username}, *{userid}, or *{sessionid}. Must match a variable that was used in the User connected expression.
                                 </small>
                             </label>
                             <input type="text" class="form-control" id="appUserDisconnExprField"
@@ -1422,6 +1422,18 @@
                             </label>
                             <input type="text" class="form-control" id="stageConditionValueField"
                                    data-bind="value: UpdateSourceConditionValue" placeholder="true">
+                        </div>
+                        <div class="mb-3 col-6">
+                            <label class="list-group-item d-flex gap-2" style="flex: 1">
+                                <input class="form-check-input flex-shrink-0" type="checkbox"
+                                       data-bind="checked: OneShot">
+                                <span>
+                                    One Shot
+                                    <small class="d-block text-muted">
+                                        The update stage runs once and never again.
+                                    </small>
+                                </span>
+                            </label>
                         </div>
                     </div><hr />
                     <div class="row">
