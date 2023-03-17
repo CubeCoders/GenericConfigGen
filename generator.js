@@ -807,7 +807,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     //Check if there is anything after the # and if it starts cdata=, then import it if it does.
     if (document.location.hash.indexOf("#cdata=") == 0) {
-        var data = decodeURIComponent(document.location.hash.substr(7));
+        var data = decodeURIComponent(document.location.hash.substring(7));
         vm.__Deserialize(data);
         document.location.hash = "";
     }

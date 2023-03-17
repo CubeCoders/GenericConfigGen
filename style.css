@@ -5,7 +5,7 @@
     left: 0;
     z-index: 100;
     padding: 48px 0 0;
-    box-shadow: inset -1px 0 0 rgb(0 0 0 / 10%);
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
 }
 
 .rightbar {
@@ -14,7 +14,7 @@
 }
 
 .leftLine {
-    box-shadow: inset 1px 0 0 rgb(0 0 0 / 10%)
+    box-shadow: inset 1px 0 0 rgba(0, 0, 0, .1)
 }
 
 .close
