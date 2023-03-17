@@ -20,6 +20,7 @@ function downloadString(data, filename) {
 class generatorViewModel {
     constructor() {
         var self = this;
+        this.availablePortOptions = ko.observableArray(['Custom Port', 'Main Game Port', 'Steam Query Port', 'RCON Port']);
 
         this._compatibility = ko.observable("None");
         this.Meta_DisplayName = ko.observable("");
@@ -325,6 +326,10 @@ class generatorViewModel {
 
         this.__AddPort = function () {
             self._PortMappings.push(new portMappingViewModel(self.__NewPort(), self.__NewName(), self.__NewDescription(), self.__NewPortType(), self.__NewProtocol(), self));
+            if (self.__NewPortType() != 'Custom Port'){
+                this.availablePortOptions.remove(self.__NewPortType());
+            }
+            
         };
 
         this.__RemoveConfigFile = function (toRemove) {

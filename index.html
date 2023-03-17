@@ -440,14 +440,7 @@
                                         <input type="number" min="1024" max="65535" value="7777"
                                                data-bind="value: Port">
                                     </td>
-                                    <td>
-                                        <select class="form-select" data-bind="value: _PortType">
-                                            <option value="0">Custom Port</option>
-                                            <option value="1">Steam Query Port</option>
-                                            <option value="2">RCON Port</option>
-                                            <option value="3">Main Game Port</option>
-                                        </select>
-                                    </td>
+                                    <td data-bind="text: _PortType"></td>
                                     <td>
                                         <input type="text" placeholder="Main Game Port"
                                                data-bind="value: _Name">
@@ -470,9 +463,9 @@
                                         </button>
                                     </td>
                                 </tr>
-                                <!-- /ko -->
-                                <!-- ko if: _PortMappings().length == 0 -->
-                                <tr>
+                                    <!-- /ko -->
+                                        <!-- ko if: _PortMappings().length == 0 -->
+<tr>
                                     <td colspan="3">No ports have been added.</td>
                                 </tr>
                                 <!-- /ko -->
@@ -492,12 +485,7 @@
                                                data-bind="value: __NewPort">
                                     </td>
                                     <td>
-                                        <select class="form-select" data-bind="value: __NewPortType">
-                                            <option value="0">Custom Port</option>
-                                            <option value="1">Steam Query Port</option>
-                                            <option value="2">RCON Port</option>
-                                            <option value="3">Main Game Port</option>
-                                        </select>
+                                        <select class="form-select" data-bind="options: availablePortOptions, value: __NewPortType"></select>
                                     </td>
                                     <td>
                                         <input type="text" placeholder="Main Game Port"
