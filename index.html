@@ -177,53 +177,35 @@
                         <div class="row">
                             <div class="mb-3 col-6">
                                 <label for="applicationNameField">Application Name</label>
-                                <input type="text" class="form-control" id="applicationNameField" placeholder="Valheim"
-                                       data-bind="value: Meta_DisplayName, valueUpdate: 'input'">
-                                <div class="form-text">
-                                    This is what will show up within AMP as the name of the
-                                    application.
-                                </div>
+                                <div class="form-text">This is what will show up within AMP as the name of the application.</div>
+                                <input type="text" class="form-control" id="applicationNameField" placeholder="Valheim" data-bind="value: Meta_DisplayName, valueUpdate: 'input'">
                             </div>
                             <div class="mb-3 col-6">
                                 <label for="applicationDescriptionField">Description</label>
-                                <input type="text" class="form-control" id="applicationDescriptionField" placeholder="Valheim Dedicated Server"
-                                       data-bind="value: Meta_Description">
-                                <div class="form-text">
-                                    Optional: useful for describing different variants/configurations
-                                    of
-                                    the same application.
-                                </div>
+                                <div class="form-text">Optional: useful for describing different variants/configurations of the same application.</div>
+                                <input type="text" class="form-control" id="applicationDescriptionField" placeholder="Valheim Dedicated Server" data-bind="value: Meta_Description">
                             </div>
                         </div>
                         <div class="row">
                             <div class="mb-3 col-6">
                                 <label for="applicationAuthorField">Configuration Author</label>
-                                <input type="text" class="form-control" id="applicationAuthorField"
-                                       data-bind="value: Meta_Author" placeholder="CubeCoders">
                                 <div class="form-text">Who are you? Take some credit for your work! Please use your GitHub username.</div>
+                                <input type="text" class="form-control" id="applicationAuthorField" data-bind="value: Meta_Author" placeholder="CubeCoders">
                             </div>
                             <div class="mb-3 col-6">
                                 <label for="applicationURLField">Application URL</label>
-                                <input type="url" class="form-control" id="applicationURLField"
-                                       data-bind="value: Meta_URL" placeholder="https://store.steampowered.com/app/892970/Valheim/">
-                                <div class="form-text">
-                                    A link to where you can learn more about the application, such as
-                                    a store listing.
-                                </div>
+                                <div class="form-text">A link to where you can learn more about the application, such as a store listing.</div>
+                                <input type="url" class="form-control" id="applicationURLField" data-bind="value: Meta_URL" placeholder="https://store.steampowered.com/app/892970/Valheim/">
                             </div>
                         </div>
                         <div class="mb-3">
                             <label>Which operating systems are supported?</label>
                             <div class="list-group mx-0 list-group-horizontal">
                                 <label class="list-group-item d-flex gap-2" style="flex: 1">
-                                    <input class="form-check-input flex-shrink-0" type="checkbox"
-                                           data-bind="checked: _SupportsWindows">
+                                    <input class="form-check-input flex-shrink-0" type="checkbox" data-bind="checked: _SupportsWindows">
                                     <span>
                                         Windows
-                                        <small class="d-block text-muted">
-                                            Runs on Windows 10/Server 2016 or newer.
-                                            x86/64 Only.
-                                        </small>
+                                        <small class="d-block text-muted">Runs on Windows 10/Server 2016 or newer. x86/64 Only.</small>
                                     </span>
                                 </label>
                                 <label class="list-group-item d-flex gap-2" style="flex: 1">
@@ -264,11 +246,31 @@
                                 </label>
                                 <label class="list-group-item d-flex gap-2">
                                     <input class="form-check-input flex-shrink-0" type="radio" name="_compatibilityType"
+                                           value="WineXvfb" data-bind="checked: _compatibility">
+                                    <span>
+                                        Wine with Xvfb
+                                        <small class="d-block text-muted">
+                                            For applications that can run on Linux, but require Wine and Xvfb.
+                                        </small>
+                                    </span>
+                                </label>
+                                <label class="list-group-item d-flex gap-2">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="_compatibilityType"
                                            value="Proton" data-bind="checked: _compatibility">
                                     <span>
                                         Proton
                                         <small class="d-block text-muted">
                                             For applications that can run on Linux, but require Proton.
+                                        </small>
+                                    </span>
+                                </label>
+                                <label class="list-group-item d-flex gap-2">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="_compatibilityType"
+                                           value="ProtonXvfb" data-bind="checked: _compatibility">
+                                    <span>
+                                        Proton with Xvfb
+                                        <small class="d-block text-muted">
+                                            For applications that can run on Linux, but require Proton and Xvfb.
                                         </small>
                                     </span>
                                 </label>
@@ -334,16 +336,16 @@
                                     <span>Quake RCON</span>
                                 </label>
                                 <!--label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="radio" name="manageType"
-                                           value="AMP_GSIO" data-bind="checked: App_AdminMethod">
-                                    <span>
-                                        AMP GS/IO
-                                        <small class="d-block text-muted">
-                                            For applications that use CubeCoders
-                                            GameServer/IO Standard.
-                                        </small>
-                                    </span>
-                                </label-->
+                <input class="form-check-input flex-shrink-0" type="radio" name="manageType"
+                       value="AMP_GSIO" data-bind="checked: App_AdminMethod">
+                <span>
+                    AMP GS/IO
+                    <small class="d-block text-muted">
+                        For applications that use CubeCoders
+                        GameServer/IO Standard.
+                    </small>
+                </span>
+            </label-->
                             </div>
                             <div class="form-text"></div>
                         </div>
@@ -379,43 +381,43 @@
                             </div>
                         </div>
                         <!--div class="mb-3">
-                            <label>Are any compatibility flags required?</label>
-                            <div class="form-text">Generally these are not needed for modern applications</div>
-                            <div class="list-group mx-0">
-                                <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="checkbox" value="">
-                                    <span>
-                                        Linux Console Unbuffering
-                                        <small class="d-block text-muted">
-                                            Handle Linux applications that only
-                                            write to the console in large chunks instead of one line at a
-                                            time.
-                                        </small>
-                                    </span>
-                                </label>
-                                <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="checkbox" value="">
-                                    <span>
-                                        Windows Virtual Console
-                                        <small class="d-block text-muted">
-                                            Handle Windows applications that use a
-                                            console window but do not use the actual standard IO
-                                            streams.
-                                        </small>
-                                    </span>
-                                </label>
-                                <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="checkbox" value="">
-                                    <span>
-                                        Legacy Windows Unity Compatibility
-                                        <small class="d-block text-muted">
-                                            Used for older Unity applications that
-                                            don't write to their console properly.
-                                        </small>
-                                    </span>
-                                </label>
-                            </div>
-                        </div-->
+        <label>Are any compatibility flags required?</label>
+        <div class="form-text">Generally these are not needed for modern applications</div>
+        <div class="list-group mx-0">
+            <label class="list-group-item d-flex gap-2">
+                <input class="form-check-input flex-shrink-0" type="checkbox" value="">
+                <span>
+                    Linux Console Unbuffering
+                    <small class="d-block text-muted">
+                        Handle Linux applications that only
+                        write to the console in large chunks instead of one line at a
+                        time.
+                    </small>
+                </span>
+            </label>
+            <label class="list-group-item d-flex gap-2">
+                <input class="form-check-input flex-shrink-0" type="checkbox" value="">
+                <span>
+                    Windows Virtual Console
+                    <small class="d-block text-muted">
+                        Handle Windows applications that use a
+                        console window but do not use the actual standard IO
+                        streams.
+                    </small>
+                </span>
+            </label>
+            <label class="list-group-item d-flex gap-2">
+                <input class="form-check-input flex-shrink-0" type="checkbox" value="">
+                <span>
+                    Legacy Windows Unity Compatibility
+                    <small class="d-block text-muted">
+                        Used for older Unity applications that
+                        don't write to their console properly.
+                    </small>
+                </span>
+            </label>
+        </div>
+    </div-->
                         <br /><hr /><br />
                         <h4 id="networking">Networking</h4>
                         <div class="form-text">
@@ -463,9 +465,9 @@
                                         </button>
                                     </td>
                                 </tr>
-                                    <!-- /ko -->
-                                        <!-- ko if: _PortMappings().length == 0 -->
-<tr>
+                                <!-- /ko -->
+                                <!-- ko if: _PortMappings().length == 0 -->
+                                <tr>
                                     <td colspan="3">No ports have been added.</td>
                                 </tr>
                                 <!-- /ko -->
@@ -698,53 +700,65 @@
                         </div>
                         <div class="mb-3">
                             <label for="applicationArgumentsField">Command line arguments</label>
-                            <input type="text" class="form-control" id="applicationArgumentsField"
-                                   data-bind="value: App_CommandLineArgs, valueUpdate: 'input'">
                             <div class="form-text">
                                 Don't include any arguments that come from the Configuration and
                                 Settings section above.
                                 <!-- <button type="button" class="linkButton">Show substitutions reference</button> -->
                             </div>
+                            <input type="text" class="form-control" id="applicationArgumentsField"
+                                   data-bind="value: App_CommandLineArgs, valueUpdate: 'input'">
                         </div>
                         <div class="row">
                             <div class="mb-3 col-6">
                                 <label for="applicationArgumentsWindowsField">Command line Windows only arguments</label>
-                                <input type="text" class="form-control" id="applicationArgumentsWindowsField"
-                                       data-bind="value: App_WindowsCommandLineArgs">
                                 <div class="form-text">
                                     Any Windows specific arguments to be used in the
                                     command line args in place of {{$PlatformArgs}}.
                                 </div>
+                                <input type="text" class="form-control" id="applicationArgumentsWindowsField"
+                                       data-bind="value: App_WindowsCommandLineArgs">
                             </div>
                             <div class="mb-3 col-6">
                                 <label for="applicationArgumentsLinuxField">Command line Linux only arguments</label>
-                                <input type="text" class="form-control" id="applicationArgumentsLinuxField"
-                                       data-bind="value: App_LinuxCommandLineArgs">
                                 <div class="form-text">
                                     Any Linux specific arguments to be used in the
                                     command line args in place of {{$PlatformArgs}}.
                                 </div>
+                                <input type="text" class="form-control" id="applicationArgumentsLinuxField"
+                                       data-bind="value: _App_LinuxCommandLineArgsInput">
                             </div>
                         </div>
                         <div class="row">
                             <div class="mb-3 col-6">
                                 <label for="applicationArgumentsFormatField">Command line paramter format</label>
-                                <input type="text" class="form-control" id="applicationArgumentsFormatField"
-                                       data-bind="value: App_CommandLineParameterFormat">
                                 <div class="form-text">
                                     The format to be used to add settings specified above to the
                                     command line in place of {{$FormattedArgs}}. {0} is the field name and {1} the
                                     value.
                                 </div>
+                                <input type="text" class="form-control" id="applicationArgumentsFormatField"
+                                       data-bind="value: App_CommandLineParameterFormat">
                             </div>
                             <div class="mb-3 col-6">
                                 <label for="applicationArgumentsDelimiterField">Command line parameter delimiter</label>
-                                <input type="text" class="form-control" id="applicationArgumentsDelimiterField"
-                                       data-bind="value: App_CommandLineParameterDelimiter">
                                 <div class="form-text">
                                     The character(s) used to separate different arguments in the
                                     command line flags generated by settings. By default this is a single space.
                                 </div>
+                                <input type="text" class="form-control" id="applicationArgumentsDelimiterField"
+                                       data-bind="value: App_CommandLineParameterDelimiter">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3 col-6" data-bind="visible: Meta_DisplayImageSource().substring(0, 3) != 'url'">
+                                <label for="workshopModsField">Steam Workshop Mods Location</label>
+                                <div class="form-text">Where should AMP place Steam Workshop mods? This is relative to the Base Directory.</div>
+                                <input type="text" class="form-control" id="workshopModsField" data-bind="value: _App_SteamWorkshopDownloadLocation" placeholder="ConanSandbox/Mods">
+                            </div>
+                            <div class="mb-3 col-6" data-bind="visible: Meta_DisplayImageSource().substring(0, 3) == 'url'">
+                                <label for="displayImageField">Display Image Source</label>
+                                <div class="form-text">A URL to an image that AMP can use to represent the application. This is pre-filled for Steam games.</div>
+                                <input type="text" class="form-control" id="displayImageField" data-bind="value: _DisplayImageSource">
                             </div>
                         </div>
                         <div class="mb-3">
@@ -1674,18 +1688,18 @@
                         </div>
                     </div>
                 </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary"
-                                data-bind="visible: !__vm.__IsEditingStage(), click: __vm.__DoAddStage">
-                            Add New
-                            Stage
-                        </button>
-                        <button type="button" class="btn btn-secondary"
-                                data-bind="click: __vm.__CloseStage">
-                            Close
-                        </button>
-                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary"
+                            data-bind="visible: !__vm.__IsEditingStage(), click: __vm.__DoAddStage">
+                        Add New
+                        Stage
+                    </button>
+                    <button type="button" class="btn btn-secondary"
+                            data-bind="click: __vm.__CloseStage">
+                        Close
+                    </button>
                 </div>
+            </div>
         </div>
     </div>
 

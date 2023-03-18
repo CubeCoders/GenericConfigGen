@@ -31,7 +31,7 @@ class generatorViewModel {
         this._Meta_GithubURL = ko.computed(() => 'https://github.com/' + self.Meta_Author() + '/AMPTemplates');
         this.Meta_URL = ko.observable("");
         this.Meta_MinAMPVersion = ko.observable("2.4.2.0");
-        this.Meta_SpecificDockerImage = ko.computed(() => self._compatibility() != "None" ? `cubecoders/ampbase:wine` : ``);
+        this.Meta_SpecificDockerImage = ko.computed(() => self._compatibility() != "None" ? (self._compatibility().substring(self._compatibility().length - 4) == "Xvfb" ? `cubecoders/ampbase:xvfb` : `cubecoders/ampbase:wine`) : ``);
         this.Meta_DockerRequired = ko.observable("False");
         this.Meta_ContainerPolicy = ko.observable("Supported");
         this.Meta_ContainerPolicyReason = ko.observable("");
@@ -85,6 +85,8 @@ class generatorViewModel {
         this.App_MonitorChildProcessName = ko.observable("");
         this.App_Compatibility = ko.observable("None");
         this.App_AppSettings = ko.observableArray();
+        this._App_SteamWorkshopDownloadLocation = ko.observable();
+        this.App_SteamWorkshopDownloadLocation = ko.computed(() => this._App_SteamWorkshopDownloadLocation() != '' ? "{{$FullBaseDir}}" + this._App_SteamWorkshopDownloadLocation() : '');
 
         this.Console_FilterMatchRegex = ko.observable("");
         this.Console_FilterMatchReplacement = ko.observable("");
@@ -208,8 +210,10 @@ class generatorViewModel {
         });
 
         this.App_ExecutableWin = ko.computed(() => self.App_WorkingDir() == "" ? self._WinExecutableName() : `${self.App_WorkingDir()}\\${self._WinExecutableName()}`);
-        this.App_ExecutableLinux = ko.computed(() => self._compatibility() == "None" ? (self.App_WorkingDir() == "" ? self._LinuxExecutableName() : `${self.App_WorkingDir()}/${self._LinuxExecutableName()}`) : `/usr/bin/xvfb-run`);
-        this.App_LinuxCommandLineArgs = ko.computed(() => self._compatibility() == "None" ? `` : (self._compatibility() == "Wine" ? `-a wine \"./` + self._WinExecutableName() + `\"` : `-a \"{{$FullRootDir}}1580130/proton\" run \"./` + self._WinExecutableName() + `\"`));
+        this.App_ExecutableLinux = ko.computed(() => self._compatibility() == "None" ? (self.App_WorkingDir() == "" ? self._LinuxExecutableName() : `${self.App_WorkingDir()}/${self._LinuxExecutableName()}`) : (self._compatibility().substring(self._compatibility().length - 4) == "Xvfb" ? '/usr/bin/xvfb-run' : (self._compatibility() == "Wine" ? '/usr/bin/wine' : '1580130/proton')));
+        this._App_LinuxCommandLineArgsCompat = ko.computed(() => self._compatibility() == "None" ? '' : (self._compatibility() == "WineXvfb" ? '-a wine \"./' + self._WinExecutableName() + '\"' : (self._compatibility() == "ProtonXvfb" ? '-a \"{{$FullRootDir}}1580130/proton\" run \"./' + self._WinExecutableName() + '\"' : (self._compatibility() == "Proton" ? 'run \"./' + self._WinExecutableName() + '\"' : '\"./' + self._WinExecutableName() + '\"'))));
+        this._App_LinuxCommandLineArgsInput = ko.observable("");
+        this.App_LinuxCommandLineArgs = ko.computed(() => self._App_LinuxCommandLineArgsCompat() != '' ? self._App_LinuxCommandLineArgsCompat() + ' ' + self._App_LinuxCommandLineArgsInput() : self._App_LinuxCommandLineArgsInput());
 
         this.App_Ports = ko.computed(() => `@IncludeJson[` + self._Meta_PortsManifest() + `]`);
         this.App_UpdateSources = ko.computed(() => `@IncludeJson[` + self._Meta_StagesManifest() + `]`);
@@ -509,7 +513,7 @@ class generatorViewModel {
             */
             if (self._UpdateSourceType() == "4") //SteamCMD
             {
-                if (self._compatibility() == "Proton") {
+                if (self._compatibility() == "Proton" || self._compatibility() == "ProtonXvfb") {
                     lines.push(`App.EnvironmentVariables={\"LD_LIBRARY_PATH\": \"./linux64:%LD_LIBRARY_PATH%\", \"SteamAppId\": \"${self._SteamClientAppID()}\", \"STEAM_COMPAT_DATA_PATH\": \"{{$FullRootDir}}1580130\", \"STEAM_COMPAT_CLIENT_INSTALL_PATH\": \"{{$FullRootDir}}1580130\"}`);
                 } else {
                     lines.push(`App.EnvironmentVariables={\"LD_LIBRARY_PATH\": \"./linux64:%LD_LIBRARY_PATH%\", \"SteamAppId\": \"${self._SteamClientAppID()}\"}`);

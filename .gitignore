@@ -7,3 +7,6 @@
 .vs/GenericConfigGen/config/applicationhost.config
 .vs/GenericConfigGen/FileContentIndex/85de9f2b-bb18-4c34-bba3-5fb4ba6dc3c9.vsidx
 .vs/GenericConfigGen/FileContentIndex/2a9b0deb-b4b1-4da6-be2c-8bcb77feecf5.vsidx
+*.vsidx
+.vs/ProjectSettings.json
+index2.html
