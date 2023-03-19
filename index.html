@@ -136,7 +136,7 @@
             <main class="col-md-7 ms-sm-auto col-lg-7 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2" id="logoHeader">AMP Configuration Generator</h1>
-                    <small class="d-block text-muted">Version 2.0 - Updated by IceOfWraith<br />©2022 CubeCoders Limited</small>
+                    <small class="d-block text-muted">Version 2.0 - Updated by IceOfWraith<br />©2023 CubeCoders Limited</small>
                     <div class="btn-toolbar mb-2 mb-md-0">
                         <div class="btn-group me-2">
                             <button type="button" class="btn btn-sm btn-outline-primary" data-bind="click: __Share" data-toggle="tooltip" title="Share URL copied to clipboard ✓">
@@ -221,7 +221,7 @@
                                 </label>
                             </div>
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-3" data-bind="visible: _SupportsLinux">
                             <label>What compatibility layer is required?</label>
                             <div class="list-group mx-0">
                                 <label class="list-group-item d-flex gap-2">
@@ -709,7 +709,7 @@
                                    data-bind="value: App_CommandLineArgs, valueUpdate: 'input'">
                         </div>
                         <div class="row">
-                            <div class="mb-3 col-6">
+                            <div class="mb-3 col-6" data-bind="visible: _SupportsWindows">
                                 <label for="applicationArgumentsWindowsField">Command line Windows only arguments</label>
                                 <div class="form-text">
                                     Any Windows specific arguments to be used in the
@@ -718,7 +718,7 @@
                                 <input type="text" class="form-control" id="applicationArgumentsWindowsField"
                                        data-bind="value: App_WindowsCommandLineArgs">
                             </div>
-                            <div class="mb-3 col-6">
+                            <div class="mb-3 col-6" data-bind="visible: _SupportsLinux">
                                 <label for="applicationArgumentsLinuxField">Command line Linux only arguments</label>
                                 <div class="form-text">
                                     Any Linux specific arguments to be used in the
