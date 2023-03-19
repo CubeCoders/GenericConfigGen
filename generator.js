@@ -325,6 +325,9 @@ class generatorViewModel {
 
         //Action methods (add/remove/update)
         this.__RemovePort = function (toRemove) {
+            if (toRemove._PortType() != 'Custom Port') {
+                this.availablePortOptions.push(toRemove._PortType());
+            }
             self._PortMappings.remove(toRemove);
         };
 
@@ -333,7 +336,6 @@ class generatorViewModel {
             if (self.__NewPortType() != 'Custom Port'){
                 this.availablePortOptions.remove(self.__NewPortType());
             }
-            
         };
 
         this.__RemoveConfigFile = function (toRemove) {
@@ -622,10 +624,12 @@ class generatorViewModel {
                                 break;
                         }
             */
+           /*
             if (self.Console_AppReadyRegex() != "" && !self.Console_AppReadyRegex().match(/\^.+\$/)) { failure("Server ready expression does not match the entire line. Regular expressions for AMP must match the entire line, starting with a ^ and ending with a $.", "Update the Server Ready expression under Server Events to match the entire line."); }
             if (self.Console_UserJoinRegex() != "" && !self.Console_UserJoinRegex().match(/\^.+\$/)) { failure("User connected expression does not match the entire line. Regular expressions for AMP must match the entire line, starting with a ^ and ending with a $.", "Update the User connected expression under Server Events to match the entire line."); }
             if (self.Console_UserLeaveRegex() != "" && !self.Console_UserLeaveRegex().match(/\^.+\$/)) { failure("User disconnected expression does not match the entire line. Regular expressions for AMP must match the entire line, starting with a ^ and ending with a $.", "Update the User disconnected expression under Server Events to match the entire line."); }
             if (self.Console_UserChatRegex() != "" && !self.Console_UserChatRegex().match(/\^.+\$/)) { failure("User chat expression does not match the entire line. Regular expressions for AMP must match the entire line, starting with a ^ and ending with a $.", "Update the User chat expression under Server Events to match the entire line."); }
+            */
             if ((self._compatibility() == "Wine" && !self._SupportsLinux()) || (self._compatibility() == "Proton" && !self._SupportsLinux())) { failure("A Linux compatibility layer was chosen, but Linux support is not checked.", "Please check both."); }
 
             //Validation Summary
@@ -669,10 +673,10 @@ class portMappingViewModel {
         this.Port = ko.observable(port);
         this._PortType = ko.observable(portType);
         this._Name = ko.observable(portName);
-        this.Name = ko.computed(() => self._PortType() == "0" ? self._Name() : (self._PortType() == "1" ? `Steam Query Port` : (self._PortType() == "2" ? `Remote Admin Port` : `Game Port 1`)));
+        this.Name = ko.computed(() => self._PortType() == "Custom Port" ? self._Name() : (self._PortType() == "Steam Query Port" ? `Steam Query Port` : (self._PortType() == "RCON Port" ? `Remote Admin Port` : `Main Game Port`)));
         this._Description = ko.observable(portDescription);
         this.Description = ko.computed(() => self._Description() == "0" ? self._Description() : (self._PortType() == "1" ? `Port used for Steam queries and server list` : (self._PortType() == "2" ? `Port used for RCON administration` : `Port used for main game traffic`)));
-        this.Ref = ko.computed(() => self._PortType() == "0" ? self._Name().replace(/\s+/g, "").replace(/[^a-z\d-_]/ig, "") : (self._PortType() == "1" ? `SteamQueryPort` : (self._PortType() == "2" ? `RemoteAdminPort` : `GamePort1`)));
+        this.Ref = ko.computed(() => self._PortType() == "0" ? self._Name().replace(/\s+/g, "").replace(/[^a-z\d-_]/ig, "") : (self._PortType() == "Steam Query Port" ? `SteamQueryPort` : (self._PortType() == "RCON Port" ? `RemoteAdminPort` : `GamePort1`)));
         this.__RemovePort = () => self.__vm.__RemovePort(self);
     }
 }
