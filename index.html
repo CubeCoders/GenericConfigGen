@@ -1141,8 +1141,8 @@
                         <table class="table mb-3" data-bind="visible: InputType() == 'enum'">
                             <thead>
                                 <tr>
-                                    <th scope="col">Enum Key</th>
-                                    <th scope="col">Enum Value</th>
+                                    <th scope="col">Key (Placed in config file/startup args)</th>
+                                    <th scope="col">Value (Presented to user)</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -1164,7 +1164,7 @@
                                 <!-- /ko -->
                                 <!-- ko if: _EnumMappings().length == 0 -->
                                 <tr>
-                                    <td colspan="3">No enums have been added.</td>
+                                    <td colspan="3">No entries have been added.</td>
                                 </tr>
                                 <!-- /ko -->
                             </tbody>
