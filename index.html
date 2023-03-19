@@ -916,12 +916,12 @@
                                         <td data-bind="text: issue"></td>
                                         <td data-bind="text: recommendation"></td>
                                     </tr>
-                                    <!-- /ko -->
                                     <!-- ko if: impact != 0 -->
                                     <tr data-bind="class: gradeClass">
                                         <td>Impact:</td>
                                         <td data-bind="text: impact" colspan="2"></td>
                                     </tr>
+                                    <!-- /ko -->
                                     <!-- /ko -->
                                     <!-- ko if: __ValidationResults().length == 0 -->
                                     <tr class="table-success">
