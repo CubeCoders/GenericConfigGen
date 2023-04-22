@@ -597,9 +597,9 @@ class ValidationResult {
 class PortMappingViewModel {
     constructor(port, portName, portDescription, portType, protocol, vm) {
         this.__vm = vm;
-        this._protocol = ko.observable(protocol);
-        this.protocol = ko.computed(() => {
-            switch (this._protocol()) {
+        this._Protocol = ko.observable(protocol);
+        this.Protocol = ko.computed(() => {
+            switch (this._Protocol()) {
                 case "1":
                     return "TCP";
                 case "2":
@@ -609,35 +609,39 @@ class PortMappingViewModel {
                     return "Both";
             }
         });
-        this.port = ko.observable(port);
-        this._portType = ko.observable(portType);
-        this._name = ko.observable(portName);
-        this.name = ko.computed(() => {
-            switch (this._portType()) {
+        this.Port = ko.observable(port);
+        this._PortType = ko.observable(portType);
+        this._Name = ko.observable(portName);
+        this.Name = ko.computed(() => {
+            switch (this._PortType()) {
+                case "Main Game Port":
+                    return "Main Game Port";
                 case "Steam Query Port":
                     return "Steam Query Port";
                 case "RCON Port":
                     return "Remote Admin Port";
                 case "Custom Port":
                 default:
-                    return this._name();
+                    return this._Name();
             }
         });
-        this._description = ko.observable(portDescription);
-        this.description = ko.computed(() => {
-            switch (this._portType()) {
+        this._Description = ko.observable(portDescription);
+        this.Description = ko.computed(() => {
+            switch (this._PortType()) {
                 case "1":
                     return "Port used for Steam queries and server list";
                 case "2":
                     return "Port used for RCON administration";
                 case "0":
                 default:
-                    return this._description();
+                    return this._Description();
             }
         });
-        this.ref = ko.computed(() => {
-            const cleanName = this._name().replace(/\s+/g, "").replace(/[^a-z\d-_]/ig, "");
-            switch (this._portType()) {
+        this.Ref = ko.computed(() => {
+            const cleanName = this._Name().replace(/\s+/g, "").replace(/[^a-z\d-_]/ig, "");
+            switch (this._PortType()) {
+                case "Main Game Port":
+                    return "MainGamePort";
                 case "Steam Query Port":
                     return "SteamQueryPort";
                 case "RCON Port":
@@ -647,7 +651,7 @@ class PortMappingViewModel {
                     return cleanName;
             }
         });
-        this.__removePort = () => this.__vm.__removePort(this);
+        this.__RemovePort = () => this.__vm.__RemovePort(this);
     }
 }
 
