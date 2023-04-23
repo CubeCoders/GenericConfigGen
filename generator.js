@@ -609,6 +609,17 @@ class ValidationResult {
 class PortMappingViewModel {
     constructor(port, portName, portDescription, portType, protocol, vm) {
         this.__vm = vm;
+
+        if (!port) {
+            throw new Error("Port Number is required.");
+        }
+        if (!portName) {
+            throw new Error("Port Name is required.");
+        }
+        if (!portDescription) {
+            throw new Error("Port Description is required.");
+        }
+
         this._Protocol = ko.observable(protocol);
         this.Protocol = ko.computed(() => {
             switch (this._Protocol()) {
