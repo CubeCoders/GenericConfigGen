@@ -1,14 +1,14 @@
 function omitNonPublicMembers(key, value) {
-    return key.startsWith("_") ? undefined : value;
+    return (key.indexOf("_") === 0) ? undefined : value;
 }
 
 function omitPrivateMembers(key, value) {
-    return key.startsWith("__") ? undefined : value;
+    return (key.indexOf("__") === 0) ? undefined : value;
 }
 
 function downloadString(data, filename) {
-    const element = document.createElement('a');
-    element.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(data)}`);
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(data));
     element.setAttribute('download', filename);
 
     element.style.display = 'none';
@@ -17,7 +17,7 @@ function downloadString(data, filename) {
     document.body.removeChild(element);
 }
 
-class GeneratorViewModel {
+class generatorViewModel {
     constructor() {
         var self = this;
         this.availablePortOptions = ko.observableArray(['Custom Port', 'Main Game Port', 'Steam Query Port', 'RCON Port']);
@@ -153,94 +153,70 @@ class GeneratorViewModel {
         this.Meta_ConfigRoot = ko.computed(() => self.__SanitizedName() + ".kvp");
 //        this.Meta_DisplayImageSource = ko.computed(() => self._UpdateSourceType() == "4" ? "steam:" + self._SteamClientAppID() : "url:" + self._DisplayImageSource());
 
-        function findAppID() {
-            const updateStages = self._UpdateStages();
-            for (let i = 0; i < updateStages.length; i++) {
-                if (updateStages[i]._UpdateSource() === 8) {
-                    return updateStages[i].UpdateSourceArgs();
-                }
-            }
-            return "0";
-        }
-
-        function findUpdateSourceData() {
-            const updateStages = self._UpdateStages();
-            for (let i = 0; i < updateStages.length; i++) {
-                if (updateStages[i]._UpdateSource() === 8) {
-                    return updateStages[i].UpdateSourceData();
-                }
-            }
-            return "0";
-        }
-
         this.Meta_DisplayImageSource = ko.computed(() => {
-            const appID = findAppID();
-            return appID !== "0" ? `steam:${appID}` : `url:${self._DisplayImageSource()}`;
+            if (self._UpdateStages().length != 0) {
+                var appIDCheck = "0";
+                for (let i = 0; i < self._UpdateStages().length; i++) {
+                    if (self._UpdateStages()[i]._UpdateSource() == 8 && appIDCheck == 0) {
+                        appIDCheck = self._UpdateStages()[i].UpdateSourceArgs();
+                    }
+                }
+                if (appIDCheck != 0) {
+                    return 'steam:' + appIDCheck;
+                } else {
+                    return 'url:' + self._DisplayImageSource();
+                }
+            } else {
+                return 'url:' + self._DisplayImageSource();
+            }
         });
 
         this.App_RootDir = ko.computed(() => `./${self.__SanitizedName()}/`);
-
+        
         this.App_BaseDirectory = ko.computed(() => {
-            const updateSourceData = findUpdateSourceData();
-            return updateSourceData !== "0"
-                ? `${self.App_RootDir()}${updateSourceData}/`
-                : `${self.App_RootDir()}serverfiles/`;
+            if (self._UpdateStages().length != 0) {
+                var appIDCheck = "0";
+                for (let i = 0; i < self._UpdateStages().length; i++) {
+                    if (self._UpdateStages()[i]._UpdateSource() == 8 && appIDCheck == 0) {
+                        appIDCheck = self._UpdateStages()[i].UpdateSourceData();
+                    }
+                }
+                if (appIDCheck != 0) {
+                    return self.App_RootDir() + appIDCheck + '/';
+                } else {
+                    return self.App_RootDir() + 'serverfiles/';
+                }
+            } else {
+                return self.App_RootDir() + 'serverfiles/';
+            }
         });
-
+        
         this.App_WorkingDir = ko.computed(() => {
-            const updateSourceData = findUpdateSourceData();
-            return updateSourceData !== "0" ? updateSourceData : "serverfiles";
-        });
-
-        function getLinuxCompatArgs(compatibility, winExecutableName) {
-            switch (compatibility) {
-                case "None":
-                    return "";
-                case "WineXvfb":
-                    return `-a wine "./${winExecutableName}"`;
-                case "ProtonXvfb":
-                    return `-a "{{\$FullRootDir}}1580130/proton" run "./${winExecutableName}"`;
-                case "Proton":
-                    return `run "./${winExecutableName}"`;
-                default:
-                    return `./${winExecutableName}`;
+            if (self._UpdateStages().length != 0) {
+                var appIDCheck = "0";
+                for (let i = 0; i < self._UpdateStages().length; i++) {
+                    if (self._UpdateStages()[i]._UpdateSource() == 8 && appIDCheck == 0) {
+                        appIDCheck = self._UpdateStages()[i].UpdateSourceData();
+                    }
+                }
+                if (appIDCheck != 0) {
+                    return appIDCheck;
+                } else {
+                    return 'serverfiles';
+                }
+            } else {
+                return 'serverfiles';
             }
-        }
-
-        this.App_ExecutableWin = ko.computed(() => {
-            const workingDir = self.App_WorkingDir();
-            const winExecutableName = self._WinExecutableName();
-            return workingDir === "" ? winExecutableName : `${workingDir}\\${winExecutableName}`;
         });
 
-        this.App_ExecutableLinux = ko.computed(() => {
-            const compatibility = self._compatibility();
-            const workingDir = self.App_WorkingDir();
-            const linuxExecutableName = self._LinuxExecutableName();
-
-            if (compatibility === "None") {
-                return workingDir === "" ? linuxExecutableName : `${workingDir}/${linuxExecutableName}`;
-            }
-
-            const suffix = compatibility.substring(compatibility.length - 4);
-            return suffix === "Xvfb" ? "/usr/bin/xvfb-run" : (compatibility === "Wine" ? "/usr/bin/wine" : "1580130/proton");
-        });
-
-        this._App_LinuxCommandLineArgsCompat = ko.computed(() => {
-            const compatibility = self._compatibility();
-            const winExecutableName = self._WinExecutableName();
-            return getLinuxCompatArgs(compatibility, winExecutableName);
-        });
-
+        this.App_ExecutableWin = ko.computed(() => self.App_WorkingDir() == "" ? self._WinExecutableName() : `${self.App_WorkingDir()}\\${self._WinExecutableName()}`);
+        this.App_ExecutableLinux = ko.computed(() => self._compatibility() == "None" ? (self.App_WorkingDir() == "" ? self._LinuxExecutableName() : `${self.App_WorkingDir()}/${self._LinuxExecutableName()}`) : (self._compatibility().substring(self._compatibility().length - 4) == "Xvfb" ? '/usr/bin/xvfb-run' : (self._compatibility() == "Wine" ? '/usr/bin/wine' : '1580130/proton')));
+        this._App_LinuxCommandLineArgsCompat = ko.computed(() => self._compatibility() == "None" ? '' : (self._compatibility() == "WineXvfb" ? '-a wine \"./' + self._WinExecutableName() + '\"' : (self._compatibility() == "ProtonXvfb" ? '-a \"{{$FullRootDir}}1580130/proton\" run \"./' + self._WinExecutableName() + '\"' : (self._compatibility() == "Proton" ? 'run \"./' + self._WinExecutableName() + '\"' : '\"./' + self._WinExecutableName() + '\"'))));
         this._App_LinuxCommandLineArgsInput = ko.observable("");
-        this.App_LinuxCommandLineArgs = ko.computed(() => {
-            const compatArgs = self._App_LinuxCommandLineArgsCompat();
-            const inputArgs = self._App_LinuxCommandLineArgsInput();
-            return compatArgs !== "" ? `${compatArgs} ${inputArgs}` : inputArgs;
-        });
+        this.App_LinuxCommandLineArgs = ko.computed(() => self._App_LinuxCommandLineArgsCompat() != '' ? self._App_LinuxCommandLineArgsCompat() + ' ' + self._App_LinuxCommandLineArgsInput() : self._App_LinuxCommandLineArgsInput());
 
-        this.App_Ports = ko.computed(() => `@IncludeJson[${self._Meta_PortsManifest()}]`);
-        this.App_UpdateSources = ko.computed(() => `@IncludeJson[${self._Meta_StagesManifest()}]`);
+        this.App_Ports = ko.computed(() => `@IncludeJson[` + self._Meta_PortsManifest() + `]`);
+        this.App_UpdateSources = ko.computed(() => `@IncludeJson[` + self._Meta_StagesManifest() + `]`);
 /*
         this.__BuildPortMappings = ko.computed(() => {
             var data = {};
@@ -267,14 +243,8 @@ class GeneratorViewModel {
             return data;
         });
 */        
-        this.__SampleFormattedArgs = ko.computed(() => {
-            return self._AppSettings()
-                .filter(s => s.IncludeInCommandLine())
-                .map(s => s.IsFlagArgument()
-                    ? s._CheckedValue()
-                    : self.App_CommandLineParameterFormat().format(s.ParamFieldName(), s.DefaultValue())
-                )
-                .join(self.App_CommandLineParameterDelimiter());
+        this.__SampleFormattedArgs = ko.computed(function () {
+            return self._AppSettings().filter(s => s.IncludeInCommandLine()).map(s => s.IsFlagArgument() ? s._CheckedValue() : self.App_CommandLineParameterFormat().format(s.ParamFieldName(), s.DefaultValue())).join(self.App_CommandLineParameterDelimiter());
         });
 /*
         this.__SampleCommandLineFlags = ko.computed(function () {
@@ -286,114 +256,156 @@ class GeneratorViewModel {
             return self.App_CommandLineArgs().template(replacements);
         });
 */
-        this.__GenData = ko.computed(() => {
+        this.__GenData = ko.computed(function () {
             var data = [
-                { "key": "Generated Name", "value": self.__SanitizedName() },
-                { "key": "Config Root", "value": self.Meta_ConfigRoot() },
-                { "key": "Settings Manifest", "value": self.Meta_ConfigManifest() },
-                { "key": "Ports Manifest", "value": self._Meta_PortsManifest() },
-                { "key": "Config Files Manifest", "value": self.Meta_MetaConfigManifest() },
-                { "key": "Image Source", "value": self.Meta_DisplayImageSource(), "longValue": true },
-                { "key": "Root Directory", "value": self.App_RootDir() },
-                { "key": "Base Directory", "value": self.App_BaseDirectory() },
-                { "key": "Working Directory", "value": self.App_WorkingDir() },
-                { "key": "Docker Image", "value": self.Meta_SpecificDockerImage(), "longValue": true },
-                { "key": "Compatibility", "value": self._compatibility() }
+                {
+                    "key": "Generated Name",
+                    "value": self.__SanitizedName(),
+                },
+                {
+                    "key": "Config Root",
+                    "value": self.Meta_ConfigRoot()
+                },
+                {
+                    "key": "Settings Manifest",
+                    "value": self.Meta_ConfigManifest()
+                },
+                {
+                    "key": "Ports Manifest",
+                    "value": self._Meta_PortsManifest()
+                },
+                {
+                    "key": "Config Files Manifest",
+                    "value": self.Meta_MetaConfigManifest()
+                },
+                {
+                    "key": "Image Source",
+                    "value": self.Meta_DisplayImageSource(),
+                    "longValue": true
+                },
+                {
+                    "key": "Root Directory",
+                    "value": self.App_RootDir()
+                },
+                {
+                    "key": "Base Directory",
+                    "value": self.App_BaseDirectory()
+                },
+                {
+                    "key": "Working Directory",
+                    "value": self.App_WorkingDir()
+                },
+                {
+                    "key": "Docker Image",
+                    "value": self.Meta_SpecificDockerImage(),
+                    "longValue": true
+                },
+                {
+                    "key": "Compatibility",
+                    "value": self._compatibility()
+                }
             ];
 
             if (self._SupportsWindows()) {
-                data.push({ "key": "Windows Executable", "value": self.App_ExecutableWin() });
+                data.push({
+                    "key": "Windows Executable",
+                    "value": self.App_ExecutableWin()
+                });
             }
 
             if (self._SupportsLinux()) {
-                data.push({ "key": "Linux Executable", "value": self.App_ExecutableLinux() });
+                data.push({
+                    "key": "Linux Executable",
+                    "value": self.App_ExecutableLinux()
+                });
             }
 
             return data;
         });
 
         //Action methods (add/remove/update)
-        this.__RemovePort = toRemove => {
-            if (toRemove._PortType() !== 'Custom Port') {
-                this.availablePortOptions.push(toRemove._PortType());
-            }
+        this.__RemovePort = function (toRemove) {
             self._PortMappings.remove(toRemove);
         };
 
-        this.__AddPort = () => {
-            self._PortMappings.push(new PortMappingViewModel(self.__NewPort(), self.__NewName(), self.__NewDescription(), self.__NewPortType(), self.__NewProtocol(), self));
-            if (self.__NewPortType() !== 'Custom Port') {
+        this.__AddPort = function () {
+            self._PortMappings.push(new portMappingViewModel(self.__NewPort(), self.__NewName(), self.__NewDescription(), self.__NewPortType(), self.__NewProtocol(), self));
+            if (self.__NewPortType() != 'Custom Port'){
                 this.availablePortOptions.remove(self.__NewPortType());
             }
+            
         };
 
-        this.__RemoveConfigFile = toRemove => {
+        this.__RemoveConfigFile = function (toRemove) {
             self._ConfigFileMappings.remove(toRemove);
         };
 
-        this.__AddConfigFile = () => {
-            self._ConfigFileMappings.push(new ConfigFileMappingViewModel(self.__NewConfigFile(), self.__NewAutoMap(), self.__NewConfigType(), self));
+        this.__AddConfigFile = function () {
+            self._ConfigFileMappings.push(new configFileMappingViewModel(self.__NewConfigFile(), self.__NewAutoMap(), self.__NewConfigType(), self));
         };
 
-        this.__RemoveSetting = toRemove => {
+        this.__RemoveSetting = function (toRemove) {
             self._AppSettings.remove(toRemove);
         };
 
-        this.__EditSetting = toEdit => {
+        this.__EditSetting = function (toEdit) {
             self.__IsEditingSetting(true);
             self.__AddEditSetting(toEdit);
             $("#addEditSettingModal").modal('show');
         };
 
-        this.__AddSetting = () => {
+        this.__AddSetting = function () {
             self.__IsEditingSetting(false);
-            self.__AddEditSetting(new AppSettingViewModel(self));
+            self.__AddEditSetting(new appSettingViewModel(self));
             $("#addEditSettingModal").modal('show');
         };
 
-        this.__DoAddSetting = () => {
+        this.__DoAddSetting = function () {
             self._AppSettings.push(self.__AddEditSetting());
             $("#addEditSettingModal").modal('hide');
         };
 
-        this.__CloseSetting = () => {
+        this.__CloseSetting = function () {
             $("#addEditSettingModal").modal('hide');
         };
 
-        this.__RemoveStage = toRemove => {
+        this.__RemoveStage = function (toRemove) {
             self._UpdateStages.remove(toRemove);
         };
 
-        this.__EditStage = toEdit => {
+        this.__EditStage = function (toEdit) {
             self.__IsEditingStage(true);
             self.__AddEditStage(toEdit);
             $("#addEditStageModal").modal('show');
         };
 
-        this.__AddStage = () => {
+        this.__AddStage = function () {
             self.__IsEditingStage(false);
-            self.__AddEditStage(new UpdateStageViewModel(self));
+            self.__AddEditStage(new updateStageViewModel(self));
             $("#addEditStageModal").modal('show');
         };
 
-        this.__DoAddStage = () => {
+        this.__DoAddStage = function () {
             self._UpdateStages.push(self.__AddEditStage());
             $("#addEditStageModal").modal('hide');
         };
 
-        this.__CloseStage = () => {
+        this.__CloseStage = function () {
             $("#addEditStageModal").modal('hide');
         };
 
-        this.__Serialize = () => {
-            const asJS = ko.toJS(self);
-            const result = JSON.stringify(asJS, omitPrivateMembers);
+        this.__Serialize = function () {
+            var asJS = ko.toJS(self);
+            var result = JSON.stringify(asJS, omitPrivateMembers);
             return result;
         };
 
-        this.__Deserialize = inputData => {
-            const asJS = JSON.parse(inputData);
-            let { _PortMappings: ports, _ConfigFileMappings: configFiles, _AppSettings: settings, _UpdateStages: stages } = asJS;
+        this.__Deserialize = function (inputData) {
+            var asJS = JSON.parse(inputData);
+            var ports = asJS._PortMappings;
+            var configFiles = asJS._ConfigFileMappings;
+            var settings = asJS._AppSettings;
+            var stages = asJS._UpdateStages;
 
             delete asJS._PortMappings;
             delete asJS._ConfigFileMappings;
@@ -403,120 +415,150 @@ class GeneratorViewModel {
             ko.quickmap.map(self, asJS);
 
             self._PortMappings.removeAll();
-            const mappedPorts = ko.quickmap.to(PortMappingViewModel, ports, false, { __vm: self });
+            var mappedPorts = ko.quickmap.to(portMappingViewModel, ports, false, { __vm: self });
             self._PortMappings.push.apply(self._PortMappings, mappedPorts);
 
             self._ConfigFileMappings.removeAll();
-            const mappedConfigFiles = ko.quickmap.to(ConfigFileMappingViewModel, configFiles, false, { __vm: self });
+            var mappedConfigFiles = ko.quickmap.to(configFileMappingViewModel, configFiles, false, { __vm: self });
             self._ConfigFileMappings.push.apply(self._ConfigFileMappings, mappedConfigFiles);
 
             self._AppSettings.removeAll();
-            const mappedSettings = ko.quickmap.to(AppSettingViewModel, settings, false, { __vm: self });
+            var mappedSettings = ko.quickmap.to(appSettingViewModel, settings, false, { __vm: self });
             self._AppSettings.push.apply(self._AppSettings, mappedSettings);
 
             self._UpdateStages.removeAll();
-            const mappedStages = ko.quickmap.to(UpdateStageViewModel, stages, false, { __vm: self });
+            var mappedStages = ko.quickmap.to(updateStageViewModel, stages, false, { __vm: self });
             self._UpdateStages.push.apply(self._UpdateStages, mappedStages);
         };
 
         this.__IsExporting = ko.observable(false);
 
-        this.__Export = () => {
+        this.__Export = function () {
             self.__IsExporting(true);
-            $("#importexporttextarea").val(self.__Serialize()).attr("readonly", true);
+            $("#importexporttextarea").val(self.__Serialize());
+            $("#importexporttextarea").attr("readonly", true);
             $("#importExportDialog").modal("show");
             autoSave();
         };
 
-        this.__CopyExportToClipboard = (data, element) => {
+        this.__CopyExportToClipboard = function (data, element) {
             navigator.clipboard.writeText($("#importexporttextarea").val());
             setTimeout(() => $(element.target).tooltip('hide'), 2000);
         };
 
-        this.__CloseImportExport = () => {
+        this.__CloseImportExport = function () {
             $("#importExportDialog").modal("hide");
         };
 
-        this.__Import = () => {
+        this.__Import = function () {
             self.__IsExporting(false);
-            $("#importexporttextarea").val("").prop("readonly", false);
+            $("#importexporttextarea").val("");
+            $("#importexporttextarea").prop("readonly", false);
             $("#importExportDialog").modal("show");
         };
 
-        this.__DoImport = () => {
+        this.__DoImport = function () {
             self.__Deserialize($("#importexporttextarea").val());
             $("#importExportDialog").modal("hide");
             autoSave();
         };
 
-        this.__Share = (data, element) => {
+        this.__Share = function (data, element) {
             var data = encodeURIComponent(self.__Serialize());
-            const url = `${document.location.protocol}//${document.location.hostname}${document.location.pathname}#cdata=${data}`;
+            var url = `${document.location.protocol}//${document.location.hostname}${document.location.pathname}#cdata=${data}`;
             navigator.clipboard.writeText(url);
             setTimeout(() => $(element.target).tooltip('hide'), 2000);
         };
 
-        this.__Clear = () => {
-            localStorage.configGenAutoSave = "";
+        this.__Clear = function () {
+            localStorage.configgenautosave = "";
             document.location.reload();
         }
 
-        this.__GithubManifest = () => {
-            const guid = () => 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-                const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
-            });
-            const githubManifest = JSON.stringify({ id: guid(), authors: [self.Meta_Author()], origin: self._Meta_GithubOrigin(), url: self._Meta_GithubURL(), imagefile: "", prefix: self.Meta_Author() }, null, 4);
+        this.__GithubManifest = function () {
+            function guid() {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+            }
+            var githubManifest = JSON.stringify({ id: guid(), authors: [self.Meta_Author()], origin: self._Meta_GithubOrigin(), url: self._Meta_GithubURL(), imagefile: "", prefix: self.Meta_Author() }, null, 4);
             return githubManifest;
         }
 
-        this.__DownloadConfig = () => {
+        this.__DownloadConfig = function () {
             if (this.__ValidationResult() < 2) { return; }
 
-            const lines = Object.keys(self)
-                .filter(k => !k.startsWith("_"))
-                .map(key => `${key.replace("_", ".")}=${self[key]()}`);
-
-            if (self._UpdateSourceType() === "4") { // SteamCMD
-                const envVars = `App.EnvironmentVariables={\"LD_LIBRARY_PATH\": \"./linux64:%LD_LIBRARY_PATH%\", \"SteamAppId\": \"${self._SteamClientAppID()}\"}`;
-                const protonVars = `, \"STEAM_COMPAT_DATA_PATH\": \"{{$FullRootDir}}1580130\", \"STEAM_COMPAT_CLIENT_INSTALL_PATH\": \"{{$FullRootDir}}1580130\"}`;
-                lines.push(self._compatibility() === "Proton" || self._compatibility() === "ProtonXvfb" ? envVars + protonVars : envVars);
+            var lines = [];
+            for (const key of Object.keys(self).filter(k => !k.startsWith("_"))) {
+                lines.push(`${key.replace("_", ".")}=${self[key]()}`);
             }
 
-            const output = lines.sort().join("\n");
-            const zip = new JSZip();
-            const zipFiles = [
-                [self.Meta_ConfigRoot(), output],
-                [self.Meta_ConfigManifest(), JSON.stringify(ko.toJS(self._AppSettings()), omitNonPublicMembers, 4)],
-                [self._Meta_StagesManifest(), JSON.stringify(ko.toJS(self._UpdateStages()), omitNonPublicMembers, 4)],
-                [self._Meta_PortsManifest(), JSON.stringify(ko.toJS(self._PortMappings()), omitNonPublicMembers, 4)],
-                [self.Meta_MetaConfigManifest(), JSON.stringify(ko.toJS(self._ConfigFileMappings()), omitNonPublicMembers, 4)],
-                ["manifest.json", self.__GithubManifest()]
-            ];
+            /*
+                        switch (self._UpdateSourceType()) {
+                            case "1": //URL
+                                lines.push(`App.UpdateSources=[{\"UpdateStageName\": \"Server Download\",\"UpdateSourcePlatform\": \"All\", \"UpdateSource\": \"FetchURL\", \"UpdateSourceData\": \"${self._UpdateSourceURL()}\", \"UnzipUpdateSource\": ${self._UpdateSourceUnzip()}}]`);
+                                break;
+                            case "4": //Steam
+                                if (self._compatibility() == "Proton") {
+                                    lines.push(`App.UpdateSources=[{\"UpdateStageName\": \"SteamCMD Download\",\"UpdateSourcePlatform\": \"All\", \"UpdateSource\": \"SteamCMD\", \"UpdateSourceData\": \"${self._SteamServerAppID()}\"},{\"UpdateStageName\": \"Proton Compatibility Layer\",\"UpdateSourcePlatform\": \"Linux\", \"UpdateSource\": \"SteamCMD\", \"UpdateSourceData\": \"1580130\"}]`);
+                                } else {
+                                    lines.push(`App.UpdateSources=[{\"UpdateStageName\": \"SteamCMD Download\",\"UpdateSourcePlatform\": \"All\", \"UpdateSource\": \"SteamCMD\", \"UpdateSourceData\": \"${self._SteamServerAppID()}\"}]`);
+                                }
+                                break;
+                            case "16": //Github
+                                lines.push(`App.UpdateSources=[{\"UpdateStageName\": \"GitHub Release Download\",\"UpdateSourcePlatform\": \"All\", \"UpdateSource\": \"GithubRelease\", \"UpdateSourceData\": \"${self._UpdateSourceGitRepo()}\"}]`);
+                                break;
+                        }
+            */
+            if (self._UpdateSourceType() == "4") //SteamCMD
+            {
+                if (self._compatibility() == "Proton" || self._compatibility() == "ProtonXvfb") {
+                    lines.push(`App.EnvironmentVariables={\"LD_LIBRARY_PATH\": \"./linux64:%LD_LIBRARY_PATH%\", \"SteamAppId\": \"${self._SteamClientAppID()}\", \"STEAM_COMPAT_DATA_PATH\": \"{{$FullRootDir}}1580130\", \"STEAM_COMPAT_CLIENT_INSTALL_PATH\": \"{{$FullRootDir}}1580130\"}`);
+                } else {
+                    lines.push(`App.EnvironmentVariables={\"LD_LIBRARY_PATH\": \"./linux64:%LD_LIBRARY_PATH%\", \"SteamAppId\": \"${self._SteamClientAppID()}\"}`);
+                }
+            }
 
-            zipFiles.forEach(([name, content]) => zip.file(name, content));
+            var output = lines.sort().join("\n");
+            var asJSAppSettings = ko.toJS(self._AppSettings());
+            var asJSUpdateStages = ko.toJS(self._UpdateStages());
+            var asJSPortMappings = ko.toJS(self._PortMappings());
+            var asJSConfigFileMappings = ko.toJS(self._ConfigFileMappings());
+            var zip = new JSZip();
+            zip.file(self.Meta_ConfigRoot(), output);
+            zip.file(self.Meta_ConfigManifest(), JSON.stringify(asJSAppSettings, omitNonPublicMembers, 4));
+            zip.file(self._Meta_StagesManifest(), JSON.stringify(asJSUpdateStages, omitNonPublicMembers, 4));
+            zip.file(self._Meta_PortsManifest(), JSON.stringify(asJSPortMappings, omitNonPublicMembers, 4));
+            zip.file(self.Meta_MetaConfigManifest(), JSON.stringify(asJSConfigFileMappings, omitNonPublicMembers, 4));
+            zip.file("manifest.json", self.__GithubManifest());
             zip.generateAsync({ type: "blob" })
-                .then(content => saveAs(content, "configs.zip"));
+                .then(function (content) {
+                    saveAs(content, "configs.zip");
+                });
         };
 
-        this.__Invalidate = newValue => {
+        this.__Invalidate = function (newValue) {
             self.__ValidationResult(0);
         };
 
-        Object.keys(self)
-            .filter(k => ko.isObservable(self[k]))
-            .forEach(k => self[k].subscribe(self.__Invalidate));
+        for (const k of Object.keys(self)) {
+            if (ko.isObservable(self[k])) {
+                self[k].subscribe(self.__Invalidate);
+            }
+        }
 
         this.__ValidationResult = ko.observable(0);
+
         this.__ValidationResults = ko.observableArray();
 
         this.__ValidateConfig = function () {
             autoSave();
             self.__ValidationResults.removeAll();
 
-            var failure = (issue, recommendation) => self.__ValidationResults.push(new ValidationResult("Failure", issue, recommendation));
-            var warning = (issue, recommendation, impact) => self.__ValidationResults.push(new ValidationResult("Warning", issue, recommendation, impact));
-            var info = (issue, recommendation, impact) => self.__ValidationResults.push(new ValidationResult("Info", issue, recommendation, impact));
+            var failure = (issue, recommendation) => self.__ValidationResults.push(new validationResult("Failure", issue, recommendation));
+            var warning = (issue, recommendation, impact) => self.__ValidationResults.push(new validationResult("Warning", issue, recommendation, impact));
+            var info = (issue, recommendation, impact) => self.__ValidationResults.push(new validationResult("Info", issue, recommendation, impact));
 
             //Validation Begins
             if (self.Meta_DisplayName() == "") {
@@ -550,8 +592,40 @@ class GeneratorViewModel {
                     if (!self.App_CommandLineArgs().contains("{{$RemoteAdminPassword}}")) {
                         warning("A server management mode is specified that requires AMP to know the password, but {{$RemoteAdminPassword}} is not found within the command line arguments.", "If the application can have it's RCON password specified via the command line then you should add the {{$RemoteAdminPassword}} template item to your command line arguments", "Without the ability to control the RCON password, AMP will not be able to use the servers RCON to provide a console or run commands.");
                     }
-                    break;
+/*
+                    if (!self.App_CommandLineArgs().contains(this.__QueryPortName())) {
+                        warning("A server management mode that uses the network was specified, but the port being used is not found within the command line arguments.", "If the application can have it's RCON port specified via the command line then you should add the {{$" + this.__QueryPortName() + "}} template item to your command line arguments");
+                    }
+
+                    if (self._PortMappings().filter(p => p.PortType() == "2").length == 0) {
+                        warning("A server management mode that uses the network was specified, but no RCON port has been added.", "Add the port used by this applications RCON under Networking.");
+                    }
+*/                    break;
             }
+            /*
+                        switch (self._UpdateSourceType()) {
+                            case "1": //Fetch from URL
+                                if (self._UpdateSourceURL() == "") {
+                                    failure("Update method is Fetch from URL, but no download URL was specified.", "Specify the 'Update source URL' under Update Sources.");
+                                }
+                                else if (self._UpdateSourceURL().toLowerCase().endsWith(".zip") && !self._UpdateSourceUnzip()) {
+                                    info("Download URL is a zip file, but 'Unzip once downloaded' is not turned on.", "Turn on 'Unzip once downloaded' under 'Update Sources'", "Without this setting turned on, the archive will not be extracted. If this was intentional, you can ignore this message.");
+                                }
+                                break;
+                            case "4": //SteamCMD
+                                if (self._SteamServerAppID() == "") {
+                                    failure("Update method is SteamCMD, but no server App ID is set.", "Specify the 'Server Steam App ID' under Update Sources.");
+                                }
+                                if (self._SteamClientAppID() == "") {
+                                    warning("Update method is SteamCMD, but no client App ID is set.", "Specify the 'Server Client App ID' under Update Sources.", "The client app ID is used to source the background image for the resulting instance.");
+                                }
+                                break;
+                        }
+            */
+            if (self.Console_AppReadyRegex() != "" && !self.Console_AppReadyRegex().match(/\^.+\$/)) { failure("Server ready expression does not match the entire line. Regular expressions for AMP must match the entire line, starting with a ^ and ending with a $.", "Update the Server Ready expression under Server Events to match the entire line."); }
+            if (self.Console_UserJoinRegex() != "" && !self.Console_UserJoinRegex().match(/\^.+\$/)) { failure("User connected expression does not match the entire line. Regular expressions for AMP must match the entire line, starting with a ^ and ending with a $.", "Update the User connected expression under Server Events to match the entire line."); }
+            if (self.Console_UserLeaveRegex() != "" && !self.Console_UserLeaveRegex().match(/\^.+\$/)) { failure("User disconnected expression does not match the entire line. Regular expressions for AMP must match the entire line, starting with a ^ and ending with a $.", "Update the User disconnected expression under Server Events to match the entire line."); }
+            if (self.Console_UserChatRegex() != "" && !self.Console_UserChatRegex().match(/\^.+\$/)) { failure("User chat expression does not match the entire line. Regular expressions for AMP must match the entire line, starting with a ^ and ending with a $.", "Update the User chat expression under Server Events to match the entire line."); }
             if ((self._compatibility() == "Wine" && !self._SupportsLinux()) || (self._compatibility() == "Proton" && !self._SupportsLinux())) { failure("A Linux compatibility layer was chosen, but Linux support is not checked.", "Please check both."); }
 
             //Validation Summary
@@ -571,183 +645,109 @@ class GeneratorViewModel {
         };
     }
 }
-
-class ValidationResult {
-    constructor(grade, issue, recommendation, impact = "") {
+class validationResult {
+    constructor(grade, issue, recommendation, impact) {
         this.grade = grade;
         this.issue = issue;
         this.recommendation = recommendation;
-        this.impact = impact;
+        this.impact = impact || "";
         this.gradeClass = "";
-
         switch (grade) {
-            case "Failure":
-                this.gradeClass = "table-danger";
-                break;
-            case "Warning":
-                this.gradeClass = "table-warning";
-                break;
-            case "Info":
-                this.gradeClass = "table-info";
-                break;
+            case "Failure": this.gradeClass = "table-danger"; break;
+            case "Warning": this.gradeClass = "table-warning"; break;
+            case "Info": this.gradeClass = "table-info"; break;
         }
     }
 }
 
-class PortMappingViewModel {
+class portMappingViewModel {
     constructor(port, portName, portDescription, portType, protocol, vm) {
+        var self = this;
         this.__vm = vm;
-
-        if (!port) {
-            throw new Error("Port Number is required.");
-        }
-        if (!portName) {
-            throw new Error("Port Name is required.");
-        }
-        if (!portDescription) {
-            throw new Error("Port Description is required.");
-        }
-
         this._Protocol = ko.observable(protocol);
-        this.Protocol = ko.computed(() => {
-            switch (this._Protocol()) {
-                case "1":
-                    return "TCP";
-                case "2":
-                    return "UDP";
-                case "0":
-                default:
-                    return "Both";
-            }
-        });
+        this.Protocol = ko.computed(() => self._Protocol() == "0" ? `Both` : (self._Protocol() == "1" ? `TCP` : `UDP`));
         this.Port = ko.observable(port);
         this._PortType = ko.observable(portType);
         this._Name = ko.observable(portName);
-        this.Name = ko.computed(() => {
-            switch (this._PortType()) {
-                case "Main Game Port":
-                    return "Main Game Port";
-                case "Steam Query Port":
-                    return "Steam Query Port";
-                case "RCON Port":
-                    return "Remote Admin Port";
-                case "Custom Port":
-                default:
-                    return this._Name();
-            }
-        });
+        this.Name = ko.computed(() => self._PortType() == "0" ? self._Name() : (self._PortType() == "1" ? `Steam Query Port` : (self._PortType() == "2" ? `Remote Admin Port` : `Game Port 1`)));
         this._Description = ko.observable(portDescription);
-        this.Description = ko.computed(() => {
-            switch (this._PortType()) {
-                case "1":
-                    return "Port used for Steam queries and server list";
-                case "2":
-                    return "Port used for RCON administration";
-                case "0":
-                default:
-                    return this._Description();
-            }
-        });
-        this.Ref = ko.computed(() => {
-            const cleanName = this._Name().replace(/\s+/g, "").replace(/[^a-z\d-_]/ig, "");
-            switch (this._PortType()) {
-                case "Main Game Port":
-                    return "MainGamePort";
-                case "Steam Query Port":
-                    return "SteamQueryPort";
-                case "RCON Port":
-                    return "RemoteAdminPort";
-                case "0":
-                default:
-                    return cleanName;
-            }
-        });
-        this.__RemovePort = () => this.__vm.__RemovePort(this);
+        this.Description = ko.computed(() => self._Description() == "0" ? self._Description() : (self._PortType() == "1" ? `Port used for Steam queries and server list` : (self._PortType() == "2" ? `Port used for RCON administration` : `Port used for main game traffic`)));
+        this.Ref = ko.computed(() => self._PortType() == "0" ? self._Name().replace(/\s+/g, "").replace(/[^a-z\d-_]/ig, "") : (self._PortType() == "1" ? `SteamQueryPort` : (self._PortType() == "2" ? `RemoteAdminPort` : `GamePort1`)));
+        this.__RemovePort = () => self.__vm.__RemovePort(self);
     }
 }
 
-
-class ConfigFileMappingViewModel {
+class configFileMappingViewModel {
     constructor(configFile, autoMap, configType, vm) {
+        var self = this;
         this.__vm = vm;
         this.ConfigFile = ko.observable(configFile);
         this._ConfigType = ko.observable(configType);
-        this.ConfigType = ko.computed(() => {
-            switch (this._ConfigType()) {
-                case "1":
-                    return "ini";
-                case "2":
-                    return "xml";
-                case "3":
-                    return "kvp";
-                case "0":
-                default:
-                    return "json";
-            }
-        });
+        this.ConfigType = ko.computed(() => self._ConfigType() == "0" ? `json` : (self._ConfigType() == "1" ? `ini` : (self._ConfigType() == "2" ? `xml` : (self._ConfigType() == "3" ? `kvp` : ``))));
         this._AutoMap = ko.observable(autoMap);
-        this.AutoMap = ko.computed(() => this._ConfigType() === "4" ? false : this._AutoMap());
-        this.__RemoveConfigFile = () => this.__vm.__RemoveConfigFile(this);
+        this.AutoMap = ko.computed(() => self._ConfigType() == "4" ? false : self._AutoMap());
+        this.__RemoveConfigFile = () => self.__vm.__RemoveConfigFile(self);
     }
 }
 
-class AppSettingViewModel {
+class appSettingViewModel {
     constructor(vm) {
+        var self = this;
         this.__vm = vm;
         this.DisplayName = ko.observable("");
         this.Category = ko.observable("Server Settings");
         this.Description = ko.observable("");
-        this.Keywords = ko.computed(() => this.DisplayName().toLowerCase().replaceAll(" ", ","));
+        this.Keywords = ko.computed(() => self.DisplayName().toLowerCase().replaceAll(" ", ","));
         this.FieldName = ko.observable("");
-        this.InputType = ko.observable("text");
+        this.InputType = ko.observable("text")
         this.IsFlagArgument = ko.observable(false);
-        this.ParamFieldName = ko.computed(() => this.FieldName());
+        this.ParamFieldName = ko.computed(() => self.FieldName());
         this.IncludeInCommandLine = ko.observable(false);
         this.DefaultValue = ko.observable("");
-        this.Placeholder = ko.computed(() => this.DefaultValue());
+        this.Placeholder = ko.computed(() => self.DefaultValue());
         this.Suffix = ko.observable("");
         this.Hidden = ko.observable(false);
         this.SkipIfEmpty = ko.observable(false);
         this._CheckedValue = ko.observable("true");
         this._UncheckedValue = ko.observable("false");
-        this.__RemoveSetting = () => this.__vm.__RemoveSetting(this);
-        this.__EditSetting = () => this.__vm.__EditSetting(this);
+        this.__RemoveSetting = () => self.__vm.__RemoveSetting(self);
+        this.__EditSetting = () => self.__vm.__EditSetting(self);
 
-        this._EnumMappings = ko.observableArray(); // of EnumMappingViewModel
+        this._EnumMappings = ko.observableArray(); //of enumMappingViewModel
         this.__NewEnumKey = ko.observable("");
         this.__NewEnumValue = ko.observable("");
 
-        this.__RemoveEnum = (toRemove) => {
-            this._EnumMappings.remove(toRemove);
+        this.__RemoveEnum = function (toRemove) {
+            self._EnumMappings.remove(toRemove);
         };
 
-        this.__AddEnum = () => {
-            this._EnumMappings.push(new EnumMappingViewModel(this.__NewEnumKey(), this.__NewEnumValue(), this));
+        this.__AddEnum = function () {
+            self._EnumMappings.push(new enumMappingViewModel(self.__NewEnumKey(), self.__NewEnumValue(), self));
         };
 
-        this.__deserialize = (inputData) => {
-            const asJS = JSON.parse(inputData);
-            const enumSettings = asJS._EnumMappings;
+        this.__Deserialize = function (inputData) {
+            var asJS = JSON.parse(inputData);
+            var enumSettings = asJS._EnumMappings;
 
             delete asJS._EnumMappings;
 
-            ko.quickmap.map(this, asJS);
+            ko.quickmap.map(self, asJS);
 
-            this._EnumMappings.removeAll();
-            const MappedEnums = ko.quickmap.to(EnumMappingViewModel, enumSettings, false, { __vm: this });
-            this._EnumMappings.push.apply(this._EnumMappings, MappedEnums);
+            self._EnumMappings.removeAll();
+            var mappedEnums = ko.quickmap.to(enumMappingViewModel, enumSettings, false, { __vm: self });
+            self._EnumMappings.push.apply(self._EnumMappings, mappedEnums);
         };
 
         this.EnumValues = ko.computed(() => {
-            if (this.InputType() === "checkbox") {
-                const result = {};
-                result[this._CheckedValue()] = "True";
-                result[this._UncheckedValue()] = "False";
+            if (self.InputType() == "checkbox") {
+                var result = {};
+                result[self._CheckedValue()] = "True";
+                result[self._UncheckedValue()] = "False";
                 return result;
-            } else if (this.InputType() === "enum") {
-                const result = {};
-                for (let i = 0; i < this._EnumMappings().length; i++) {
-                    result[this._EnumMappings()[i]._EnumKey()] = this._EnumMappings()[i]._EnumValue();
+            } else if (self.InputType() == "enum") {
+                var result = {};
+                for (let i = 0; i < self._EnumMappings().length; i++) {
+                    result[self._EnumMappings()[i]._enumKey()] = self._EnumMappings()[i]._enumValue();
                 }
                 return result;
             } else {
@@ -757,54 +757,25 @@ class AppSettingViewModel {
     }
 }
 
-class EnumMappingViewModel {
+class enumMappingViewModel {
     constructor(enumKey, enumValue, vm) {
+        var self = this;
         this.__vm = vm;
-        this._EnumKey = ko.observable(EnumKey);
-        this._EnumValue = ko.observable(EnumValue);
-        this.__RemoveEnum = () => this.__vm.__RemoveEnum(this);
+        this._enumKey = ko.observable(enumKey);
+        this._enumValue = ko.observable(enumValue);
+        this.__RemoveEnum = () => self.__vm.__RemoveEnum(self);
     }
 }
 
-
-class UpdateStageViewModel {
+class updateStageViewModel {
     constructor(vm) {
+        var self = this;
         this.__vm = vm;
         this.UpdateStageName = ko.observable("");
         this._UpdateSourcePlatform = ko.observable("0");
-        this.UpdateSourcePlatform = ko.computed(() => {
-            switch (this._UpdateSourcePlatform()) {
-                case "1":
-                    return "Linux";
-                case "2":
-                    return "Windows";
-                default:
-                    return "All";
-            }
-        });
+        this.UpdateSourcePlatform = ko.computed(() => self._UpdateSourcePlatform() == "0" ? `All` : (self._UpdateSourcePlatform() == "1" ? `Linux` : `Windows`));
         this._UpdateSource = ko.observable("8");
-        this.UpdateSource = ko.computed(() => {
-            switch (this._UpdateSource()) {
-                case "0":
-                    return "CopyFilePath";
-                case "1":
-                    return "CreateSymlink";
-                case "2":
-                    return "Executable";
-                case "3":
-                    return "ExtractArchive";
-                case "4":
-                    return "FetchURL";
-                case "5":
-                    return "GithubRelease";
-                case "6":
-                    return "SetExecutableFlag";
-                case "7":
-                    return "StartApplication";
-                default:
-                    return "SteamCMD";
-            }
-        });
+        this.UpdateSource = ko.computed(() => self._UpdateSource() == "0" ? `CopyFilePath` : (self._UpdateSource() == "1" ? `CreateSymlink` : (self._UpdateSource() == "2" ? `Executable` : (self._UpdateSource() == "3" ? `ExtractArchive` : (self._UpdateSource() == "4" ? `FetchURL` : (self._UpdateSource() == "5" ? `GithubRelease` : (self._UpdateSource() == "6" ? `SetExecutableFlag` : (self._UpdateSource() == "7" ? `StartApplication` : `SteamCMD`))))))));
         this.UpdateSourceData = ko.observable("");
         this.UpdateSourceArgs = ko.observable("");
         this.UpdateSourceVersion = ko.observable("");
@@ -812,65 +783,45 @@ class UpdateStageViewModel {
         this.UnzipUpdateSource = ko.observable(false);
         this.OverwriteExistingFiles = ko.observable(false);
         this._ForceDownloadPlatform = ko.observable(null);
-        this.ForceDownloadPlatform = ko.computed(() => {
-            switch (this._ForceDownloadPlatform()) {
-                case "1":
-                    return "Linux";
-                case "2":
-                    return "Windows";
-                default:
-                    return null;
-            }
-        });
+        this.ForceDownloadPlatform = ko.computed(() => self._ForceDownloadPlatform() == "0" ? null : (self._ForceDownloadPlatform() == "1" ? `Linux` : `Windows`));
         this.UpdateSourceConditionSetting = ko.observable(null);
         this.UpdateSourceConditionValue = ko.observable(null);
         this.DeleteAfterExtract = ko.observable(true);
         this.OneShot = ko.observable(false);
-        this.__RemoveStage = () => this.__vm.__RemoveStage(this);
-        this.__EditStage = () => this.__vm.__EditStage(this);
+        this.__RemoveStage = () => self.__vm.__RemoveStage(self);
+        this.__EditStage = () => self.__vm.__EditStage(self);
     }
 }
 
-const vm = new GeneratorViewModel();
+var vm = new generatorViewModel();
 
-const autoSave = () => {
-    localStorage.setItem('configGenAutoSave', vm.__Serialize());
-};
+function autoSave() {
+    localStorage.configgenautosave = vm.__Serialize();
+}
 
-const autoLoad = () => {
-    const configGenAutoSave = localStorage.getItem('configGenAutoSave');
-
-    if (configGenAutoSave !== "") {
-        vm.__Deserialize(configGenAutoSave);
+function autoLoad() {
+    if (localStorage.configgenautosave != "") {
+        vm.__Deserialize(localStorage.configgenautosave);
     }
-};
-
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     ko.applyBindings(vm);
     setInterval(autoSave, 30000);
     $('body').scrollspy({ target: '#navbar', offset: 90 });
 
-    initTooltip();
-    processLocationHash();
-});
-
-function initTooltip() {
     $('[data-toggle="tooltip"]').tooltip({
         container: 'body',
         trigger: 'click',
         placement: 'bottom'
     });
-}
-
-function processLocationHash() {
-    const { hash } = document.location;
-
-    if (hash.startsWith("#cdata=")) {
-        var data = decodeURIComponent(hash.substring(7));
+    //Check if there is anything after the # and if it starts cdata=, then import it if it does.
+    if (document.location.hash.indexOf("#cdata=") == 0) {
+        var data = decodeURIComponent(document.location.hash.substring(7));
         vm.__Deserialize(data);
         document.location.hash = "";
-    } else {
+    }
+    else {
         autoLoad();
     }
-}
+});

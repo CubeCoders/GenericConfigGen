@@ -1,32 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>AMP Configuration Generator</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark">
+    <script>
+        if (window.matchMedia("(prefers-color-scheme: dark)").media === "not all") {
+            document.documentElement.style.display = "none";
+            document.head.insertAdjacentHTML(
+                "beforeend",
+                "<link id=\"css\" rel=\"stylesheet\" href=\"../dist/css/bootstrap.css\" onload=\"document.documentElement.style.display = ''\">"
+            );
+        }
+    </script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-dark-5@1.1.3/dist/css/bootstrap-night.min.css" rel="stylesheet" media="(prefers-color-scheme: dark)">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-dark-5@1.1.3/dist/css/bootstrap.min.css" rel="stylesheet" media="(prefers-color-scheme: light)">
-    <link href="style.css" rel="stylesheet">
-    <script type="text/javascript" src="common.js" defer></script>
-    <script type="text/javascript" src="knockout.quickmap.js" defer></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous" defer></script>
-    <script type="text/javascript" src="generator.js" defer></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            if (window.matchMedia("(prefers-color-scheme: dark)").media === "not all") {
-                document.documentElement.style.display = "none";
-                document.head.insertAdjacentHTML(
-                    "beforeend",
-                    "<link id=\"css\" rel=\"stylesheet\" href=\"../dist/css/bootstrap.css\" onload=\"document.documentElement.style.display = ''\">"
-                );
-            }
-        });
-    </script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js"></script>
-    <script type="text/javascript" src="FileSaver.min.js" defer></script>
-    <script type="text/javascript" src="jszip.min.js" defer></script>
+    <script type="text/javascript" src="FileSaver.min.js"></script>
+    <script type="text/javascript" src="jszip.min.js"></script>
+    <link href="style.css" rel="stylesheet">
+    <script type="text/javascript" src="common.js"></script>
+    <script type="text/javascript" src="knockout.quickmap.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.js"
+            integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+            crossorigin="anonymous"></script>
+    <script type="text/javascript" src="generator.js"></script>
 </head>
 
 <body data-spy="scroll" data-target="#navbar" data-offset="0">
@@ -37,7 +39,9 @@
                     <ul class="nav flex-column">
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" href="#basicInfo">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-server" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                     stroke-linejoin="round" class="feather feather-server" aria-hidden="true">
                                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                                     <polyline points="9 22 9 12 15 12 15 22"></polyline>
                                 </svg>
@@ -46,7 +50,8 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" aria-current="page" href="#managementConsole">
-                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2"
+                                     fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
                                     <polyline points="4 17 10 11 4 5"></polyline>
                                     <line x1="12" y1="19" x2="20" y2="19"></line>
                                 </svg>
@@ -55,7 +60,8 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" aria-current="page" href="#networking">
-                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2"
+                                     fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
                                     <circle cx="12" cy="12" r="10"></circle>
                                     <line x1="2" y1="12" x2="22" y2="12"></line>
                                     <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
@@ -66,7 +72,8 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" aria-current="page" href="#updateSources">
-                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2"
+                                     fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
                                     <polyline points="8 17 12 21 16 17"></polyline>
                                     <line x1="12" y1="12" x2="12" y2="21"></line>
                                     <path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"></path>
@@ -76,7 +83,8 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" aria-current="page" href="#configuration">
-                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2"
+                                     fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
                                     <circle cx="12" cy="12" r="3"></circle>
                                     <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
                                     </path>
@@ -86,7 +94,8 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" aria-current="page" href="#startupShutdown">
-                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2"
+                                     fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
                                     <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
                                     <line x1="12" y1="2" x2="12" y2="12"></line>
                                 </svg>
@@ -95,7 +104,8 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" aria-current="page" href="#serverEvents">
-                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2"
+                                     fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
                                     <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
                                 </svg>
                                 Server Events
@@ -103,7 +113,8 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" aria-current="page" href="#validateReview">
-                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2"
+                                     fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
                                     <polyline points="20 6 9 17 4 12"></polyline>
                                 </svg>
                                 Validate and Review
@@ -170,8 +181,8 @@
                                 <input type="text" class="form-control" id="applicationNameField" placeholder="Valheim" data-bind="value: Meta_DisplayName, valueUpdate: 'input'">
                             </div>
                             <div class="mb-3 col-6">
-                                <label for="applicationDescriptionField">Description (Optional)</label>
-                                <div class="form-text">Useful for describing different variants/configurations of the same application.</div>
+                                <label for="applicationDescriptionField">Description</label>
+                                <div class="form-text">Optional: useful for describing different variants/configurations of the same application.</div>
                                 <input type="text" class="form-control" id="applicationDescriptionField" placeholder="Valheim Dedicated Server" data-bind="value: Meta_Description">
                             </div>
                         </div>
@@ -194,17 +205,17 @@
                                     <input class="form-check-input flex-shrink-0" type="checkbox" data-bind="checked: _SupportsWindows">
                                     <span>
                                         Windows
-                                        <small class="d-block text-muted">
-                                            Runs on Windows 10/Server 2016 or newer. x86/64 Only.
-                                        </small>
+                                        <small class="d-block text-muted">Runs on Windows 10/Server 2016 or newer. x86/64 Only.</small>
                                     </span>
                                 </label>
                                 <label class="list-group-item d-flex gap-2" style="flex: 1">
-                                    <input class="form-check-input flex-shrink-0" type="checkbox" data-bind="checked: _SupportsLinux">
+                                    <input class="form-check-input flex-shrink-0" type="checkbox"
+                                           data-bind="checked: _SupportsLinux">
                                     <span>
                                         Linux
                                         <small class="d-block text-muted">
-                                            Runs on Linux Systems. Recommend validating on Debian 10 x86/64.
+                                            Runs on Linux Systems. Recommend validating on
+                                            Debian 10 x86/64.
                                         </small>
                                     </span>
                                 </label>
@@ -214,7 +225,8 @@
                             <label>What compatibility layer is required?</label>
                             <div class="list-group mx-0">
                                 <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="radio" name="_compatibilityType" value="None" data-bind="checked: _compatibility">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="_compatibilityType"
+                                           value="None" data-bind="checked: _compatibility">
                                     <span>
                                         None
                                         <small class="d-block text-muted">
@@ -223,7 +235,8 @@
                                     </span>
                                 </label>
                                 <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="radio" name="_compatibilityType" value="Wine" data-bind="checked: _compatibility">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="_compatibilityType"
+                                           value="Wine" data-bind="checked: _compatibility">
                                     <span>
                                         Wine
                                         <small class="d-block text-muted">
@@ -232,7 +245,8 @@
                                     </span>
                                 </label>
                                 <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="radio" name="_compatibilityType" value="WineXvfb" data-bind="checked: _compatibility">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="_compatibilityType"
+                                           value="WineXvfb" data-bind="checked: _compatibility">
                                     <span>
                                         Wine with Xvfb
                                         <small class="d-block text-muted">
@@ -241,7 +255,8 @@
                                     </span>
                                 </label>
                                 <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="radio" name="_compatibilityType" value="Proton" data-bind="checked: _compatibility">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="_compatibilityType"
+                                           value="Proton" data-bind="checked: _compatibility">
                                     <span>
                                         Proton (Not recommended)
                                         <small class="d-block text-muted">
@@ -250,7 +265,8 @@
                                     </span>
                                 </label>
                                 <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="radio" name="_compatibilityType" value="ProtonXvfb" data-bind="checked: _compatibility">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="_compatibilityType"
+                                           value="ProtonXvfb" data-bind="checked: _compatibility">
                                     <span>
                                         Proton with Xvfb (Not recommended)
                                         <small class="d-block text-muted">
@@ -267,130 +283,146 @@
                             <label>How is this application managed?</label>
                             <div class="list-group mx-0">
                                 <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="radio" name="manageType" value="PinballWizard" data-bind="checked: App_AdminMethod">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="manageType"
+                                           value="PinballWizard" data-bind="checked: App_AdminMethod">
                                     <span>
                                         None
                                         <small class="d-block text-muted">
-                                            For applications that cannot be managed. AMP will only be able to provide basic monitoring.
+                                            For applications that cannot be
+                                            managed. AMP will only be able to provide basic monitoring.
                                         </small>
                                     </span>
                                 </label>
                                 <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="radio" name="manageType" value="STDIO" data-bind="checked: App_AdminMethod">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="manageType"
+                                           value="STDIO" data-bind="checked: App_AdminMethod">
                                     <span>
                                         Standard IO
                                         <small class="d-block text-muted">
-                                            For applications with a normal console that can be read from and/or written to.
+                                            For applications with a normal console
+                                            that can be read from and/or written to.
                                         </small>
                                     </span>
                                 </label>
                                 <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="radio" name="manageType" value="SourceRCON" data-bind="checked: App_AdminMethod">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="manageType"
+                                           value="SourceRCON" data-bind="checked: App_AdminMethod">
                                     <span>
                                         Source RCON
                                         <small class="d-block text-muted">
-                                            For applications that use the standard Source RCON Protocol.
+                                            For applications that use the standard
+                                            Source RCON Protocol.
                                         </small>
                                     </span>
                                 </label>
                                 <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="radio" name="manageType" value="TelnetRCON" data-bind="checked: App_AdminMethod">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="manageType"
+                                           value="TelnetRCON" data-bind="checked: App_AdminMethod">
                                     <span>Telnet</span>
                                 </label>
                                 <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="radio" name="manageType" value="BattlEyeRCON" data-bind="checked: App_AdminMethod">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="manageType"
+                                           value="BattlEyeRCON" data-bind="checked: App_AdminMethod">
                                     <span>BattleEye</span>
                                 </label>
                                 <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="radio" name="manageType" value="WebRCON" data-bind="checked: App_AdminMethod">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="manageType"
+                                           value="WebRCON" data-bind="checked: App_AdminMethod">
                                     <span>WebRCON</span>
                                 </label>
                                 <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="radio" name="manageType" value="QuakeRCON" data-bind="checked: App_AdminMethod">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="manageType"
+                                           value="QuakeRCON" data-bind="checked: App_AdminMethod">
                                     <span>Quake RCON</span>
                                 </label>
                                 <!--label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="radio" name="manageType"
-                                           value="AMP_GSIO" data-bind="checked: App_AdminMethod">
-                                    <span>
-                                        AMP GS/IO
-                                        <small class="d-block text-muted">
-                                            For applications that use CubeCoders
-                                            GameServer/IO Standard.
-                                        </small>
-                                    </span>
-                                </label-->
+                <input class="form-check-input flex-shrink-0" type="radio" name="manageType"
+                       value="AMP_GSIO" data-bind="checked: App_AdminMethod">
+                <span>
+                    AMP GS/IO
+                    <small class="d-block text-muted">
+                        For applications that use CubeCoders
+                        GameServer/IO Standard.
+                    </small>
+                </span>
+            </label-->
                             </div>
                             <div class="form-text"></div>
                         </div>
                         <div class="mb-3">
                             <label>What modes are supported by the applications console?</label>
                             <div class="form-text">
-                                This is in addition to the applications management type if it accepts management over methods other than Standard IO
+                                This is in addition to the applications management type if it
+                                accepts management over methods other than Standard IO
                             </div>
                             <div class="list-group mx-0 list-group-horizontal">
                                 <label class="list-group-item d-flex gap-2" style="flex: 1">
-                                    <input class="form-check-input flex-shrink-0" type="checkbox" data-bind="checked: App_HasReadableConsole">
+                                    <input class="form-check-input flex-shrink-0" type="checkbox"
+                                           data-bind="checked: App_HasReadableConsole">
                                     <span>
                                         Reading
                                         <small class="d-block text-muted">
-                                            This application writes log output to its console that AMP can read.
+                                            This application writes log output to
+                                            its console that AMP can read.
                                         </small>
                                     </span>
                                 </label>
                                 <label class="list-group-item d-flex gap-2" style="flex: 1">
-                                    <input class="form-check-input flex-shrink-0" type="checkbox" data-bind="checked: App_HasWritableConsole">
+                                    <input class="form-check-input flex-shrink-0" type="checkbox"
+                                           data-bind="checked: App_HasWritableConsole">
                                     <span>
                                         Writing
                                         <small class="d-block text-muted">
-                                            The console of this application supports having input written to it.
+                                            The console of this application supports
+                                            having input written to it.
                                         </small>
                                     </span>
                                 </label>
                             </div>
                         </div>
                         <!--div class="mb-3">
-                            <label>Are any compatibility flags required?</label>
-                            <div class="form-text">Generally these are not needed for modern applications</div>
-                            <div class="list-group mx-0">
-                                <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="checkbox" value="">
-                                    <span>
-                                        Linux Console Unbuffering
-                                        <small class="d-block text-muted">
-                                            Handle Linux applications that only
-                                            write to the console in large chunks instead of one line at a
-                                            time.
-                                        </small>
-                                    </span>
-                                </label>
-                                <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="checkbox" value="">
-                                    <span>
-                                        Windows Virtual Console
-                                        <small class="d-block text-muted">
-                                            Handle Windows applications that use a
-                                            console window but do not use the actual standard IO
-                                            streams.
-                                        </small>
-                                    </span>
-                                </label>
-                                <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="checkbox" value="">
-                                    <span>
-                                        Legacy Windows Unity Compatibility
-                                        <small class="d-block text-muted">
-                                            Used for older Unity applications that
-                                            don't write to their console properly.
-                                        </small>
-                                    </span>
-                                </label>
-                            </div>
-                        </div-->
+        <label>Are any compatibility flags required?</label>
+        <div class="form-text">Generally these are not needed for modern applications</div>
+        <div class="list-group mx-0">
+            <label class="list-group-item d-flex gap-2">
+                <input class="form-check-input flex-shrink-0" type="checkbox" value="">
+                <span>
+                    Linux Console Unbuffering
+                    <small class="d-block text-muted">
+                        Handle Linux applications that only
+                        write to the console in large chunks instead of one line at a
+                        time.
+                    </small>
+                </span>
+            </label>
+            <label class="list-group-item d-flex gap-2">
+                <input class="form-check-input flex-shrink-0" type="checkbox" value="">
+                <span>
+                    Windows Virtual Console
+                    <small class="d-block text-muted">
+                        Handle Windows applications that use a
+                        console window but do not use the actual standard IO
+                        streams.
+                    </small>
+                </span>
+            </label>
+            <label class="list-group-item d-flex gap-2">
+                <input class="form-check-input flex-shrink-0" type="checkbox" value="">
+                <span>
+                    Legacy Windows Unity Compatibility
+                    <small class="d-block text-muted">
+                        Used for older Unity applications that
+                        don't write to their console properly.
+                    </small>
+                </span>
+            </label>
+        </div>
+    </div-->
                         <br /><hr /><br />
                         <h4 id="networking">Networking</h4>
                         <div class="form-text">
-                            AMP will automatically generate firewall rules to allow the application ports through. You may add any number of ports. Maximum of 1 Main Game, Steam Query, and RCON Port.
+                            AMP will automatically generate firewall rules to allow the application
+                            ports through
                         </div>
                         <table class="table mb-3">
                             <thead>
@@ -407,14 +439,17 @@
                                 <!-- ko foreach: _PortMappings -->
                                 <tr>
                                     <td>
-                                        <input type="number" min="1024" max="65535" value="7777" data-bind="value: Port">
+                                        <input type="number" min="1024" max="65535" value="7777"
+                                               data-bind="value: Port">
                                     </td>
                                     <td data-bind="text: _PortType"></td>
                                     <td>
-                                        <input type="text" data-bind="value: Name">
+                                        <input type="text" placeholder="Main Game Port"
+                                               data-bind="value: _Name">
                                     </td>
                                     <td>
-                                        <input type="text" placeholder="Port for main traffic" data-bind="value: _Description">
+                                        <input type="text" placeholder="Port for main traffic"
+                                               data-bind="value: _Description">
                                     </td>
                                     <td>
                                         <select class="form-select" data-bind="value: _Protocol">
@@ -424,7 +459,8 @@
                                         </select>
                                     </td>
                                     <td style="text-align: right;">
-                                        <button type="button" class="btn btn-danger" data-bind="click: __RemovePort">
+                                        <button type="button" class="btn btn-danger"
+                                                data-bind="click: __RemovePort">
                                             Delete
                                         </button>
                                     </td>
@@ -438,17 +474,28 @@
                             </tbody>
                             <tfoot>
                                 <tr>
+                                    <td colspan="3">
+                                        <small class="d-block text-muted">
+                                            You may add any number of ports.<br />
+                                            Maximum of 1 Main Game, Steam Query, and RCON Port.
+                                        </small>
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td>
-                                        <input type="number" min="1024" max="65535" value="7777" data-bind="value: __NewPort">
+                                        <input type="number" min="1024" max="65535" value="7777"
+                                               data-bind="value: __NewPort">
                                     </td>
                                     <td>
                                         <select class="form-select" data-bind="options: availablePortOptions, value: __NewPortType"></select>
                                     </td>
                                     <td>
-                                        <input type="text" placeholder="Main Game Port" data-bind="value: __NewName">
+                                        <input type="text" placeholder="Main Game Port"
+                                               data-bind="value: __NewName">
                                     </td>
                                     <td>
-                                        <input type="text" placeholder="Port for main traffic" data-bind="value: __NewDescription">
+                                        <input type="text" placeholder="Port for main traffic"
+                                               data-bind="value: __NewDescription">
                                     </td>
                                     <td>
                                         <select class="form-select" data-bind="value: __NewProtocol">
@@ -481,10 +528,12 @@
                                     <td data-bind="text: UpdateStageName"></td>
                                     <td data-bind="text: UpdateSource"></td>
                                     <td style="text-align: right;">
-                                        <button type="button" class="btn btn-primary" data-bind="click: __EditStage">
+                                        <button type="button" class="btn btn-primary"
+                                                data-bind="click: __EditStage">
                                             Edit
                                         </button>
-                                        <button type="button" class="btn btn-danger" data-bind="click: __RemoveStage">
+                                        <button type="button" class="btn btn-danger"
+                                                data-bind="click: __RemoveStage">
                                             Delete
                                         </button>
                                     </td>
@@ -500,7 +549,8 @@
                                 <tr>
                                     <td colspan="2"></td>
                                     <td colspan="2" style="text-align: right;">
-                                        <button type="button" class="btn btn-primary" data-bind="click: __AddStage">
+                                        <button type="button" class="btn btn-primary"
+                                                data-bind="click: __AddStage">
                                             Add Stage
                                         </button>
                                     </td>
@@ -528,10 +578,12 @@
                                     <td data-bind="text: DefaultValue"></td>
                                     <td data-bind="text: IncludeInCommandLine() ? '✓' : '✗'"></td>
                                     <td style="text-align: right;">
-                                        <button type="button" class="btn btn-primary" data-bind="click: __EditSetting">
+                                        <button type="button" class="btn btn-primary"
+                                                data-bind="click: __EditSetting">
                                             Edit
                                         </button>
-                                        <button type="button" class="btn btn-danger" data-bind="click: __RemoveSetting">
+                                        <button type="button" class="btn btn-danger"
+                                                data-bind="click: __RemoveSetting">
                                             Delete
                                         </button>
                                     </td>
@@ -547,7 +599,8 @@
                                 <tr>
                                     <td colspan="4"></td>
                                     <td colspan="2" style="text-align: right;">
-                                        <button type="button" class="btn btn-primary" data-bind="click: __AddSetting">
+                                        <button type="button" class="btn btn-primary"
+                                                data-bind="click: __AddSetting">
                                             Add Setting
                                         </button>
                                     </td>
@@ -571,7 +624,8 @@
                                 <!-- ko foreach: _ConfigFileMappings -->
                                 <tr>
                                     <td>
-                                        <input type="text" placeholder="Configs/Network.eco" data-bind="value: ConfigFile">
+                                        <input type="text" placeholder="Configs/Network.eco"
+                                               data-bind="value: ConfigFile">
                                     </td>
                                     <td>
                                         <select class="form-select" data-bind="value: _ConfigType">
@@ -583,10 +637,12 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="checkbox" data-bind="checked: _AutoMap">
+                                        <input type="checkbox"
+                                               data-bind="checked: _AutoMap">
                                     </td>
                                     <td style="text-align: right;">
-                                        <button type="button" class="btn btn-danger" data-bind="click: __RemoveConfigFile">
+                                        <button type="button" class="btn btn-danger"
+                                                data-bind="click: __RemoveConfigFile">
                                             Delete Config File
                                         </button>
                                     </td>
@@ -601,7 +657,8 @@
                             <tfoot>
                                 <tr>
                                     <td>
-                                        <input type="text" placeholder="Configs/Network.eco" data-bind="value: __NewConfigFile">
+                                        <input type="text" placeholder="Configs/Network.eco"
+                                               data-bind="value: __NewConfigFile">
                                     </td>
                                     <td>
                                         <select class="form-select" data-bind="value: __NewConfigType">
@@ -613,7 +670,8 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="checkbox" data-bind="checked: __NewAutoMap">
+                                        <input type="checkbox"
+                                               data-bind="checked: __NewAutoMap">
                                     </td>
                                     <td style="text-align: right;">
                                         <button type="button" class="btn btn-primary" data-bind="click: __AddConfigFile">
@@ -629,126 +687,143 @@
                         <div class="row mb-3">
                             <div class="mb-3 col-6" data-bind="visible: _SupportsWindows">
                                 <label for="applicationWinExeField">Windows Executable</label>
-                                <input type="text" class="form-control" id="applicationWinExeField" data-bind="value: _WinExecutableName, valueUpdate: 'input'" placeholder="Application.exe">
+                                <input type="text" class="form-control" id="applicationWinExeField"
+                                       data-bind="value: _WinExecutableName, valueUpdate: 'input'"
+                                       placeholder="Application.exe">
                             </div>
                             <div class="mb-3 col-6" data-bind="visible: _SupportsLinux">
                                 <label for="applicationLinExeField">Linux Executable</label>
-                                <input type="text" class="form-control" id="applicationLinExeField" data-bind="value: _LinuxExecutableName, valueUpdate: 'input'" placeholder="Application.x86_64">
+                                <input type="text" class="form-control" id="applicationLinExeField"
+                                       data-bind="value: _LinuxExecutableName, valueUpdate: 'input'"
+                                       placeholder="Application.x86_64">
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="applicationArgumentsField">Command line arguments</label>
                             <div class="form-text">
-                                Don't include any arguments that come from the Configuration and Settings section above.
+                                Don't include any arguments that come from the Configuration and
+                                Settings section above.
                                 <!-- <button type="button" class="linkButton">Show substitutions reference</button> -->
                             </div>
-                            <input type="text" class="form-control" id="applicationArgumentsField" data-bind="value: App_CommandLineArgs, valueUpdate: 'input'">
+                            <input type="text" class="form-control" id="applicationArgumentsField"
+                                   data-bind="value: App_CommandLineArgs, valueUpdate: 'input'">
                         </div>
                         <div class="row">
                             <div class="mb-3 col-6" data-bind="visible: _SupportsWindows">
                                 <label for="applicationArgumentsWindowsField">Command line Windows only arguments</label>
                                 <div class="form-text">
-                                    Any Windows specific arguments to be used in the command line args in place of {{$PlatformArgs}}.
+                                    Any Windows specific arguments to be used in the
+                                    command line args in place of {{$PlatformArgs}}.
                                 </div>
-                                <input type="text" class="form-control" id="applicationArgumentsWindowsField" data-bind="value: App_WindowsCommandLineArgs">
+                                <input type="text" class="form-control" id="applicationArgumentsWindowsField"
+                                       data-bind="value: App_WindowsCommandLineArgs">
                             </div>
                             <div class="mb-3 col-6" data-bind="visible: _SupportsLinux">
                                 <label for="applicationArgumentsLinuxField">Command line Linux only arguments</label>
                                 <div class="form-text">
-                                    Any Linux specific arguments to be used in the command line args in place of {{$PlatformArgs}}.
+                                    Any Linux specific arguments to be used in the
+                                    command line args in place of {{$PlatformArgs}}.
                                 </div>
-                                <input type="text" class="form-control" id="applicationArgumentsLinuxField" data-bind="value: _App_LinuxCommandLineArgsInput">
+                                <input type="text" class="form-control" id="applicationArgumentsLinuxField"
+                                       data-bind="value: _App_LinuxCommandLineArgsInput">
                             </div>
                         </div>
                         <div class="row">
                             <div class="mb-3 col-6">
                                 <label for="applicationArgumentsFormatField">Command line paramter format</label>
                                 <div class="form-text">
-                                    The format to be used to add settings specified above to the command line in place of {{$FormattedArgs}}. {0} is the field name and {1} the value.
+                                    The format to be used to add settings specified above to the
+                                    command line in place of {{$FormattedArgs}}. {0} is the field name and {1} the
+                                    value.
                                 </div>
-                                <input type="text" class="form-control" id="applicationArgumentsFormatField" data-bind="value: App_CommandLineParameterFormat">
+                                <input type="text" class="form-control" id="applicationArgumentsFormatField"
+                                       data-bind="value: App_CommandLineParameterFormat">
                             </div>
                             <div class="mb-3 col-6">
                                 <label for="applicationArgumentsDelimiterField">Command line parameter delimiter</label>
                                 <div class="form-text">
-                                    The character(s) used to separate different arguments in the command line flags generated by settings. By default this is a single space.
+                                    The character(s) used to separate different arguments in the
+                                    command line flags generated by settings. By default this is a single space.
                                 </div>
-                                <input type="text" class="form-control" id="applicationArgumentsDelimiterField" data-bind="value: App_CommandLineParameterDelimiter">
+                                <input type="text" class="form-control" id="applicationArgumentsDelimiterField"
+                                       data-bind="value: App_CommandLineParameterDelimiter">
                             </div>
                         </div>
                         <div class="row">
                             <div class="mb-3 col-6" data-bind="visible: Meta_DisplayImageSource().substring(0, 3) != 'url'">
                                 <label for="workshopModsField">Steam Workshop Mods Location</label>
-                                <div class="form-text">
-                                    Where should AMP place Steam Workshop mods? This is relative to the Base Directory.
-                                </div>
+                                <div class="form-text">Where should AMP place Steam Workshop mods? This is relative to the Base Directory.</div>
                                 <input type="text" class="form-control" id="workshopModsField" data-bind="value: _App_SteamWorkshopDownloadLocation" placeholder="ConanSandbox/Mods">
                             </div>
                             <div class="mb-3 col-6" data-bind="visible: Meta_DisplayImageSource().substring(0, 3) == 'url'">
                                 <label for="displayImageField">Display Image Source</label>
-                                <div class="form-text">
-                                    A URL to an image that AMP can use to represent the application. This is pre-filled for Steam games.
-                                </div>
+                                <div class="form-text">A URL to an image that AMP can use to represent the application. This is pre-filled for Steam games.</div>
                                 <input type="text" class="form-control" id="displayImageField" data-bind="value: _DisplayImageSource">
                             </div>
                         </div>
-                        <!--
-                                                <div class="mb-3">
-                                                    <label>Startup Mode</label>
-                                                    <div class="list-group mx-0 list-group-horizontal">
-                                                        <label class="list-group-item d-flex gap-2">
-                                                            <input class="form-check-input flex-shrink-0" type="radio" name="startupType"
-                                                                   value="false" data-bind="checked: App_RapidStartup">
-                                                            <span>
-                                                                Standard
-                                                                <small class="d-block text-muted">
-                                                                    For applications that take some time to start.
-                                                                    AMP will display a notification until startup has been confirmed.
-                                                                </small>
-                                                            </span>
-                                                        </label>
-                                                        <label class="list-group-item d-flex gap-2">
-                                                            <input class="form-check-input flex-shrink-0" type="radio" name="startupType"
-                                                                   value="true" data-bind="checked: App_RapidStartup">
-                                                            <span>
-                                                                Rapid
-                                                                <small class="d-block text-muted">
-                                                                    For applications that can start very quickly
-                                                                    (Under 5 seconds) - AMP will not create a notification/task for
-                                                                    startup.
-                                                                </small>
-                                                            </span>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                        -->
+<!--
+                        <div class="mb-3">
+                            <label>Startup Mode</label>
+                            <div class="list-group mx-0 list-group-horizontal">
+                                <label class="list-group-item d-flex gap-2">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="startupType"
+                                           value="false" data-bind="checked: App_RapidStartup">
+                                    <span>
+                                        Standard
+                                        <small class="d-block text-muted">
+                                            For applications that take some time to start.
+                                            AMP will display a notification until startup has been confirmed.
+                                        </small>
+                                    </span>
+                                </label>
+                                <label class="list-group-item d-flex gap-2">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="startupType"
+                                           value="true" data-bind="checked: App_RapidStartup">
+                                    <span>
+                                        Rapid
+                                        <small class="d-block text-muted">
+                                            For applications that can start very quickly
+                                            (Under 5 seconds) - AMP will not create a notification/task for
+                                            startup.
+                                        </small>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+-->
                         <div class="mb-3">
                             <label>Startup Confirmation Mode</label>
                             <div class="list-group mx-0">
                                 <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="radio" name="startConfirmMode" value="Immediate" data-bind="checked: App_ApplicationReadyMode">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="startConfirmMode"
+                                           value="Immediate" data-bind="checked: App_ApplicationReadyMode">
                                     <span>
                                         Immediate
                                         <small class="d-block text-muted">
-                                            AMP will assume that the application is ready immediately without making any checks.
+                                            AMP will assume that the application is ready
+                                            immediately without making any checks.
                                         </small>
                                     </span>
                                 </label>
                                 <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="radio" name="startConfirmMode" value="RCONConnected" data-bind="checked: App_ApplicationReadyMode">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="startConfirmMode"
+                                           value="RCONConnected" data-bind="checked: App_ApplicationReadyMode">
                                     <span>
                                         Successful RCON Connection
                                         <small class="d-block text-muted">
-                                            Once AMP connects to the game servers RCON successfully, it will treat the server as being ready.
+                                            Once AMP connects to the game servers RCON
+                                            successfully, it will treat the server as being ready.
                                         </small>
                                     </span>
                                 </label>
                                 <label class="list-group-item d-flex gap-2">
-                                    <input class="form-check-input flex-shrink-0" type="radio" name="startConfirmMode" value="RegexMatch" data-bind="checked: App_ApplicationReadyMode">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="startConfirmMode"
+                                           value="RegexMatch" data-bind="checked: App_ApplicationReadyMode">
                                     <span>
                                         Wait for message (Regular Expression)
                                         <small class="d-block text-muted">
-                                            AMP will wait until the server produces a message matching a regular expression before assuming it's ready.
+                                            AMP will wait until the server produces a
+                                            message matching a regular expression before assuming it's ready.
                                         </small>
                                     </span>
                                 </label>
@@ -760,7 +835,10 @@
                                 <label>Shutdown Method</label>
                                 <select class="form-select" data-bind="value: App_ExitMethod">
                                     <option value="String">Run a command on the server</option>
-                                    <option value="OS_CLOSE">Request via OS (Recommended if running a command is not possible)</option>
+                                    <option value="OS_CLOSE">
+                                        Request via OS (Recommended if running a command is not
+                                        possible)
+                                    </option>
                                     <option value="Kill">Kill Process Immediately</option>
                                     <option value="EndStream">End STDIO stream</option>
                                     <option value="CtrlC">Send CTRL+C literal (Probably not what you want)</option>
@@ -768,14 +846,18 @@
                                     <option value="Esc">Send ESCAPE literal</option>
                                     <option value="WM_CLOSE">Send WM_CLOSE message (Windows Only)</option>
                                     <option value="WM_QUIT">Send WM_QUIT message (Windows Only)</option>
-                                    <option value="SIGINT">Send SIGINT signal (Linux only, equivalent to pressing CTRL+C)</option>
+                                    <option value="SIGINT">
+                                        Send SIGINT signal (Linux only, equivalent to pressing
+                                        CTRL+C)
+                                    </option>
                                     <option value="SIGTERM">Send SIGTERM signal (Linux only)</option>
                                     <option value="SIGKILL">Send SIGKILL signal (Linux only)</option>
                                 </select>
                             </div>
                             <div class="mb-3 col-6" data-bind="visible: App_ExitMethod() == 'String'">
                                 <label for="applicationStopCommandField">Command to send</label>
-                                <input type="text" class="form-control" id="applicationStopCommandField" data-bind="value: App_ExitString">
+                                <input type="text" class="form-control" id="applicationStopCommandField"
+                                       data-bind="value: App_ExitString">
                             </div>
                         </div>
                         <br /><hr /><br />
@@ -821,7 +903,8 @@
                             </tr>
                         </table><br />
                         <p>
-                            <a href="https://regex101.com" target="_blank">Regex101</a> is an excellent resource to help validate expressions. AMP uses the 'ECMAScript (Javascript)' regex flavour.
+                            <a href="https://regex101.com" target="_blank">Regex101</a> is an excellent resource to help
+                            validate expressions. AMP uses the 'ECMAScript (Javascript)' regex flavour.
                         </p>
                         <div class="mb-3">
                             <label for="appReadyExprField">
@@ -830,7 +913,8 @@
                                     AMP will transition from the 'starting' to the 'ready' state when matched and using 'Wait for message as the Startup Confirmation Mode.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="appReadyExprField" data-bind="value: _Console_AppReadyRegex" placeholder="Server is ready.">
+                            <input type="text" class="form-control" id="appReadyExprField"
+                                   data-bind="value: _Console_AppReadyRegex" placeholder="Server is ready.">
                         </div>
                         <div class="mb-3">
                             <label for="appUserConnExprField">
@@ -839,7 +923,8 @@
                                     Must contain a *{username}, *{userid}, or *{sessionid} and optionally an *{endpoint}.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="appUserConnExprField" data-bind="value: _Console_UserJoinRegex" placeholder="User *{username} (*{userid}) connected from [*{endpoint}]">
+                            <input type="text" class="form-control" id="appUserConnExprField"
+                                   data-bind="value: _Console_UserJoinRegex" placeholder="User *{username} (*{userid}) connected from [*{endpoint}]">
                         </div>
                         <div class="mb-3">
                             <label for="appUserDisconnExprField">
@@ -848,7 +933,8 @@
                                     Must contain a *{username}, *{userid}, or *{sessionid}. Must match a variable that was used in the User connected expression.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="appUserDisconnExprField" data-bind="value: _Console_UserLeaveRegex" placeholder="User *{username} (*{userid}) disconnected. Reason: *{misc}">
+                            <input type="text" class="form-control" id="appUserDisconnExprField"
+                                   data-bind="value: _Console_UserLeaveRegex" placeholder="User *{username} (*{userid}) disconnected. Reason: *{misc}">
                         </div>
                         <div class="mb-3">
                             <label for="appChatExprField">
@@ -857,14 +943,16 @@
                                     Must have either a *{username} or *{userid} plus a *{message}.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="appChatExprField" data-bind="value: _Console_UserChatRegex" placeholder="*{username}: *{message}">
+                            <input type="text" class="form-control" id="appChatExprField"
+                                   data-bind="value: _Console_UserChatRegex" placeholder="*{username}: *{message}">
                         </div>
                         <br /><hr /><br />
                         <h4 id="validateReview">Validate and Review</h4>
                         <div class="mb-3">
                             <label>Generated Command Line Arguments</label>
                             <div class="form-text">
-                                This is generated assuming the default values and default port numbers, these will change based on user-specified values or assignments made by AMP.
+                                This is generated assuming the default values and default port
+                                numbers, these will change based on user-specified values or assignments made by AMP.
                             </div>
                         </div>
                         <div class="mb-3">
@@ -998,7 +1086,8 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" data-bind="text: __vm.__IsEditingSetting() ? 'Edit Setting' : 'Add New Setting'"></h5>
+                    <h5 class="modal-title"
+                        data-bind="text: __vm.__IsEditingSetting() ? 'Edit Setting' : 'Add New Setting'"></h5>
                     <button type="button" class="close" data-bind="click: __vm.__CloseSetting">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -1009,19 +1098,23 @@
                             <label for="settingDispNameField">
                                 Display Name
                                 <small class="d-block text-muted">
-                                    The name of the setting as it will appear within AMPs configuration page.
+                                    The name of the setting as it will appear within AMPs
+                                    configuration page.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="settingDispNameField" data-bind="value: DisplayName" placeholder="Server Name">
+                            <input type="text" class="form-control" id="settingDispNameField"
+                                   data-bind="value: DisplayName" placeholder="Server Name">
                         </div>
                         <div class="mb-3 col-6">
                             <label for="settingCategoryField">
                                 Category
                                 <small class="d-block text-muted">
-                                    Settings within the same category are automatically grouped together.
+                                    Settings within the same category are automatically
+                                    grouped together.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="settingCategoryField" data-bind="value: Category" placeholder="Server Settings">
+                            <input type="text" class="form-control" id="settingCategoryField"
+                                   data-bind="value: Category" placeholder="Server Settings">
                         </div>
                     </div>
                     <div class="row">
@@ -1029,19 +1122,23 @@
                             <label for="settingDescriptionField">
                                 Description
                                 <small class="d-block text-muted">
-                                    A brief explanation as to what the setting does and what effect it will have.
+                                    A brief explanation as to what the setting does and
+                                    what effect it will have.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="settingDescriptionField" data-bind="value: Description" placeholder="The name displayed in server browser.">
+                            <input type="text" class="form-control" id="settingDescriptionField"
+                                   data-bind="value: Description" placeholder="The name displayed in server browser.">
                         </div>
                         <div class="mb-3 col-6">
                             <label for="settingKeywordField">
                                 Keywords
                                 <small class="d-block text-muted">
-                                    Keywords that relate to this setting. AMP uses these to help users find settings when using the search box.
+                                    Keywords that relate to this setting. AMP uses these
+                                    to help users find settings when using the search box.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="settingKeywordField" data-bind="value: Keywords" placeholder="server,name">
+                            <input type="text" class="form-control" id="settingKeywordField"
+                                   data-bind="value: Keywords" placeholder="server,name">
                         </div>
                     </div>
                     <div class="row">
@@ -1049,16 +1146,19 @@
                             <label for="settingFieldNameField">
                                 Field Name
                                 <small class="d-block text-muted">
-                                    The name of the command line argument that this setting controls. Used as the arguments key.
+                                    The name of the command line argument that this
+                                    setting controls. Used as the arguments key.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="settingFieldNameField" data-bind="value: FieldName" placeholder="ServerName">
+                            <input type="text" class="form-control" id="settingFieldNameField"
+                                   data-bind="value: FieldName" placeholder="ServerName">
                         </div>
                         <div class="mb-3 col-6">
                             <label for="settingInputTypeField">
                                 Input Type
                                 <small class="d-block text-muted">
-                                    Controls what interface is displayed to the user when editing this setting.
+                                    Controls what interface is displayed to the user when
+                                    editing this setting.
                                 </small>
                             </label>
                             <select class="form-select" id="settingInputTypeField" data-bind="value: InputType">
@@ -1077,10 +1177,12 @@
                             <label for="settingDefaultValueField">
                                 Default Value
                                 <small class="d-block text-muted">
-                                    The value that this setting will have by default until changed.
+                                    The value that this setting will have by default until
+                                    changed.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="settingDefaultValueField" data-bind="value: DefaultValue" placeholder="AMP Powered Server">
+                            <input type="text" class="form-control" id="settingDefaultValueField"
+                                   data-bind="value: DefaultValue" placeholder="AMP Powered Server">
                         </div>
                         <div class="mb-3 col-6">
                             <label for="settingSuffixField">
@@ -1089,52 +1191,63 @@
                                     A unit of measure for the input.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="settingSuffixField" data-bind="value: Suffix" placeholder="sec">
+                            <input type="text" class="form-control" id="settingSuffixField"
+                                   data-bind="value: Suffix" placeholder="sec">
                         </div>
                     </div>
                     <div class="row">
                         <div class="mb-3 col-6">
                             <label>
-                                <input class="form-check-input" type="checkbox" data-bind="checked: Hidden">
+                                <input class="form-check-input" type="checkbox"
+                                       data-bind="checked: Hidden">
                                 <span>
                                     Hidden Setting
                                     <small class="d-block text-muted">
-                                        Allows a setting to be hidden from GUI, but used in command line or setting files.
+                                        Allows a setting to be hidden from GUI,
+                                        but used in command line or setting files.
                                     </small>
                                 </span>
                             </label>
                         </div>
                         <div class="mb-3 col-6">
                             <label>
-                                <input class="form-check-input" type="checkbox" data-bind="checked: IncludeInCommandLine">
+                                <input class="form-check-input" type="checkbox"
+                                       data-bind="checked: IncludeInCommandLine">
                                 <span>
                                     Include in formatted command line
                                     <small class="d-block text-muted">
-                                        This setting controls a command line argument/flag.
+                                        This setting controls a command line
+                                        argument/flag.
                                     </small>
                                 </span>
                             </label>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="mb-3 col-6" data-bind="visible: IncludeInCommandLine()">
+                        <div class="mb-3 col-6"
+                             data-bind="visible: IncludeInCommandLine()">
                             <label>
-                                <input class="form-check-input" type="checkbox" data-bind="checked: SkipIfEmpty">
+                                <input class="form-check-input" type="checkbox"
+                                       data-bind="checked: SkipIfEmpty">
                                 <span>
                                     Skip If Empty
                                     <small class="d-block text-muted">
-                                        The Command Line Arg will be excluded if no value is entered.
+                                        The Command Line Arg will be excluded
+                                        if no value is entered.
                                     </small>
                                 </span>
                             </label>
                         </div>
-                        <div class="mb-3 col-6" data-bind="visible: InputType() == 'checkbox' && IncludeInCommandLine()">
+                        <div class="mb-3 col-6"
+                             data-bind="visible: InputType() == 'checkbox' && IncludeInCommandLine()">
                             <label>
                                 <input class="form-check-input" type="checkbox" data-bind="checked: IsFlagArgument">
                                 <span>
                                     Is a flag argument
                                     <small class="d-block text-muted">
-                                        For checkbox based settings, the checkbox being on will add the 'True' value as a flag without using the field name as a key.
+                                        For checkbox based settings, the checkbox being on
+                                        will add the 'True' value as a flag without using the field name as a
+                                        key.
                                     </small>
                                 </span>
                             </label>
@@ -1142,8 +1255,8 @@
                         <table class="table mb-3" data-bind="visible: InputType() == 'enum'">
                             <thead>
                                 <tr>
-                                    <th scope="col">Key (Placed in config file/startup args)</th>
-                                    <th scope="col">Value (Presented to user)</th>
+                                    <th scope="col">Enum Key</th>
+                                    <th scope="col">Enum Value</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -1157,7 +1270,8 @@
                                         <input type="text" data-bind="value: _enumValue">
                                     </td>
                                     <td style="text-align: right;">
-                                        <button type="button" class="btn btn-danger" data-bind="click: __RemoveEnum">
+                                        <button type="button" class="btn btn-danger"
+                                                data-bind="click: __RemoveEnum">
                                             Delete Enum
                                         </button>
                                     </td>
@@ -1165,7 +1279,7 @@
                                 <!-- /ko -->
                                 <!-- ko if: _EnumMappings().length == 0 -->
                                 <tr>
-                                    <td colspan="3">No entries have been added.</td>
+                                    <td colspan="3">No enums have been added.</td>
                                 </tr>
                                 <!-- /ko -->
                             </tbody>
@@ -1191,27 +1305,34 @@
                             <label for="settingCheckedValueField">
                                 Checked Value
                                 <small class="d-block text-muted">
-                                    The value used for this setting if it is checked.
+                                    The value used for this setting if it is
+                                    checked.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="settingCheckedValueField" data-bind="value: _CheckedValue">
+                            <input type="text" class="form-control" id="settingCheckedValueField"
+                                   data-bind="value: _CheckedValue">
                         </div>
                         <div class="mb-3 col-6">
                             <label for="settingUncheckedValueField">
                                 Unchecked Value
                                 <small class="d-block text-muted">
-                                    The value used for this setting if it is not checked.
+                                    The value used for this setting if it is not
+                                    checked.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="settingUncheckedValueField" data-bind="value: _UncheckedValue">
+                            <input type="text" class="form-control" id="settingUncheckedValueField"
+                                   data-bind="value: _UncheckedValue">
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-bind="visible: !__vm.__IsEditingSetting(), click: __vm.__DoAddSetting">
-                        Add New Setting
+                    <button type="button" class="btn btn-primary"
+                            data-bind="visible: !__vm.__IsEditingSetting(), click: __vm.__DoAddSetting">
+                        Add New
+                        Setting
                     </button>
-                    <button type="button" class="btn btn-secondary" data-bind="click: __vm.__CloseSetting">
+                    <button type="button" class="btn btn-secondary"
+                            data-bind="click: __vm.__CloseSetting">
                         Close
                     </button>
                 </div>
@@ -1223,7 +1344,8 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" data-bind="text: __vm.__IsEditingStage() ? 'Edit Stage' : 'Add New Stage'"></h5>
+                    <h5 class="modal-title"
+                        data-bind="text: __vm.__IsEditingStage() ? 'Edit Stage' : 'Add New Stage'"></h5>
                     <button type="button" class="close" data-bind="click: __vm.__CloseStage">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -1265,7 +1387,8 @@
                                     This will show as the notification while updating.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="stageNameField" data-bind="value: UpdateStageName" placeholder="Config File Download" required>
+                            <input type="text" class="form-control" id="stageNameField"
+                                   data-bind="value: UpdateStageName" placeholder="Config File Download" required>
                         </div>
                     </div>
                     <div class="row">
@@ -1289,7 +1412,8 @@
                                     Run this stage based on another setting. Place the variable name here and the value in Condition Value.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="stageConditionField" data-bind="value: UpdateSourceConditionSetting" placeholder="GitHubDownload">
+                            <input type="text" class="form-control" id="stageConditionField"
+                                   data-bind="value: UpdateSourceConditionSetting" placeholder="GitHubDownload">
                         </div>
                     </div>
                     <div class="row">
@@ -1300,11 +1424,13 @@
                                     The value of the Condition Setting that allows this stage to run.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="stageConditionValueField" data-bind="value: UpdateSourceConditionValue" placeholder="true">
+                            <input type="text" class="form-control" id="stageConditionValueField"
+                                   data-bind="value: UpdateSourceConditionValue" placeholder="true">
                         </div>
                         <div class="mb-3 col-6">
                             <label class="list-group-item d-flex gap-2" style="flex: 1">
-                                <input class="form-check-input flex-shrink-0" type="checkbox" data-bind="checked: OneShot">
+                                <input class="form-check-input flex-shrink-0" type="checkbox"
+                                       data-bind="checked: OneShot">
                                 <span>
                                     One Shot
                                     <small class="d-block text-muted">
@@ -1322,7 +1448,8 @@
                                     The URL of the file to download.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="stageSourceDataField" data-bind="value: UpdateSourceData" placeholder="https://raw.githubusercontent.com/CubeCoders/AMPTemplates/main/terrariaserverconfig.txt">
+                            <input type="text" class="form-control" id="stageSourceDataField"
+                                   data-bind="value: UpdateSourceData" placeholder="https://raw.githubusercontent.com/CubeCoders/AMPTemplates/main/terrariaserverconfig.txt">
                         </div>
                     </div>
                     <div class="row">
@@ -1333,7 +1460,8 @@
                                     Source File to copy including the Root Directory.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="stageArgsField" data-bind="value: UpdateSourceArgs" placeholder="./v-rising/1829350/file.txt">
+                            <input type="text" class="form-control" id="stageArgsField"
+                                   data-bind="value: UpdateSourceArgs" placeholder="./v-rising/1829350/file.txt">
                         </div>
                     </div>
                     <div class="row">
@@ -1344,7 +1472,8 @@
                                     The file/directory to create a symlink of including the Root Directory.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="stageArgsField" data-bind="value: UpdateSourceArgs" placeholder="./v-rising/1829350/file.txt">
+                            <input type="text" class="form-control" id="stageArgsField"
+                                   data-bind="value: UpdateSourceArgs" placeholder="./v-rising/1829350/file.txt">
                         </div>
                     </div>
                     <div class="row">
@@ -1355,7 +1484,8 @@
                                     The arguments to append to the executable.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="stageArgsField" data-bind="value: UpdateSourceArgs" placeholder="-config -force">
+                            <input type="text" class="form-control" id="stageArgsField"
+                                   data-bind="value: UpdateSourceArgs" placeholder="-config -force">
                         </div>
                     </div>
                     <div class="row">
@@ -1366,7 +1496,8 @@
                                     The zip file to extract including the Root Directory.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="stageArgsField" data-bind="value: UpdateSourceArgs" placeholder="./pk/374040/dedicated_server.zip">
+                            <input type="text" class="form-control" id="stageArgsField"
+                                   data-bind="value: UpdateSourceArgs" placeholder="./pk/374040/dedicated_server.zip">
                         </div>
                     </div>
                     <div class="row">
@@ -1377,7 +1508,8 @@
                                     The GitHub repo to download the release from.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="stageArgsField" data-bind="value: UpdateSourceArgs" placeholder="tModLoader/tModLoader">
+                            <input type="text" class="form-control" id="stageArgsField"
+                                   data-bind="value: UpdateSourceArgs" placeholder="tModLoader/tModLoader">
                         </div>
                     </div>
                     <div class="row">
@@ -1388,7 +1520,8 @@
                                     The file to mark executable.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="stageArgsField" data-bind="value: UpdateSourceArgs" placeholder="dedicated_server.x86_64">
+                            <input type="text" class="form-control" id="stageArgsField"
+                                   data-bind="value: UpdateSourceArgs" placeholder="dedicated_server.x86_64">
                         </div>
                     </div>
                     <div class="row">
@@ -1399,7 +1532,8 @@
                                     The App ID of the Steam game client. You can find this via <a href="https://steamdb.info" target="_blank">SteamDB</a>.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="stageArgsField" data-bind="value: UpdateSourceArgs" placeholder="892970">
+                            <input type="text" class="form-control" id="stageArgsField"
+                                   data-bind="value: UpdateSourceArgs" placeholder="892970">
                         </div>
                     </div>
                     <div class="row">
@@ -1410,7 +1544,8 @@
                                     The location to place the symlink including the Root Directory.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="stageSourceDataField" data-bind="value: UpdateSourceData" placeholder="./v-rising/1829350/save/config.cfg">
+                            <input type="text" class="form-control" id="stageSourceDataField"
+                                   data-bind="value: UpdateSourceData" placeholder="./v-rising/1829350/save/config.cfg">
                         </div>
                     </div>
                     <div class="row">
@@ -1421,7 +1556,8 @@
                                     The location and name of the executable including the Root Directory.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="stageSourceDataField" data-bind="value: UpdateSourceData" placeholder="./v-rising/1829350/save/config.cfg">
+                            <input type="text" class="form-control" id="stageSourceDataField"
+                                   data-bind="value: UpdateSourceData" placeholder="./v-rising/1829350/save/config.cfg">
                         </div>
                     </div>
                     <div class="row">
@@ -1432,7 +1568,8 @@
                                     The file to download from the release.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="stageSourceDataField" data-bind="value: UpdateSourceData" placeholder="tModLoader.zip">
+                            <input type="text" class="form-control" id="stageSourceDataField"
+                                   data-bind="value: UpdateSourceData" placeholder="tModLoader.zip">
                         </div>
                     </div>
                     <div class="row">
@@ -1443,7 +1580,8 @@
                                     The destination file location/name including the Root Directory.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="stageSourceDataField" data-bind="value: UpdateSourceData" placeholder="https://raw.githubusercontent.com/CubeCoders/AMPTemplates/main/terrariaserverconfig.txt">
+                            <input type="text" class="form-control" id="stageSourceDataField"
+                                   data-bind="value: UpdateSourceData" placeholder="https://raw.githubusercontent.com/CubeCoders/AMPTemplates/main/terrariaserverconfig.txt">
                         </div>
                     </div>
                     <div class="row">
@@ -1454,7 +1592,8 @@
                                     The App ID of the application to download. You can find this via <a href="https://steamdb.info" target="_blank">SteamDB</a>.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="stageSourceDataField" data-bind="value: UpdateSourceData" placeholder="896660">
+                            <input type="text" class="form-control" id="stageSourceDataField"
+                                   data-bind="value: UpdateSourceData" placeholder="896660">
                         </div>
                     </div>
                     <div class="row">
@@ -1465,7 +1604,8 @@
                                     The branch to download from. Can be hardcoded or the Field Name of an input. Public branch if left blank.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="stageSourceVersionField" data-bind="value: UpdateSourceVersion" placeholder="{{ReleaseStream}}">
+                            <input type="text" class="form-control" id="stageSourceVersionField"
+                                   data-bind="value: UpdateSourceVersion" placeholder="{{ReleaseStream}}">
                         </div>
                     </div>
                     <div class="row">
@@ -1491,7 +1631,8 @@
                                     Where to download relative to the Root Directory.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="stageTargetField" data-bind="value: UpdateSourceTarget" placeholder="serverfiles">
+                            <input type="text" class="form-control" id="stageTargetField"
+                                   data-bind="value: UpdateSourceTarget" placeholder="serverfiles">
                         </div>
                     </div>
                     <div class="row">
@@ -1502,13 +1643,15 @@
                                     Where to extract the file to relative to Root Directory.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="stageTargetField" data-bind="value: UpdateSourceTarget" placeholder="./pk/374040/">
+                            <input type="text" class="form-control" id="stageTargetField"
+                                   data-bind="value: UpdateSourceTarget" placeholder="./pk/374040/">
                         </div>
                     </div>
                     <div class="row">
                         <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '0' || _UpdateSource() == '4'">
                             <label class="list-group-item d-flex gap-2" style="flex: 1">
-                                <input class="form-check-input flex-shrink-0" type="checkbox" data-bind="checked: UnzipUpdateSource">
+                                <input class="form-check-input flex-shrink-0" type="checkbox"
+                                       data-bind="checked: UnzipUpdateSource">
                                 <span>
                                     Unzip Source
                                     <small class="d-block text-muted">
@@ -1521,7 +1664,8 @@
                     <div class="row">
                         <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '0' || _UpdateSource() == '4'">
                             <label class="list-group-item d-flex gap-2" style="flex: 1">
-                                <input class="form-check-input flex-shrink-0" type="checkbox" data-bind="checked: OverwriteExistingFiles">
+                                <input class="form-check-input flex-shrink-0" type="checkbox"
+                                       data-bind="checked: OverwriteExistingFiles">
                                 <span>
                                     Overwrite
                                     <small class="d-block text-muted">
@@ -1534,7 +1678,8 @@
                     <div class="row">
                         <div class="mb-3 col-6" data-bind="visible: _UpdateSource() == '0' || _UpdateSource() == '4'">
                             <label class="list-group-item d-flex gap-2" style="flex: 1">
-                                <input class="form-check-input flex-shrink-0" type="checkbox" data-bind="checked: DeleteAfterExtract">
+                                <input class="form-check-input flex-shrink-0" type="checkbox"
+                                       data-bind="checked: DeleteAfterExtract">
                                 <span>
                                     Delete After Extract
                                     <small class="d-block text-muted">
@@ -1546,11 +1691,13 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-bind="visible: !__vm.__IsEditingStage(), click: __vm.__DoAddStage">
+                    <button type="button" class="btn btn-primary"
+                            data-bind="visible: !__vm.__IsEditingStage(), click: __vm.__DoAddStage">
                         Add New
                         Stage
                     </button>
-                    <button type="button" class="btn btn-secondary" data-bind="click: __vm.__CloseStage">
+                    <button type="button" class="btn btn-secondary"
+                            data-bind="click: __vm.__CloseStage">
                         Close
                     </button>
                 </div>
