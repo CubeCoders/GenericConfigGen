@@ -1,15 +1,3 @@
-$(window).on("error", function (evt) {
-
-    console.log("jQuery error event:", evt);
-    var e = evt.originalEvent; // get the javascript event
-    console.log("original event:", e);
-    if (e.message) {
-        alert(e.message);
-    } else {
-        alert("Error: " + e.type + "\nElement:\n\t" + (e.srcElement || e.target));
-    }
-});
-
 function omitNonPublicMembers(key, value) {
     return key.startsWith("_") ? undefined : value;
 }
@@ -682,11 +670,6 @@ class PortMappingViewModel {
 class ConfigFileMappingViewModel {
     constructor(configFile, autoMap, configType, vm) {
         this.__vm = vm;
-
-        if (!configFile) {
-            throw new Error("Config File Name is required.");
-        }
-
         this.ConfigFile = ko.observable(configFile);
         this._ConfigType = ko.observable(configType);
         this.ConfigType = ko.computed(() => {
@@ -777,8 +760,8 @@ class AppSettingViewModel {
 class EnumMappingViewModel {
     constructor(enumKey, enumValue, vm) {
         this.__vm = vm;
-        this._EnumKey = ko.observable(enumKey);
-        this._EnumValue = ko.observable(enumValue);
+        this._EnumKey = ko.observable(EnumKey);
+        this._EnumValue = ko.observable(EnumValue);
         this.__RemoveEnum = () => this.__vm.__RemoveEnum(this);
     }
 }
