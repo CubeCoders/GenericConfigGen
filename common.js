@@ -52,8 +52,6 @@ function WildcardToRegex(pattern) {
         reg = reg.replace(/\s+/g, "\\s+"); // replace all numbers with \d+
         reg = reg.replace(/\\\*\\\{(\w+)\\\}/g, "(?<$1>.+)"); // replace *{} with named capture group
         reg = reg.replace(/\(\?<misc>\.\+\)/g, ".*"); // replace *{} with named capture group
-//        reg = escapeReplace(reg, "?", "(.)");
-//        reg = escapeReplace(reg, "*", starMatchesEmpty === true ? "(.*?)" : "(.+?)");
         return reg;
     };
     

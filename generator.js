@@ -20,8 +20,7 @@ function downloadString(data, filename) {
 class generatorViewModel {
     constructor() {
         var self = this;
-        this.availablePortOptions = ko.observableArray(['Custom Port', 'Main Game Port', 'Steam Query Port', 'RCON Port']);
-
+        this._availablePortOptions = ko.observableArray(['Custom Port', 'Main Game Port', 'Steam Query Port', 'RCON Port']);
         this._compatibility = ko.observable("None");
         this.Meta_DisplayName = ko.observable("");
         this.Meta_Description = ko.observable("");
@@ -30,7 +29,7 @@ class generatorViewModel {
         this._Meta_GithubOrigin = ko.computed(() => 'https://github.com/' + self.Meta_Author() + '/AMPTemplates.git');
         this._Meta_GithubURL = ko.computed(() => 'https://github.com/' + self.Meta_Author() + '/AMPTemplates');
         this.Meta_URL = ko.observable("");
-        this.Meta_MinAMPVersion = ko.observable("2.4.2.0");
+        this.Meta_MinAMPVersion = ko.observable("2.4.5.4");
         this.Meta_SpecificDockerImage = ko.computed(() => self._compatibility() != "None" ? (self._compatibility().substring(self._compatibility().length - 4) == "Xvfb" ? `cubecoders/ampbase:xvfb` : `cubecoders/ampbase:wine`) : ``);
         this.Meta_DockerRequired = ko.observable("False");
         this.Meta_ContainerPolicy = ko.observable("Supported");
@@ -84,7 +83,7 @@ class generatorViewModel {
         this.App_MonitorChildProcessWaitMs = ko.observable("1000");
         this.App_MonitorChildProcessName = ko.observable("");
         this.App_Compatibility = ko.observable("None");
-        this.App_AppSettings = ko.observableArray();
+//        this.App_AppSettings = ko.observableArray();
         this._App_SteamWorkshopDownloadLocation = ko.observable();
         this.App_SteamWorkshopDownloadLocation = ko.computed(() => this._App_SteamWorkshopDownloadLocation() != '' ? "{{$FullBaseDir}}" + this._App_SteamWorkshopDownloadLocation() : '');
 
@@ -326,7 +325,7 @@ class generatorViewModel {
         //Action methods (add/remove/update)
         this.__RemovePort = function (toRemove) {
             if (toRemove._PortType() != 'Custom Port') {
-                this.availablePortOptions.push(toRemove._PortType());
+                this._availablePortOptions.push(toRemove._PortType());
             }
             self._PortMappings.remove(toRemove);
         };
@@ -334,7 +333,7 @@ class generatorViewModel {
         this.__AddPort = function () {
             self._PortMappings.push(new portMappingViewModel(self.__NewPort(), self.__NewName(), self.__NewDescription(), self.__NewPortType(), self.__NewProtocol(), self));
             if (self.__NewPortType() != 'Custom Port'){
-                this.availablePortOptions.remove(self.__NewPortType());
+                this._availablePortOptions.remove(self.__NewPortType());
             }
         };
 
@@ -676,7 +675,7 @@ class portMappingViewModel {
         this.Name = ko.computed(() => self._PortType() == "Custom Port" ? self._Name() : (self._PortType() == "Steam Query Port" ? `Steam Query Port` : (self._PortType() == "RCON Port" ? `Remote Admin Port` : `Main Game Port`)));
         this._Description = ko.observable(portDescription);
         this.Description = ko.computed(() => self._Description() == "0" ? self._Description() : (self._PortType() == "1" ? `Port used for Steam queries and server list` : (self._PortType() == "2" ? `Port used for RCON administration` : `Port used for main game traffic`)));
-        this.Ref = ko.computed(() => self._PortType() == "0" ? self._Name().replace(/\s+/g, "").replace(/[^a-z\d-_]/ig, "") : (self._PortType() == "Steam Query Port" ? `SteamQueryPort` : (self._PortType() == "RCON Port" ? `RemoteAdminPort` : `GamePort1`)));
+        this.Ref = ko.computed(() => self._PortType() == "0" ? self._Name().replace(/\s+/g, "").replace(/[^a-z\d-_]/ig, "") : (self._PortType() == "Steam Query Port" ? `SteamQueryPort` : (self._PortType() == "RCON Port" ? `RemoteAdminPort` : `MainGamePort`)));
         this.__RemovePort = () => self.__vm.__RemovePort(self);
     }
 }
