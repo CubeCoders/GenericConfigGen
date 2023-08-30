@@ -25,7 +25,8 @@ class generatorViewModel {
         this.Meta_DisplayName = ko.observable("");
         this.Meta_Description = ko.observable("");
         this.Meta_Arch = ko.observable("x86_64");
-        this.Meta_Author = ko.observable("");
+        this._Meta_Author = ko.observable("");
+        this.Meta_Author = ko.computed(() => self._Meta_Author() + ' - Made with AMP Config Generator');
         this._Meta_GithubOrigin = ko.computed(() => 'https://github.com/' + self.Meta_Author() + '/AMPTemplates.git');
         this._Meta_GithubURL = ko.computed(() => 'https://github.com/' + self.Meta_Author() + '/AMPTemplates');
         this.Meta_URL = ko.observable("");
