@@ -529,6 +529,29 @@ class generatorViewModel {
             var zip = new JSZip();
             zip.file(self.Meta_ConfigRoot(), output);
             zip.file(self.Meta_ConfigManifest(), JSON.stringify(asJSAppSettings, omitNonPublicMembers, 4));
+            for (const stage of asJSUpdateStages) {
+                if (stage.ForceDownloadPlatform == null) {
+                    delete stage.ForceDownloadPlatform;
+                }
+                if (stage.UpdateSourceConditionSetting == null) {
+                    delete stage.UpdateSourceConditionSetting;
+                }
+                if (stage.UpdateSourceConditionValue == null) {
+                    delete stage.UpdateSourceConditionValue;
+                }
+                if (stage.UpdateSourceData == "") {
+                    delete stage.UpdateSourceData;
+                }
+                if (stage.UpdateSourceArgs == "") {
+                    delete stage.UpdateSourceArgs;
+                }
+                if (stage.UpdateSourceVersion == "") {
+                    delete stage.UpdateSourceVersion;
+                }
+                if (stage.UpdateSourceTarget == "") {
+                    delete stage.UpdateSourceTarget;
+                }
+            }
             zip.file(self._Meta_StagesManifest(), JSON.stringify(asJSUpdateStages, omitNonPublicMembers, 4));
             zip.file(self._Meta_PortsManifest(), JSON.stringify(asJSPortMappings, omitNonPublicMembers, 4));
             zip.file(self.Meta_MetaConfigManifest(), JSON.stringify(asJSConfigFileMappings, omitNonPublicMembers, 4));

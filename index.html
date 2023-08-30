@@ -1082,14 +1082,14 @@
                             </label>
                             <input type="text" class="form-control" id="settingDefaultValueField" data-bind="value: DefaultValue" placeholder="AMP Powered Server">
                         </div>
-                        <div class="mb-3 col-6">
+                        <div class="mb-3 col-6" data-bind="visible: InputType() != 'checkbox' && InputType() != 'enum' && InputType() != 'password'" placeholder="sec">
                             <label for="settingSuffixField">
                                 Suffix
                                 <small class="d-block text-muted">
                                     A unit of measure for the input.
                                 </small>
                             </label>
-                            <input type="text" class="form-control" id="settingSuffixField" data-bind="value: Suffix" placeholder="sec">
+                            <input type="text" class="form-control" id="settingSuffixField" data-bind="value: Suffix">
                         </div>
                     </div>
                     <div class="row">
