@@ -30,15 +30,15 @@ class generatorViewModel {
         this._Meta_GithubOrigin = ko.computed(() => 'https://github.com/' + self.Meta_Author() + '/AMPTemplates.git');
         this._Meta_GithubURL = ko.computed(() => 'https://github.com/' + self.Meta_Author() + '/AMPTemplates');
         this.Meta_URL = ko.observable("");
-        this.Meta_MinAMPVersion = ko.observable("2.4.5.4");
+        this.Meta_MinAMPVersion = ko.observable("2.4.6.6");
         this.Meta_SpecificDockerImage = ko.computed(() => self._compatibility() != "None" ? (self._compatibility().substring(self._compatibility().length - 4) == "Xvfb" ? `cubecoders/ampbase:xvfb` : `cubecoders/ampbase:wine`) : ``);
         this.Meta_DockerRequired = ko.observable("False");
         this.Meta_ContainerPolicy = ko.observable("Supported");
         this.Meta_ContainerPolicyReason = ko.observable("");
         this.Meta_Prerequsites = ko.observable("[]");
-        this.Meta_ExtraContainerPackages = ko.observable("");
-        this.Meta_ConfigReleaseState = ko.observable("NotSpecified");
-        this.Meta_NoCommercialUsage = ko.observable("False");
+        //this.Meta_ExtraContainerPackages = ko.observable("");
+        //this.Meta_ConfigReleaseState = ko.observable("NotSpecified");
+        //this.Meta_NoCommercialUsage = ko.observable("False");
         this.Meta_EndpointURIFormat = ko.observable(`steam://connect/{ip}:{GenericModule.App.Ports.$SteamQueryPort}`);
 
         this._SupportsWindows = ko.observable(true);
@@ -56,7 +56,7 @@ class generatorViewModel {
         this.App_ApplicationReadyMode = ko.observable("Immediate");
         this.App_ExitMethod = ko.observable("OS_CLOSE");
         this.App_ExitString = ko.observable("stop");
-        this.App_UseLinuxIOREDIR = ko.observable("False");
+        //this.App_UseLinuxIOREDIR = ko.observable("False");
         this.App_ExitTimeout = ko.observable("30");
         this.App_ExitFile = ko.observable("app_exit.lck");
         this.App_SupportsLiveSettingsChanges = ko.observable("False");
@@ -76,7 +76,7 @@ class generatorViewModel {
         this.App_RCONHeartbeatMinutes = ko.observable("0");
         this.App_TelnetLoginFormat = ko.observable("{0}");
         this.App_SteamUpdateAnonymousLogin = ko.observable("True");
-        this.App_SteamForceLoginProm = ko.observable("False");
+        this.App_SteamForceLoginPrompt = ko.observable("False");
         this.App_SupportsUniversalSleep = ko.observable("False");
         this.App_WakeupMode = ko.observable("Any");
         this.App_TemplateMatchRegex = ko.observable("{{(\\$?[\\w]+)}}");
@@ -96,7 +96,7 @@ class generatorViewModel {
         this._Console_UserLeaveRegex = ko.observable("");
         this._Console_UserChatRegex = ko.observable("");
         this.Console_UpdateAvailableRegex = ko.observable("^\\[\\d\\d:\\d\\d:\\d\\d\\] \\[INFO\\] A new server update is available! v[\\d\\.]+.$");
-        this.Console_MetricsRegex = ko.observable("");
+        //this.Console_MetricsRegex = ko.observable("");
         this.Console_SuppressLogAtStart = ko.observable("False");
         this.Console_ActivateLogRegex = ko.observable("");
         this.Console_UserActions = ko.observable("{}");
