@@ -17,12 +17,14 @@ function downloadString(data, filename) {
     document.body.removeChild(element);
 }
 
+ko.validation.init();
+
 class generatorViewModel {
     constructor() {
         var self = this;
         this._availablePortOptions = ko.observableArray(['Custom Port', 'Main Game Port', 'Steam Query Port', 'RCON Port']);
         this._compatibility = ko.observable("None");
-        this.Meta_DisplayName = ko.observable("");
+        this.Meta_DisplayName = ko.observable("").extend({ required: "Please enter a first name" });
         this.Meta_Description = ko.observable("");
         this.Meta_Arch = ko.observable("x86_64");
         this._Meta_Author = ko.observable("");
@@ -119,14 +121,12 @@ class generatorViewModel {
         this.__NewAutoMap = ko.observable(true);
         this.__NewConfigType = ko.observable("");
 
-        this._UpdateSourceType = ko.observable("4");
         this._UpdateSourceURL = ko.observable("");
         this._UpdateSourceGitRepo = ko.observable("");
         this._UpdateSourceUnzip = ko.observable(false);
         this._DisplayImageSource = ko.observable("");
 
         this._SteamServerAppID = ko.observable("");
-        this._SteamClientAppID = ko.observable("");
 
         this._WinExecutableName = ko.observable("");
         this._LinuxExecutableName = ko.observable("");
@@ -151,9 +151,9 @@ class generatorViewModel {
         this._Meta_PortsManifest = ko.computed(() => self.__SanitizedName() + "ports.json");
         this._Meta_StagesManifest = ko.computed(() => self.__SanitizedName() + "updates.json");
         this.Meta_ConfigRoot = ko.computed(() => self.__SanitizedName() + ".kvp");
-//        this.Meta_DisplayImageSource = ko.computed(() => self._UpdateSourceType() == "4" ? "steam:" + self._SteamClientAppID() : "url:" + self._DisplayImageSource());
+        this.App_RootDir = ko.computed(() => `./${self.__SanitizedName()}/`);
 
-        this.Meta_DisplayImageSource = ko.computed(() => {
+        this._SteamCheck = ko.computed(() => {
             if (self._UpdateStages().length != 0) {
                 var appIDCheck = "0";
                 for (let i = 0; i < self._UpdateStages().length; i++) {
@@ -162,53 +162,19 @@ class generatorViewModel {
                     }
                 }
                 if (appIDCheck != 0) {
-                    return 'steam:' + appIDCheck;
-                } else {
-                    return 'url:' + self._DisplayImageSource();
-                }
-            } else {
-                return 'url:' + self._DisplayImageSource();
-            }
-        });
-
-        this.App_RootDir = ko.computed(() => `./${self.__SanitizedName()}/`);
-        
-        this.App_BaseDirectory = ko.computed(() => {
-            if (self._UpdateStages().length != 0) {
-                var appIDCheck = "0";
-                for (let i = 0; i < self._UpdateStages().length; i++) {
-                    if (self._UpdateStages()[i]._UpdateSource() == 8 && appIDCheck == 0) {
-                        appIDCheck = self._UpdateStages()[i].UpdateSourceData();
-                    }
-                }
-                if (appIDCheck != 0) {
-                    return self.App_RootDir() + appIDCheck + '/';
-                } else {
-                    return self.App_RootDir() + 'serverfiles/';
-                }
-            } else {
-                return self.App_RootDir() + 'serverfiles/';
-            }
-        });
-        
-        this.App_WorkingDir = ko.computed(() => {
-            if (self._UpdateStages().length != 0) {
-                var appIDCheck = "0";
-                for (let i = 0; i < self._UpdateStages().length; i++) {
-                    if (self._UpdateStages()[i]._UpdateSource() == 8 && appIDCheck == 0) {
-                        appIDCheck = self._UpdateStages()[i].UpdateSourceData();
-                    }
-                }
-                if (appIDCheck != 0) {
                     return appIDCheck;
                 } else {
-                    return 'serverfiles';
+                    return '0';
                 }
             } else {
-                return 'serverfiles';
+                return '0';
             }
         });
 
+        this.Meta_DisplayImageSource = ko.computed(() => self._SteamCheck() == 0 ? 'url:' + self._DisplayImageSource() : 'steam:' + self._SteamCheck());
+        this.App_BaseDirectory = ko.computed(() => self._SteamCheck() == 0 ? self.App_RootDir() + 'serverfiles/' : self.App_RootDir() + self._SteamCheck() + '/');
+        this.App_WorkingDir = ko.computed(() => self._SteamCheck() == 0 ? 'serverfiles' : self._SteamCheck());
+        this._SteamClientAppID = ko.computed(() => self._SteamCheck() != 0 ? self._SteamCheck() : '');
         this.App_ExecutableWin = ko.computed(() => self.App_WorkingDir() == "" ? self._WinExecutableName() : `${self.App_WorkingDir()}\\${self._WinExecutableName()}`);
         this.App_ExecutableLinux = ko.computed(() => self._compatibility() == "None" ? (self.App_WorkingDir() == "" ? self._LinuxExecutableName() : `${self.App_WorkingDir()}/${self._LinuxExecutableName()}`) : (self._compatibility().substring(self._compatibility().length - 4) == "Xvfb" ? '/usr/bin/xvfb-run' : (self._compatibility() == "Wine" ? '/usr/bin/wine' : '1580130/proton')));
         this._App_LinuxCommandLineArgsCompat = ko.computed(() => self._compatibility() == "None" ? '' : (self._compatibility() == "WineXvfb" ? '-a wine \"./' + self._WinExecutableName() + '\"' : (self._compatibility() == "ProtonXvfb" ? '-a \"{{$FullRootDir}}1580130/proton\" run \"./' + self._WinExecutableName() + '\"' : (self._compatibility() == "Proton" ? 'run \"./' + self._WinExecutableName() + '\"' : '\"./' + self._WinExecutableName() + '\"'))));
@@ -260,7 +226,7 @@ class generatorViewModel {
             var data = [
                 {
                     "key": "Generated Name",
-                    "value": self.__SanitizedName(),
+                    "value": self.__SanitizedName()
                 },
                 {
                     "key": "Config Root",
@@ -386,7 +352,11 @@ class generatorViewModel {
             self.__AddEditStage(new updateStageViewModel(self));
             $("#addEditStageModal").modal('show');
         };
-
+        this.Errors = ko.validation.group(self);
+        this.isValid = ko.computed(function () {
+            return self.Errors().length == 0;
+        });
+        
         this.__DoAddStage = function () {
             self._UpdateStages.push(self.__AddEditStage());
             $("#addEditStageModal").modal('hide');
@@ -496,33 +466,17 @@ class generatorViewModel {
                 lines.push(`${key.replace("_", ".")}=${self[key]()}`);
             }
 
-            /*
-                        switch (self._UpdateSourceType()) {
-                            case "1": //URL
-                                lines.push(`App.UpdateSources=[{\"UpdateStageName\": \"Server Download\",\"UpdateSourcePlatform\": \"All\", \"UpdateSource\": \"FetchURL\", \"UpdateSourceData\": \"${self._UpdateSourceURL()}\", \"UnzipUpdateSource\": ${self._UpdateSourceUnzip()}}]`);
-                                break;
-                            case "4": //Steam
-                                if (self._compatibility() == "Proton") {
-                                    lines.push(`App.UpdateSources=[{\"UpdateStageName\": \"SteamCMD Download\",\"UpdateSourcePlatform\": \"All\", \"UpdateSource\": \"SteamCMD\", \"UpdateSourceData\": \"${self._SteamServerAppID()}\"},{\"UpdateStageName\": \"Proton Compatibility Layer\",\"UpdateSourcePlatform\": \"Linux\", \"UpdateSource\": \"SteamCMD\", \"UpdateSourceData\": \"1580130\"}]`);
-                                } else {
-                                    lines.push(`App.UpdateSources=[{\"UpdateStageName\": \"SteamCMD Download\",\"UpdateSourcePlatform\": \"All\", \"UpdateSource\": \"SteamCMD\", \"UpdateSourceData\": \"${self._SteamServerAppID()}\"}]`);
-                                }
-                                break;
-                            case "16": //Github
-                                lines.push(`App.UpdateSources=[{\"UpdateStageName\": \"GitHub Release Download\",\"UpdateSourcePlatform\": \"All\", \"UpdateSource\": \"GithubRelease\", \"UpdateSourceData\": \"${self._UpdateSourceGitRepo()}\"}]`);
-                                break;
-                        }
-            */
-            if (self._UpdateSourceType() == "4") //SteamCMD
-            {
-                if (self._compatibility() == "Proton" || self._compatibility() == "ProtonXvfb") {
-                    lines.push(`App.EnvironmentVariables={\"LD_LIBRARY_PATH\": \"./linux64:%LD_LIBRARY_PATH%\", \"SteamAppId\": \"${self._SteamClientAppID()}\", \"STEAM_COMPAT_DATA_PATH\": \"{{$FullRootDir}}1580130\", \"STEAM_COMPAT_CLIENT_INSTALL_PATH\": \"{{$FullRootDir}}1580130\"}`);
-                } else {
-                    lines.push(`App.EnvironmentVariables={\"LD_LIBRARY_PATH\": \"./linux64:%LD_LIBRARY_PATH%\", \"SteamAppId\": \"${self._SteamClientAppID()}\"}`);
-                }
+            if ((self._compatibility() == "Proton" || self._compatibility() == "ProtonXvfb") && self._SteamCheck() != 0) {
+                lines.push(`App.EnvironmentVariables={\"LD_LIBRARY_PATH\": \"{{$FullBaseDir}}linux64:{{$FullRootDir}}linux64:%LD_LIBRARY_PATH%\", \"SteamAppId\": \"${self._SteamClientAppID()}\", \"STEAM_COMPAT_DATA_PATH\": \"{{$FullRootDir}}1580130\", \"STEAM_COMPAT_CLIENT_INSTALL_PATH\": \"{{$FullRootDir}}1580130\"}`);
+            } else if ((self._compatibility() == "Proton" || self._compatibility() == "ProtonXvfb") && self._SteamCheck() == 0) {
+                lines.push(`App.EnvironmentVariables={\"LD_LIBRARY_PATH\": \"{{$FullBaseDir}}linux64:{{$FullRootDir}}linux64:%LD_LIBRARY_PATH%\"}`);
+            } else if ((self._compatibility() == "Wine" || self._compatibility() == "WineXvfb") && self._SteamCheck() != 0) {
+                lines.push(`App.EnvironmentVariables={\"LD_LIBRARY_PATH\": \"{{$FullBaseDir}}linux64:{{$FullRootDir}}linux64:%LD_LIBRARY_PATH%\", \"SteamAppId\": \"${self._SteamClientAppID()}\", \"WINEPREFIX\": \"{{$FullRootDir}}.wine\", \"WINEARCH\": \"win64\", \"WINEDEBUG\": \"-all\"}`);
+            } else {
+                lines.push(`App.EnvironmentVariables={\"LD_LIBRARY_PATH\": \"{{$FullBaseDir}}linux64:{{$FullRootDir}}linux64:%LD_LIBRARY_PATH%\", \"WINEPREFIX\": \"{{$FullRootDir}}.wine\", \"WINEARCH\": \"win64\", \"WINEDEBUG\": \"-all\"}`);
             }
 
-            var output = lines.sort().join("\n");
+            var output = lines.join("\n");
             var asJSAppSettings = ko.toJS(self._AppSettings());
             var asJSUpdateStages = ko.toJS(self._UpdateStages());
             var asJSPortMappings = ko.toJS(self._PortMappings());
@@ -579,6 +533,10 @@ class generatorViewModel {
 
         this.__ValidateConfig = function () {
             autoSave();
+            if (!self.isValid()) {
+                self.Errors.showAllMessages();
+                return;
+            }
             self.__ValidationResults.removeAll();
 
             var failure = (issue, recommendation) => self.__ValidationResults.push(new validationResult("Failure", issue, recommendation));
@@ -627,32 +585,7 @@ class generatorViewModel {
                     }
 */                    break;
             }
-            /*
-                        switch (self._UpdateSourceType()) {
-                            case "1": //Fetch from URL
-                                if (self._UpdateSourceURL() == "") {
-                                    failure("Update method is Fetch from URL, but no download URL was specified.", "Specify the 'Update source URL' under Update Sources.");
-                                }
-                                else if (self._UpdateSourceURL().toLowerCase().endsWith(".zip") && !self._UpdateSourceUnzip()) {
-                                    info("Download URL is a zip file, but 'Unzip once downloaded' is not turned on.", "Turn on 'Unzip once downloaded' under 'Update Sources'", "Without this setting turned on, the archive will not be extracted. If this was intentional, you can ignore this message.");
-                                }
-                                break;
-                            case "4": //SteamCMD
-                                if (self._SteamServerAppID() == "") {
-                                    failure("Update method is SteamCMD, but no server App ID is set.", "Specify the 'Server Steam App ID' under Update Sources.");
-                                }
-                                if (self._SteamClientAppID() == "") {
-                                    warning("Update method is SteamCMD, but no client App ID is set.", "Specify the 'Server Client App ID' under Update Sources.", "The client app ID is used to source the background image for the resulting instance.");
-                                }
-                                break;
-                        }
-            */
-           /*
-            if (self.Console_AppReadyRegex() != "" && !self.Console_AppReadyRegex().match(/\^.+\$/)) { failure("Server ready expression does not match the entire line. Regular expressions for AMP must match the entire line, starting with a ^ and ending with a $.", "Update the Server Ready expression under Server Events to match the entire line."); }
-            if (self.Console_UserJoinRegex() != "" && !self.Console_UserJoinRegex().match(/\^.+\$/)) { failure("User connected expression does not match the entire line. Regular expressions for AMP must match the entire line, starting with a ^ and ending with a $.", "Update the User connected expression under Server Events to match the entire line."); }
-            if (self.Console_UserLeaveRegex() != "" && !self.Console_UserLeaveRegex().match(/\^.+\$/)) { failure("User disconnected expression does not match the entire line. Regular expressions for AMP must match the entire line, starting with a ^ and ending with a $.", "Update the User disconnected expression under Server Events to match the entire line."); }
-            if (self.Console_UserChatRegex() != "" && !self.Console_UserChatRegex().match(/\^.+\$/)) { failure("User chat expression does not match the entire line. Regular expressions for AMP must match the entire line, starting with a ^ and ending with a $.", "Update the User chat expression under Server Events to match the entire line."); }
-            */
+
             if ((self._compatibility() == "Wine" && !self._SupportsLinux()) || (self._compatibility() == "Proton" && !self._SupportsLinux())) { failure("A Linux compatibility layer was chosen, but Linux support is not checked.", "Please check both."); }
 
             //Validation Summary
