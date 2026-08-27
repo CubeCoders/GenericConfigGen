@@ -5,7 +5,7 @@
     left: 0;
     z-index: 100;
     padding: 48px 0 0;
-    box-shadow: inset -1px 0 0 rgb(0 0 0 / 10%);
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
 }
 
 .rightbar {
@@ -14,7 +14,7 @@
 }
 
 .leftLine {
-    box-shadow: inset 1px 0 0 rgb(0 0 0 / 10%)
+    box-shadow: inset 1px 0 0 rgba(0, 0, 0, .1)
 }
 
 .close
@@ -45,6 +45,170 @@ a.nav-link.active {
     color: #0d6efd;
     text-decoration: underline;
     background-color: transparent;
+}
+
+/* The setting and stage dialogs show a different set of fields depending on the input type or step type
+   that's been picked. Laying them out as grid columns left holes wherever a field was hidden, so they're
+   flex items instead - a hidden field drops out of the flow entirely and the rest close up. */
+.fieldRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.fieldRow:last-child {
+    margin-bottom: 0;
+}
+
+/* Column flex with the label allowed to grow, so the controls in a row line up along the bottom no
+   matter how many lines each field's help text wraps to. */
+.field {
+    flex: 1 1 15rem;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.field.narrow {
+    flex: 1 1 10rem;
+}
+
+.field.wide {
+    flex: 2 1 24rem;
+}
+
+.field.full {
+    flex: 1 1 100%;
+}
+
+.field > label {
+    display: block;
+    flex: 1 0 auto;
+    margin-bottom: 0.35rem;
+    font-weight: 600;
+}
+
+.fieldHelp {
+    display: block;
+    margin-top: 0.15rem;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    line-height: 1.35;
+    color: #6c757d;
+}
+
+.modalSection {
+    margin-top: 1.75rem;
+}
+
+.modalSection:first-child {
+    margin-top: 0;
+}
+
+.modalSectionTitle {
+    margin-bottom: 0.2rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #6c757d;
+}
+
+.modalSectionHelp {
+    margin-bottom: 0.85rem;
+    font-size: 0.8125rem;
+    color: #6c757d;
+}
+
+.modalSectionRule {
+    margin: 0.35rem 0 1rem;
+    opacity: 0.15;
+}
+
+/* Checkboxes wrap as tiles for the same reason - a column of them left a ragged gap whenever one only
+   applies to some of the input or step types. */
+.checkRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.checkTile {
+    flex: 1 1 17rem;
+    min-width: 0;
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    margin: 0;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid rgba(128, 128, 128, 0.3);
+    border-radius: 0.375rem;
+    cursor: pointer;
+}
+
+.checkTile:hover {
+    border-color: rgba(128, 128, 128, 0.6);
+}
+
+.checkTile > input {
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+}
+
+.checkTile .checkLabel {
+    display: block;
+    font-weight: 600;
+}
+
+.subPanel {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border: 1px solid rgba(128, 128, 128, 0.3);
+    border-radius: 0.375rem;
+}
+
+/* Table cells size to their content, which squeezed these two down until they clipped the option they
+   were showing. The text inputs alongside them go fluid so the wider pickers don't push the whole table
+   out past its column. */
+.table-responsive .table input[type="text"] {
+    width: 100%;
+    min-width: 5rem;
+}
+
+.table-responsive .table input[type="number"] {
+    width: 100%;
+    min-width: 4.5rem;
+}
+
+.portTypeSelect {
+    min-width: 8.5rem;
+}
+
+.portProtocolSelect {
+    min-width: 5rem;
+}
+
+/* The range and offset take two or three digits at most, so they don't get the width a port number
+   needs - the ports table has enough columns in it without them. */
+.table-responsive .table input.portNarrowNumber[type="number"] {
+    min-width: 3.25rem;
+    max-width: 4.5rem;
+}
+
+/* Checkboxes stacked in one cell, tight enough not to widen the row they sit in. */
+.portFlags .form-check {
+    margin-bottom: 0;
+    white-space: nowrap;
+}
+
+.modal-body .table {
+    margin-bottom: 0;
+}
+
+.modal-body .table input[type="text"] {
+    width: 100%;
 }
 
 #importexporttextarea
